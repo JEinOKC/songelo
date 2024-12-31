@@ -1,6 +1,6 @@
-# Music-Elo Frontend
+# Songelo Frontend
 
-This is the frontend for the Music-Elo project, built with React. It connects to the backend for Spotify authentication and displays related data.
+This is the frontend for the Songelo project, built with React. It connects to the backend for Spotify authentication and displays related data.
 
 ## Prerequisites
 
