@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV=development
+    command: npm run dev -- --host 0.0.0.0  # Ensure Vite's development server starts with host set to 0.0.0.0
