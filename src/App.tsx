@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import TopTracks from './TopTracks';
-// import PlaylistsDropdown from './PlaylistsDropdown';
 import SongeloPlaylistsDropdown from './SongeloPlaylistsDropdown';
+import { AppStateProvider } from './AppStateContext';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -66,7 +66,7 @@ const App = () => {
       const data = await response.json();
       
       localStorage.setItem('app_token', data.access_token);
-      localStorage.setItem('app_token_expiration', (new Date().getTime() + data.expires_in * 1000).toString());
+      localStorage.setItem('app_token_expiration', (new Date().getTime() + data.expires_in).toString());
     };
 
     const isTokenExpired = (serverTimestamp: number): boolean => {
@@ -105,26 +105,27 @@ const App = () => {
   };
 
   return (
-    <div>
-      <h1>Welcome to Songelo!</h1>
-      <p>This is the home page of the app.</p>
+    <AppStateProvider>
+      <div>
+        <h1>Welcome to Songelo!</h1>
+        <p>This is the home page of the app.</p>
 
-      {isLoggedIn ? (
-        <div>
-          <p>You are logged in with Spotify!</p>
-          <button onClick={refreshAppTokenTmp} style={{ padding: '10px 20px', fontSize: '16px' }}>
-            Refresh App Token
+        {isLoggedIn ? (
+          <div>
+            <p>You are logged in with Spotify!</p>
+            <button onClick={refreshAppTokenTmp} style={{ padding: '10px 20px', fontSize: '16px' }}>
+              Refresh App Token
+            </button>
+            <TopTracks />
+            <SongeloPlaylistsDropdown />
+          </div>
+        ) : (
+          <button onClick={handleLogin} style={{ padding: '10px 20px', fontSize: '16px' }}>
+            Login with Spotify
           </button>
-          <TopTracks />
-          {/* <PlaylistsDropdown /> */}
-          <SongeloPlaylistsDropdown />
-        </div>
-      ) : (
-        <button onClick={handleLogin} style={{ padding: '10px 20px', fontSize: '16px' }}>
-          Login with Spotify
-        </button>
-      )}
-    </div>
+        )}
+      </div>
+    </AppStateProvider>
   );
 };
 

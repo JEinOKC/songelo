@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import CreateSongeloPlaylistForm from './CreateSongeloPlaylistForm';
+import ListSongeloPlaylistSongs from './ListSongeloPlaylistSongs';
+import TopTracks from './TopTracks';
+import { useAppState } from './AppStateContext';
 
 const SongeloPlaylistsDropdown = () => {
   const [playlists, setPlaylists] = useState<any[]>([]);
-  const [selectedPlaylist, setSelectedPlaylist] = useState<string>('');
+  const { selectedPlaylist, setSelectedPlaylist } = useAppState();
 
   const fetchPlaylists = async () => {
     const appToken = localStorage.getItem('app_token');
@@ -33,6 +36,7 @@ const SongeloPlaylistsDropdown = () => {
     <div>
       <label htmlFor="songelo-playlists">Select a playlist:</label>
       <select id="songelo-playlists" value={selectedPlaylist} onChange={handleChange}>
+        <option value="" disabled>Select a playlist</option>
         {playlists.map((playlist) => (
           <option key={playlist.id} value={playlist.id}>
             {playlist.name}
@@ -40,6 +44,11 @@ const SongeloPlaylistsDropdown = () => {
         ))}
       </select>
       <CreateSongeloPlaylistForm onCreate={fetchPlaylists} />
+      {selectedPlaylist && (
+        <>
+          <ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
+        </>
+      )}
     </div>
   );
 };

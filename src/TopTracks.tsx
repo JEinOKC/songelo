@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Song from './Song';
+import { useAppState } from './AppStateContext';
 
-
-const TopTracks = () => {
+const TopTracks = ({ onSongAdded }: { onSongAdded: () => void }) => {
   const [topTracks, setTopTracks] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { selectedPlaylist } = useAppState();
 
   useEffect(() => {
     const token = localStorage.getItem('spotify_access_token');
@@ -35,7 +36,7 @@ const TopTracks = () => {
       <ul>
         {topTracks.map((track: any) => (
           <li key={track.id}>
-            <Song track={track} />
+            <Song track={track} playlistId={selectedPlaylist} canAddToPlaylist={true} onSongAdded={onSongAdded} />
           </li>
         ))}
       </ul>

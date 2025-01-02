@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Song from './Song';
 
 const ListSongeloPlaylistSongs = ({ playlistId }: { playlistId: string }) => {
   const [songs, setSongs] = useState<any[]>([]);
@@ -28,7 +29,9 @@ const ListSongeloPlaylistSongs = ({ playlistId }: { playlistId: string }) => {
       <h2>Songs in Playlist</h2>
       <ul>
         {songs.map((song) => (
-          <li key={song.id}>{song.name}</li>
+          <li key={song.id}>
+            <Song track={song.track_info} playlistId={playlistId} canAddToPlaylist={false} onSongAdded={undefined} />
+          </li>
         ))}
       </ul>
     </div>

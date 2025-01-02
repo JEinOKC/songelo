@@ -24,7 +24,7 @@ const Callback = () => {
           const { access_token, expires_in, app_token, app_token_expiration, refresh_token, app_refresh_token } = response.data;
 
           // Calculate expiration timestamp
-          const expirationTime = new Date().getTime() + expires_in;
+          const expirationTime = Math.floor(( new Date().getTime() + expires_in ) / 1000);//convert to seconds so it is standardized with the other timestamps
 
           // Store token and expiration in localStorage
           localStorage.setItem('spotify_access_token', access_token);
