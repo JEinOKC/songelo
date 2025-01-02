@@ -8,7 +8,6 @@ const PlaylistsDropdown = () => {
     const fetchPlaylists = async () => {
       const token = localStorage.getItem('spotify_access_token');
       if (!token) return;
-	  
 
       const response = await fetch('https://api.spotify.com/v1/me/playlists', {
         headers: {
