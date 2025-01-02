@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import TopTracks from './TopTracks';
-import PlaylistsDropdown from './PlaylistsDropdown';
+// import PlaylistsDropdown from './PlaylistsDropdown';
+import SongeloPlaylistsDropdown from './SongeloPlaylistsDropdown';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -115,7 +116,8 @@ const App = () => {
             Refresh App Token
           </button>
           <TopTracks />
-          <PlaylistsDropdown />
+          {/* <PlaylistsDropdown /> */}
+          <SongeloPlaylistsDropdown />
         </div>
       ) : (
         <button onClick={handleLogin} style={{ padding: '10px 20px', fontSize: '16px' }}>
