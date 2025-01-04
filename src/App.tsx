@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import TopTracks from './TopTracks';
 import SongeloPlaylistsDropdown from './SongeloPlaylistsDropdown';
 import ListSongeloPlaylistSongs from './ListSongeloPlaylistSongs';
