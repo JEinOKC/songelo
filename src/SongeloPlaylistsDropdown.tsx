@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import CreateSongeloPlaylistForm from './CreateSongeloPlaylistForm';
-import ListSongeloPlaylistSongs from './ListSongeloPlaylistSongs';
-import TopTracks from './TopTracks';
 import { useAppState } from './AppStateContext';
 
 const SongeloPlaylistsDropdown = () => {
   const [playlists, setPlaylists] = useState<any[]>([]);
   const { selectedPlaylist, setSelectedPlaylist } = useAppState();
+  const [wantNewPlaylist, setWantNewPlaylist] = useState<boolean>(false);
 
   const fetchPlaylists = async () => {
     const appToken = localStorage.getItem('app_token');
@@ -35,6 +34,7 @@ const SongeloPlaylistsDropdown = () => {
   return (
     <div>
       <label htmlFor="songelo-playlists">Select a playlist:</label>
+      {playlists.length > 0 ? (
       <select id="songelo-playlists" value={selectedPlaylist} onChange={handleChange}>
         <option value="" disabled>Select a playlist</option>
         {playlists.map((playlist) => (
@@ -42,13 +42,22 @@ const SongeloPlaylistsDropdown = () => {
             {playlist.name}
           </option>
         ))}
-      </select>
-      <CreateSongeloPlaylistForm onCreate={fetchPlaylists} />
-      {selectedPlaylist && (
-        <>
-          <ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
-        </>
-      )}
+      </select>)
+      : (
+        <div>No Playlists Available</div>
+      )
+    }
+      {wantNewPlaylist && <CreateSongeloPlaylistForm onCreate={fetchPlaylists} />}
+      
+      {
+        wantNewPlaylist ? 
+       (
+        <button onClick={() => {setWantNewPlaylist(false)}}>Cancel</button>
+       ) 
+        :
+        (<button onClick={() => {setWantNewPlaylist(true)}}>Create New Playlist</button>)
+      }
+
     </div>
   );
 };

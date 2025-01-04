@@ -41,6 +41,7 @@ const CreateSongeloPlaylistForm = ({ onCreate }: { onCreate: () => void }) => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
+        <h1>Create a New Playlist</h1>
         <label htmlFor="name">Playlist Name:</label>
         <input
           type="text"

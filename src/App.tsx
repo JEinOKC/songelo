@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import TopTracks from './TopTracks';
 import SongeloPlaylistsDropdown from './SongeloPlaylistsDropdown';
-import { AppStateProvider } from './AppStateContext';
+import ListSongeloPlaylistSongs from './ListSongeloPlaylistSongs';
+import { useAppState } from './AppStateContext';
+
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const { isLoggedIn, setIsLoggedIn, selectedPlaylist } = useAppState();
 
-  const refreshAppTokenTmp = async () => {//not sure that this works...
+  const refreshAppTokenTmp = async () => {
     const appRefreshToken = localStorage.getItem('app_refresh_token');
     const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/refresh-token`, {
       method: 'POST',
@@ -31,30 +33,30 @@ const App = () => {
     const appRefreshToken = localStorage.getItem('app_refresh_token');
 
     const refreshSpotifyToken = async () => {
-      const clientId = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
-      const clientSecret = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET;
-      const authString = btoa(`${clientId}:${clientSecret}`);
+      // const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+      // const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
+      // const authString = btoa(`${clientId}:${clientSecret}`);
 
-      const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${authString}`,
-        },
-        body: new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: refreshToken || '',
-        }),
-      });
+      // const response = await fetch('https://accounts.spotify.com/api/token', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/x-www-form-urlencoded',
+      //     'Authorization': `Basic ${authString}`,
+      //   },
+      //   body: new URLSearchParams({
+      //     grant_type: 'refresh_token',
+      //     refresh_token: refreshToken || '',
+      //   }),
+      // });
 
-      const data = await response.json();
-      const expirationTime = new Date().getTime() + data.expires_in;
+      // const data = await response.json();
+      // const expirationTime = new Date().getTime() + data.expires_in;
       
-      localStorage.setItem('spotify_access_token', data.access_token);
-      localStorage.setItem('spotify_token_expiration', expirationTime.toString());
+      // localStorage.setItem('spotify_access_token', data.access_token);
+      // localStorage.setItem('spotify_token_expiration', expirationTime.toString());
     };
 
-    const refreshAppToken = async () => {//not sure that this works...
+    const refreshAppToken = async () => {
       const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/refresh-token`, {
         method: 'POST',
         headers: {
@@ -89,6 +91,7 @@ const App = () => {
       }
 
       if (!isSpotifyTokenExpired && !isAppTokenExpired) {
+        console.log('setting login flag as true');
         setIsLoggedIn(true);
       } else {
         setIsLoggedIn(false);
@@ -105,27 +108,30 @@ const App = () => {
   };
 
   return (
-    <AppStateProvider>
-      <div>
-        <h1>Welcome to Songelo!</h1>
-        <p>This is the home page of the app.</p>
-
-        {isLoggedIn ? (
-          <div>
-            <p>You are logged in with Spotify!</p>
-            <button onClick={refreshAppTokenTmp} style={{ padding: '10px 20px', fontSize: '16px' }}>
-              Refresh App Token
-            </button>
-            <TopTracks />
-            <SongeloPlaylistsDropdown />
-          </div>
-        ) : (
-          <button onClick={handleLogin} style={{ padding: '10px 20px', fontSize: '16px' }}>
-            Login with Spotify
+    <div>
+      <h1>Welcome to Songelo!</h1>
+      <p>This is the home page of the app.</p>
+      {isLoggedIn ? (
+        <div>
+          <p>You are logged in with Spotify!</p>
+          <button onClick={refreshAppTokenTmp} style={{ padding: '10px 20px', fontSize: '16px' }}>
+            Refresh App Token
           </button>
-        )}
-      </div>
-    </AppStateProvider>
+          {selectedPlaylist && <TopTracks onSongAdded={() => { /* handle song added */ }} />}
+          <SongeloPlaylistsDropdown />
+
+          {selectedPlaylist && (
+            <>
+              <ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
+            </>
+          )}
+        </div>
+      ) : (
+        <button onClick={handleLogin} style={{ padding: '10px 20px', fontSize: '16px' }}>
+          Login with Spotify
+        </button>
+      )}
+    </div>
   );
 };
 
