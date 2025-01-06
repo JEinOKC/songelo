@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import CreateSongeloPlaylistForm from './CreateSongeloPlaylistForm';
-import { useAppState } from './AppStateContext';
+import CreateSongeloPlaylistForm from '../CreateSongeloPlaylistForm/CreateSongeloPlaylistForm';
+import { useAppState } from '../state/AppStateContext';
 
 const SongeloPlaylistsDropdown = () => {
   const [playlists, setPlaylists] = useState<any[]>([]);

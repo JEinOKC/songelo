@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';  // Import ReactDOM for rendering the app
-import Main from './Main';  // Import the Main component, which contains your routes
-import { AppStateProvider } from './AppStateContext';
+import Main from './main';  // Import the Main component, which contains your routes
+import { AppStateProvider } from './state/AppStateContext';
 
 // Find the root div in index.html to mount the React app
 const rootElement = document.getElementById('root') as HTMLElement;

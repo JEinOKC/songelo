@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Song from './Song';
-import { useAppState } from './AppStateContext';
+import Song from '../Song/Song';
+import { useAppState } from '../state/AppStateContext';
 
 const TopTracks = ({ onSongAdded }: { onSongAdded: () => void }) => {
   const [topTracks, setTopTracks] = useState<any[]>([]);

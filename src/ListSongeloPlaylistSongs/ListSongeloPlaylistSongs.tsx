@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Song from './Song';
+import Song from '../Song/Song';
 
 const ListSongeloPlaylistSongs = ({ playlistId }: { playlistId: string }) => {
   const [songs, setSongs] = useState<any[]>([]);

@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import TopTracks from './TopTracks';
-import SongeloPlaylistsDropdown from './SongeloPlaylistsDropdown';
-import ListSongeloPlaylistSongs from './ListSongeloPlaylistSongs';
-import { useAppState } from './AppStateContext';
+import TopTracks from '../TopTracks/TopTracks';
+import SongeloPlaylistsDropdown from '../SongeloPlaylistsDropdown/SongeloPlaylistsDropdown';
+import ListSongeloPlaylistSongs from '../ListSongeloPlaylistSongs/ListSongeloPlaylistSongs';
+import { useAppState } from '../state/AppStateContext';
+import './App.css';
 
 
 const App = () => {
