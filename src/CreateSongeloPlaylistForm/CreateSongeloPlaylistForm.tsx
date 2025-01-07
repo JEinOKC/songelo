@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useAuthState } from '../state/AuthStateContext';
 
 const CreateSongeloPlaylistForm = ({ onCreate }: { onCreate: () => void }) => {
   const [name, setName] = useState<string>('');
   const [isPublic, setIsPublic] = useState<boolean>(false);
   const [maxSize, setMaxSize] = useState<number>(0);
+  const { appToken } = useAuthState();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -12,7 +14,6 @@ const CreateSongeloPlaylistForm = ({ onCreate }: { onCreate: () => void }) => {
       return;
     }
 
-    const appToken = localStorage.getItem('app_token');
     if (!appToken) return;
 
     const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists`, {

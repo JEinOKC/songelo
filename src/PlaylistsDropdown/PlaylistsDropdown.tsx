@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useAuthState } from '../state/AuthStateContext';
 
 const PlaylistsDropdown = () => {
   const [playlists, setPlaylists] = useState<any[]>([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState<string>('');
+  const { spotifyToken } = useAuthState();
 
   useEffect(() => {
     const fetchPlaylists = async () => {
-      const token = localStorage.getItem('spotify_access_token');
-      if (!token) return;
+      if (!spotifyToken) return;
 
       const response = await fetch('https://api.spotify.com/v1/me/playlists', {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${spotifyToken}`,
         },
       });
 

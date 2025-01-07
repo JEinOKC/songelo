@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import CreateSongeloPlaylistForm from '../CreateSongeloPlaylistForm/CreateSongeloPlaylistForm';
 import { useAppState } from '../state/AppStateContext';
+import { useAuthState } from '../state/AuthStateContext';
 
 const SongeloPlaylistsDropdown = () => {
   const [playlists, setPlaylists] = useState<any[]>([]);
+  const { appToken } = useAuthState();
   const { selectedPlaylist, setSelectedPlaylist } = useAppState();
   const [wantNewPlaylist, setWantNewPlaylist] = useState<boolean>(false);
 
   const fetchPlaylists = async () => {
-    const appToken = localStorage.getItem('app_token');
     if (!appToken) return;
 
     const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists`, {

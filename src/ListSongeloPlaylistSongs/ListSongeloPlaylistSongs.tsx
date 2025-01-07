@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import Song from '../Song/Song';
+import { useAuthState } from '../state/AuthStateContext';
 
 const ListSongeloPlaylistSongs = ({ playlistId }: { playlistId: string }) => {
   const [songs, setSongs] = useState<any[]>([]);
+  const { appToken } = useAuthState();
 
   useEffect(() => {
     const fetchSongs = async () => {
-      const appToken = localStorage.getItem('app_token');
       if (!appToken || !playlistId) return;
 
       const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistId}/songs`, {

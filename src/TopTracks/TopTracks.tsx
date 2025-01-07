@@ -2,19 +2,21 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Song from '../Song/Song';
 import { useAppState } from '../state/AppStateContext';
+import { useAuthState } from '../state/AuthStateContext';
 
 const TopTracks = ({ onSongAdded }: { onSongAdded: () => void }) => {
   const [topTracks, setTopTracks] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { selectedPlaylist } = useAppState();
+  const { spotifyToken } = useAuthState();
+  
 
   useEffect(() => {
-    const token = localStorage.getItem('spotify_access_token');
-    if (token) {
+    if (spotifyToken) {
       axios
         .get('https://api.spotify.com/v1/me/top/tracks?limit=50', {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${spotifyToken}` },
         })
         .then((response) => {
           setTopTracks(response.data.items);

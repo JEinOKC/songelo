@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuthState } from '../state/AuthStateContext';
 
 interface SongProps {
   track: {
@@ -14,10 +15,10 @@ interface SongProps {
 
 const Song: React.FC<SongProps> = ({ track, playlistId, onSongAdded, canAddToPlaylist = true }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
+  const { appToken } = useAuthState();
 
   const handleAddToPlaylist = async () => {
     setIsAdding(true);
-    const appToken = localStorage.getItem('app_token');
     if (!appToken || !playlistId) {
       console.error({
         'appToken': appToken,

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuthState } from '../state/AuthStateContext';
 
 interface PlaybackControlProps {
   track: any;
@@ -6,15 +7,14 @@ interface PlaybackControlProps {
 }
 
 const PlaybackControl: React.FC<PlaybackControlProps> = ({ track, onClose }) => {
+  const { spotifyToken } = useAuthState();
   const playTrack = async () => {
-	console.log({'track': track});
-    const token = localStorage.getItem('spotify_access_token');
-    if (token) {
+    if (spotifyToken) {
       try {
         await fetch('https://api.spotify.com/v1/me/player/play', {
           method: 'PUT',
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${spotifyToken}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
