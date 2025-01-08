@@ -11,7 +11,7 @@ interface AuthState {
 	spotifyRefreshToken: string;
 	setSpotifyRefreshToken: (token: string) => void;
 
-	spotifyTokenExpiration: string;
+	spotifyTokenExpiration: number;
 	setSpotifyTokenExpiration: (token: number) => void;
 
 	appToken: string;
@@ -20,7 +20,7 @@ interface AuthState {
 	appRefreshToken: string;
 	setAppRefreshToken: (token: string) => void;
 
-	appTokenExpiration: string;
+	appTokenExpiration: number;
 	setAppTokenExpiration: (token: number) => void;
 
 	handleLogin: () => void;
@@ -154,9 +154,17 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 		<AuthStateContext.Provider
 			value={{
 				spotifyToken,
+				spotifyRefreshToken,
+				spotifyTokenExpiration,
 				setSpotifyToken,
+				setSpotifyRefreshToken,
+				setSpotifyTokenExpiration,
 				appToken,
+				appRefreshToken,
+				appTokenExpiration,
 				setAppToken,
+				setAppRefreshToken,
+				setAppTokenExpiration,
 				isLoggedIn, 
 				setIsLoggedIn,
 				refreshAppToken,

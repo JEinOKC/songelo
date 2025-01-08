@@ -9,7 +9,7 @@ import './App.css';
 
 const App = () => {
   const { selectedPlaylist } = useAppState();
-  const { isLoggedIn, setIsLoggedIn, handleLogin, refreshAppToken, refreshSpotifyToken } = useAuthState();
+  const { isLoggedIn, handleLogin, refreshAppToken, refreshSpotifyToken } = useAuthState();
 
   useEffect(() => {
 	// const token = localStorage.getItem('spotify_access_token');
