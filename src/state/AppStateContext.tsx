@@ -1,19 +1,31 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { PlaylistSong, AppState, SpotifyTrack} from '../interfaces';
 
-interface AppState {
-  selectedPlaylist: string;
-  setSelectedPlaylist: (playlistId: string) => void;
-}
 
 const AppStateContext = createContext<AppState | undefined>(undefined);
 
 export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   const [selectedPlaylist, setSelectedPlaylist] = useState<string>('');
+  const [selectedPlaylistSongs, setSelectedPlaylistSongs] = useState<PlaylistSong[]>([]);
+
+  const isTrackInPlaylist = (track:SpotifyTrack) => {
+    
+    return selectedPlaylistSongs.some((playlistTrack: any) => {
+      return playlistTrack.track_info.id === track.id;
+    });
+
+  };
+
+  // const addTrackToPlaylist = (track:SpotifyTrack) => {
+
+  // }
 
   return (
     <AppStateContext.Provider 
       value={{ 
-        selectedPlaylist, setSelectedPlaylist
+        selectedPlaylist, setSelectedPlaylist,
+        selectedPlaylistSongs, setSelectedPlaylistSongs,
+        isTrackInPlaylist
     }}>
       {children}
     </AppStateContext.Provider>

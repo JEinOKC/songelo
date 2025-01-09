@@ -1,33 +1,8 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import axios from 'axios';
+import { AuthState } from '../interfaces';
 
-interface AuthState {
-	isLoggedIn: boolean;
-	setIsLoggedIn: (loggedIn: boolean) => void;
 
-	spotifyToken: string;
-	setSpotifyToken: (token: string) => void;
-
-	spotifyRefreshToken: string;
-	setSpotifyRefreshToken: (token: string) => void;
-
-	spotifyTokenExpiration: number;
-	setSpotifyTokenExpiration: (token: number) => void;
-
-	appToken: string;
-	setAppToken: (token: string) => void;
-
-	appRefreshToken: string;
-	setAppRefreshToken: (token: string) => void;
-
-	appTokenExpiration: number;
-	setAppTokenExpiration: (token: number) => void;
-
-	handleLogin: () => void;
-	refreshAppToken: () => Promise<void>;
-	refreshSpotifyToken: () => Promise<void>;
-	confirmSpotifyLoginCode: (code:string) => Promise<void>;
-}
 
 const AuthStateContext = createContext<AuthState | undefined>(undefined);
 

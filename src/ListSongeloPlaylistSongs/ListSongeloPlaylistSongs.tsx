@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import Song from '../Song/Song';
 import { useAuthState } from '../state/AuthStateContext';
+import { useAppState } from '../state/AppStateContext';
 
 const ListSongeloPlaylistSongs = ({ playlistId }: { playlistId: string }) => {
-  const [songs, setSongs] = useState<any[]>([]);
   const { appToken } = useAuthState();
+  const { selectedPlaylistSongs, setSelectedPlaylistSongs } = useAppState();
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -17,8 +18,9 @@ const ListSongeloPlaylistSongs = ({ playlistId }: { playlistId: string }) => {
       });
 
       const data = await response.json();
-      if (data.success) {
-        setSongs(data.songs);
+      
+      if (data.success && data.songs) {
+        setSelectedPlaylistSongs(data.songs);
       }
     };
 
@@ -29,7 +31,7 @@ const ListSongeloPlaylistSongs = ({ playlistId }: { playlistId: string }) => {
     <div>
       <h2>Songs in Playlist</h2>
       <ul>
-        {songs.map((song) => (
+        {selectedPlaylistSongs.map((song) => (
           <li key={song.id}>
             <Song track={song.track_info} playlistId={playlistId} canAddToPlaylist={false} onSongAdded={undefined} />
           </li>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import TopTracks from '../TopTracks/TopTracks';
 import SongeloPlaylistsDropdown from '../SongeloPlaylistsDropdown/SongeloPlaylistsDropdown';
 import ListSongeloPlaylistSongs from '../ListSongeloPlaylistSongs/ListSongeloPlaylistSongs';
@@ -11,6 +11,11 @@ const App = () => {
   const { selectedPlaylist } = useAppState();
   const { isLoggedIn, handleLogin, refreshAppToken, refreshSpotifyToken } = useAuthState();
   const configMode:'DEV'|'PROD' = import.meta.env.VITE_CONFIG;
+  const [showTopTracks, setShowTopTracks] = useState(false);
+
+  const toggleTopTracks = () =>{
+	setShowTopTracks(!showTopTracks);
+  }
 
   useEffect(() => {
 	// const token = localStorage.getItem('spotify_access_token');
@@ -71,6 +76,11 @@ const App = () => {
 					<p>You are logged in with Spotify!</p>
 
 					<div>
+						{selectedPlaylist && (
+						<button onClick={toggleTopTracks} style={{ padding: '10px 20px', fontSize: '16px' }}>
+						Toggle Top Tracks
+						</button>	
+						)}
 						<button onClick={refreshAppToken} style={{ padding: '10px 20px', fontSize: '16px' }}>
 						Refresh App Token
 						</button>
@@ -83,7 +93,8 @@ const App = () => {
 					<div className="mainContent">
 
 					<div className="leftPanel">
-						{selectedPlaylist && <TopTracks onSongAdded={() => { /* handle song added */ }} />}
+					<h1>Show top tracks? {showTopTracks.toString()}</h1>
+						{selectedPlaylist && showTopTracks && <TopTracks onSongAdded={() => { /* handle song added */ }} />}
 					</div>
 
 					

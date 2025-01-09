@@ -3,12 +3,13 @@ import axios from 'axios';
 import Song from '../Song/Song';
 import { useAppState } from '../state/AppStateContext';
 import { useAuthState } from '../state/AuthStateContext';
+import { SpotifyTrack } from '../interfaces';
 
 const TopTracks = ({ onSongAdded }: { onSongAdded: () => void }) => {
-  const [topTracks, setTopTracks] = useState<any[]>([]);
+  const [topTracks, setTopTracks] = useState<SpotifyTrack[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { selectedPlaylist } = useAppState();
+  const { selectedPlaylist, isTrackInPlaylist } = useAppState();
   const { spotifyToken } = useAuthState();
   
 
@@ -36,7 +37,9 @@ const TopTracks = ({ onSongAdded }: { onSongAdded: () => void }) => {
     <div>
       <h2>Your Top Tracks</h2>
       <ul>
-        {topTracks.map((track: any) => (
+        {topTracks
+        .filter((track: SpotifyTrack) => !isTrackInPlaylist(track))
+        .map((track: SpotifyTrack) => (
           <li key={track.id}>
             <Song track={track} playlistId={selectedPlaylist} canAddToPlaylist={true} onSongAdded={onSongAdded} />
           </li>

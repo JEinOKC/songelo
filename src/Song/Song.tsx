@@ -1,17 +1,6 @@
 import { useState } from 'react';
 import { useAuthState } from '../state/AuthStateContext';
-
-interface SongProps {
-  track: {
-    id: string;
-    name: string;
-    artists: { name: string }[];
-    album: { images: { url: string }[] };
-  };
-  playlistId: string;
-  onSongAdded?: () => void;
-  canAddToPlaylist?: boolean;
-}
+import { SongProps } from '../interfaces';
 
 const Song: React.FC<SongProps> = ({ track, playlistId, onSongAdded, canAddToPlaylist = true }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
