@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useAuthState } from '../state/AuthStateContext';
 import { SongProps } from '../interfaces';
+import { useAppState } from '../state/AppStateContext';
 
-const Song: React.FC<SongProps> = ({ track, playlistId, onSongAdded, canAddToPlaylist = true }) => {
+const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const { appToken } = useAuthState();
+  const { addSongToPlaylist } = useAppState();
 
   const handleAddToPlaylist = async () => {
     setIsAdding(true);
@@ -26,8 +28,13 @@ const Song: React.FC<SongProps> = ({ track, playlistId, onSongAdded, canAddToPla
       body: JSON.stringify({ track_id: track.id, track_info: track }),
     });
 
-    if (response.ok && onSongAdded) {
-      onSongAdded();
+    if (response.ok) {
+      const data = await response.json();
+console.log({'data':data});
+      if(data.success){
+        addSongToPlaylist(data.song);
+      }
+      
     } else if (!response.ok) {
       alert('Failed to add song to playlist.');
     }

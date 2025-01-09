@@ -7,6 +7,7 @@ const Main = () => {
     <Router>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/playlist/:playlistID" element={<App />} />
         <Route path="/callback" element={<Callback />} />
       </Routes>
     </Router>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CreateSongeloPlaylistForm from '../CreateSongeloPlaylistForm/CreateSongeloPlaylistForm';
 import { useAppState } from '../state/AppStateContext';
 import { useAuthState } from '../state/AuthStateContext';
@@ -8,6 +9,7 @@ const SongeloPlaylistsDropdown = () => {
   const { appToken } = useAuthState();
   const { selectedPlaylist, setSelectedPlaylist } = useAppState();
   const [wantNewPlaylist, setWantNewPlaylist] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const fetchPlaylists = async () => {
     if (!appToken) return;
@@ -28,7 +30,12 @@ const SongeloPlaylistsDropdown = () => {
     fetchPlaylists();
   }, []);
 
+  // useEffect(() =>{
+
+  // }, [appToken])
+
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    navigate(`/playlist/${event.target.value}`);
     setSelectedPlaylist(event.target.value);
   };
 

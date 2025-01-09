@@ -5,7 +5,7 @@ import { useAppState } from '../state/AppStateContext';
 import { useAuthState } from '../state/AuthStateContext';
 import { SpotifyTrack } from '../interfaces';
 
-const TopTracks = ({ onSongAdded }: { onSongAdded: () => void }) => {
+const TopTracks = () => {
   const [topTracks, setTopTracks] = useState<SpotifyTrack[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +41,7 @@ const TopTracks = ({ onSongAdded }: { onSongAdded: () => void }) => {
         .filter((track: SpotifyTrack) => !isTrackInPlaylist(track))
         .map((track: SpotifyTrack) => (
           <li key={track.id}>
-            <Song track={track} playlistId={selectedPlaylist} canAddToPlaylist={true} onSongAdded={onSongAdded} />
+            <Song track={track} playlistId={selectedPlaylist} canAddToPlaylist={true}/>
           </li>
         ))}
       </ul>

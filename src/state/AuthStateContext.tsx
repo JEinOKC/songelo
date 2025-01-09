@@ -1,24 +1,33 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
 import axios from 'axios';
 import { AuthState } from '../interfaces';
+import useStateWithLocalStorage from './useStateWithLocalStorage';
 
 
 
 const AuthStateContext = createContext<AuthState | undefined>(undefined);
 
 export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
-	const [spotifyToken,setSpotifyToken] = useState<string>('');
-	const [spotifyRefreshToken,setSpotifyRefreshToken] = useState<string>('');
-	const [spotifyTokenExpiration,setSpotifyTokenExpiration] = useState<number>(0);
-	const [appToken,setAppToken] = useState<string>('');
-	const [appRefreshToken,setAppRefreshToken] = useState<string>('');
-	const [appTokenExpiration, setAppTokenExpiration] = useState<number>(0);
-	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+	const [spotifyToken,setSpotifyToken] = useStateWithLocalStorage('spotifyToken','');
+	const [spotifyRefreshToken,setSpotifyRefreshToken] = useStateWithLocalStorage('spotifyRefreshToken','');
+	const [spotifyTokenExpiration,setSpotifyTokenExpiration] = useStateWithLocalStorage('spotifyTokenExpiration',0);
+	const [appToken,setAppToken] = useStateWithLocalStorage('appToken','');
+	const [appRefreshToken,setAppRefreshToken] = useStateWithLocalStorage('appRefreshToken','');
+	const [appTokenExpiration, setAppTokenExpiration] = useStateWithLocalStorage('appTokenExpiration',0);
+	const [isLoggedIn, setIsLoggedIn] = useStateWithLocalStorage('isLoggedIn',false);
 	
 	const handleLogin = () => {
 		const domainUrl = import.meta.env.VITE_DOMAIN_URL || 'http://localhost:5000';
 		const loginUrl = `${domainUrl}/login`;
 		window.location.href = loginUrl;
+	};
+
+	const isTokenExpired = (expiration:number): boolean => {
+		expiration = expiration * 1000;
+		if (expiration) {
+			return Date.now() > expiration; // Compare current time with expiration time
+		}
+		return true; // If no expiration time is found, consider it expired
 	};
 
 	//function that handles the callback of the spotify login, gathers a token and logs them into our system
@@ -27,26 +36,11 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 		axios
         .post(domainUrl+'/api/spotify/callback', { code })
         .then((response) => {
-			console.log({ 'response data': response.data });
-
 			// Extract token and expiration time
 			const { access_token, expires_in, app_token, app_token_expiration, refresh_token, app_refresh_token } = response.data;
 
 			// Calculate expiration timestamp
-			const expirationTime = Math.floor(( new Date().getTime() + expires_in ) / 1000);//convert to seconds so it is standardized with the other timestamps
-
-			console.log({
-				'spotify' : {
-					'access_token':	access_token,
-					'refresh_token':refresh_token,
-					'expirationTime':expirationTime
-				},
-				'app' : {
-					'access_token':	app_token,
-					'refresh_token':app_refresh_token,
-					'expirationTime':app_token_expiration
-				}
-			})
+			const expirationTime = Math.floor(new Date().getTime() / 1000) + expires_in;//convert to seconds so it is standardized with the other timestamps
 
 			//store spotify token information
 			setSpotifyToken(access_token);
@@ -108,16 +102,8 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 			setSpotifyToken(data.access_token);
 
 			// Calculate expiration timestamp
-			const expirationTime = Math.floor(( new Date().getTime() + data.expires_in ) / 1000);//convert to seconds so it is standardized with the other timestamps
+			const expirationTime = Math.floor(new Date().getTime() / 1000) + data.expires_in;//convert to seconds so it is standardized with the other timestamps
 			setSpotifyTokenExpiration(expirationTime);
-
-			console.log({
-				'after refresh' : {
-					'spotify token' : spotifyToken,
-					'spotify expiration' : spotifyTokenExpiration,
-					'response data' : response
-				}
-			})
 
 		} catch (error) {
 			console.error('Failed to refresh Spotify token:', error);
@@ -145,7 +131,8 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 				refreshAppToken,
 				refreshSpotifyToken,
 				handleLogin,
-				confirmSpotifyLoginCode
+				confirmSpotifyLoginCode,
+				isTokenExpired
 
 			}}>
 				{children}
@@ -156,7 +143,6 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 export const useAuthState = () => {
 	const context = useContext(AuthStateContext);
 	  if (!context) {
-		console.log({'context':context});
 		throw new Error('useAuthState must be used within an AuthStateProvider');
 	  }
 	  return context;

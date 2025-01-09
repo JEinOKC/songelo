@@ -8,7 +8,6 @@ export interface SpotifyTrack {
 export interface SongProps {
 	track: SpotifyTrack;
 	playlistId: string;
-	onSongAdded?: () => void;
 	canAddToPlaylist?: boolean;
 }
 
@@ -23,6 +22,7 @@ export interface AppState {
 	selectedPlaylistSongs: PlaylistSong[];
 	setSelectedPlaylistSongs: (playlistSongArray: PlaylistSong[]) => void;
 	isTrackInPlaylist: (track: SpotifyTrack) => boolean;
+	addSongToPlaylist: (track: PlaylistSong) => void;
 }
 
 export interface PlaybackControlProps {
@@ -56,4 +56,5 @@ export interface AuthState {
 	refreshAppToken: () => Promise<void>;
 	refreshSpotifyToken: () => Promise<void>;
 	confirmSpotifyLoginCode: (code:string) => Promise<void>;
+	isTokenExpired: (expiration:number) => boolean;
 }

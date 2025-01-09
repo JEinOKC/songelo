@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import TopTracks from '../TopTracks/TopTracks';
 import SongeloPlaylistsDropdown from '../SongeloPlaylistsDropdown/SongeloPlaylistsDropdown';
 import ListSongeloPlaylistSongs from '../ListSongeloPlaylistSongs/ListSongeloPlaylistSongs';
@@ -8,16 +9,35 @@ import './App.css';
 
 
 const App = () => {
-  const { selectedPlaylist } = useAppState();
-  const { isLoggedIn, handleLogin, refreshAppToken, refreshSpotifyToken } = useAuthState();
-  const configMode:'DEV'|'PROD' = import.meta.env.VITE_CONFIG;
-  const [showTopTracks, setShowTopTracks] = useState(false);
+	const { selectedPlaylist, setSelectedPlaylist } = useAppState();
+	const { isLoggedIn, appTokenExpiration, spotifyTokenExpiration , handleLogin, refreshAppToken, refreshSpotifyToken, isTokenExpired } = useAuthState();
+	const configMode:'DEV'|'PROD' = import.meta.env.VITE_CONFIG;
+	const [showTopTracks, setShowTopTracks] = useState(false);
+	const { playlistID } = useParams<{ playlistID: string }>();
 
-  const toggleTopTracks = () =>{
-	setShowTopTracks(!showTopTracks);
-  }
+	const toggleTopTracks = () =>{
+		setShowTopTracks(!showTopTracks);
+	}
+
+	useEffect(() => {
+		if (playlistID) {
+			setSelectedPlaylist(playlistID); // Update the state safely after render
+		}
+	}, [playlistID, setSelectedPlaylist]);
 
   useEffect(() => {
+
+	//in theory this should check to see if the user has expired tokens and re-fetch them, but instead this is just running an endless loop
+	//it believes that the spotify token is always expired
+	if(isLoggedIn){
+		if(isTokenExpired(appTokenExpiration)){
+			refreshAppToken();
+		}
+		if(isTokenExpired(spotifyTokenExpiration)){
+			refreshSpotifyToken();
+		}
+	}
+	
 	// const token = localStorage.getItem('spotify_access_token');
 	// const expiration = localStorage.getItem('spotify_token_expiration');
 	// const refreshToken = localStorage.getItem('spotify_refresh_token');
@@ -94,7 +114,7 @@ const App = () => {
 
 					<div className="leftPanel">
 					<h1>Show top tracks? {showTopTracks.toString()}</h1>
-						{selectedPlaylist && showTopTracks && <TopTracks onSongAdded={() => { /* handle song added */ }} />}
+						{selectedPlaylist && showTopTracks && <TopTracks/>}
 					</div>
 
 					

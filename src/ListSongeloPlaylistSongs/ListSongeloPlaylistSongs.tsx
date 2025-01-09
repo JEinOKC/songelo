@@ -33,7 +33,7 @@ const ListSongeloPlaylistSongs = ({ playlistId }: { playlistId: string }) => {
       <ul>
         {selectedPlaylistSongs.map((song) => (
           <li key={song.id}>
-            <Song track={song.track_info} playlistId={playlistId} canAddToPlaylist={false} onSongAdded={undefined} />
+            <Song track={song.track_info} playlistId={playlistId} canAddToPlaylist={false} />
           </li>
         ))}
       </ul>
