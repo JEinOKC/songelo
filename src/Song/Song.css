@@ -1,0 +1,30 @@
+.song-container{
+	display:flex;
+	padding:0;
+	background-color: #f9f9f9;
+	border:1px solid #ccc;
+	min-width:200px;
+}
+
+.song-container img{
+	margin-right:10px;
+	height:5em;
+	width:5em;
+
+}
+
+.track-info{
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: space-between;
+	padding:5px;
+}
+
+	.track-info .song{
+		font-weight: bold;
+	}
+
+	.track-info .artist{
+		opacity: 0.9;
+	}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuthState } from '../state/AuthStateContext';
 import { SongProps } from '../interfaces';
 import { useAppState } from '../state/AppStateContext';
+import './Song.css';
 
 const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -30,7 +31,7 @@ const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true 
 
     if (response.ok) {
       const data = await response.json();
-console.log({'data':data});
+      
       if(data.success){
         addSongToPlaylist(data.song);
       }
@@ -42,23 +43,28 @@ console.log({'data':data});
   };
 
   return (
-    <span key={track.id}>
+    <span className="song-container" key={track.id}>
       <img
         src={track.album.images[2].url}
         alt={track.name}
-        style={{ width: 50, height: 50 }}
       />
-      <span>
-        {track.name} by {track.artists[0].name}
-      </span>
+      <div className="track-info">
+        <span className="song">
+          {track.name}
+        </span>
+        <span className="artist">
+          {track.artists[0].name}
+        </span>
+        <a
+          href={`https://open.spotify.com/track/${track.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Play on Spotify
+        </a>
+      </div>
       <br />
-      <a
-        href={`https://open.spotify.com/track/${track.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Play on Spotify
-      </a>
+      
       <br />
       {canAddToPlaylist && (
         <button onClick={handleAddToPlaylist} disabled={isAdding}>
