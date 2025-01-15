@@ -2,12 +2,21 @@ import { useState } from 'react';
 import { useAuthState } from '../state/AuthStateContext';
 import { SongProps } from '../interfaces';
 import { useAppState } from '../state/AppStateContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSpotify } from '@fortawesome/free-brands-svg-icons'
 import './Song.css';
 
-const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true }) => {
+const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true, onPlay }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const { appToken } = useAuthState();
   const { addSongToPlaylist } = useAppState();
+
+  const handleSpotifyClick = (event:React.MouseEvent<HTMLAnchorElement>) => {
+    const trackURL = `https://open.spotify.com/track/${track.id}`;
+    console.log('trackURL',trackURL);
+    // window.open(trackURL, '_blank', 'noopener,noreferrer');
+    onPlay ? onPlay(event) : null;
+  }
 
   const handleAddToPlaylist = async () => {
     setIsAdding(true);
@@ -43,35 +52,45 @@ const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true 
   };
 
   return (
-    <span className="song-container" key={track.id}>
-      <img
-        src={track.album.images[2].url}
-        alt={track.name}
-      />
-      <div className="track-info">
-        <span className="song">
-          {track.name}
-        </span>
-        <span className="artist">
-          {track.artists[0].name}
-        </span>
-        <a
-          href={`https://open.spotify.com/track/${track.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Play on Spotify
-        </a>
+    <div>
+      <div className="song-container" key={track.id}>
+        <img
+          src={track.album.images[2].url}
+          alt={track.name}
+        />
+        <div className="track-info">
+          <span className="song" title={track.name} >
+            {track.name}
+          </span>
+          <span className="artist" title={track.artists[0].name}>
+            {track.artists[0].name}
+          </span>
+          <a
+            href="#"
+            onClick={(e:React.MouseEvent<HTMLAnchorElement>)=>{
+              e.preventDefault();
+              handleSpotifyClick(e);
+            }} 
+            className='spotify-link'
+          >
+            Play On Spotify <FontAwesomeIcon icon={faSpotify} size="lg" />
+          </a>
+        </div>
       </div>
-      <br />
-      
-      <br />
       {canAddToPlaylist && (
-        <button onClick={handleAddToPlaylist} disabled={isAdding}>
-          {isAdding ? 'Adding...' : 'Add to Playlist'}
-        </button>
+          <div className='add-to-playlist-container'>
+            <a 
+              href="#" 
+              onClick={(e)=>{
+                e.preventDefault();
+                handleAddToPlaylist();
+              }} 
+              className={isAdding ? 'disabled' : ''}>
+              {isAdding ? 'Adding...' : 'Add to Playlist'}
+            </a>
+          </div>
       )}
-    </span>
+    </div>
   );
 };
 

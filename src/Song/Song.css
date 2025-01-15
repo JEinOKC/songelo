@@ -6,25 +6,62 @@
 	min-width:200px;
 }
 
-.song-container img{
-	margin-right:10px;
-	height:5em;
-	width:5em;
+	.song-container img{
+		margin-right:10px;
+		height:5em;
+		width:5em;
 
-}
-
-.track-info{
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: space-between;
-	padding:5px;
-}
-
-	.track-info .song{
-		font-weight: bold;
 	}
 
-	.track-info .artist{
-		opacity: 0.9;
+	.track-info{
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		justify-content: space-between;
+		padding:5px;
+		text-align: left;
+	}
+
+		.track-info .song, .track-info .artist{
+			text-align: left;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: 150px;
+		}
+
+		.track-info .song{
+			font-weight: bold;
+		}
+
+		.track-info .artist{
+			opacity: 0.9;
+		}
+
+		.track-info .spotify-link{
+			cursor: pointer;
+			text-decoration: none;
+		}
+
+		.track-info .spotify-link:hover{
+			background-color: #ccc;
+			opacity: 0.75;
+		}
+
+
+.add-to-playlist-container{
+}
+	.add-to-playlist-container a{
+		display: block;
+		padding:5px;	
+		text-decoration: none;
+		background-color: #ccc;
+	}
+
+	.add-to-playlist-container a:hover{
+		opacity: 0.75;
+	}
+
+	.add-to-playlist-container a.disabled{
+		pointer-events: none;
 	}

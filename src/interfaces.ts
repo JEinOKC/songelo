@@ -9,6 +9,7 @@ export interface SongProps {
 	track: SpotifyTrack;
 	playlistId: string;
 	canAddToPlaylist?: boolean;
+	onPlay?: (event?:React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export interface PlaylistSong {

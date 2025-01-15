@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import TopTracks from '../TopTracks/TopTracks';
 import SongeloPlaylistsDropdown from '../SongeloPlaylistsDropdown/SongeloPlaylistsDropdown';
 import ListSongeloPlaylistSongs from '../ListSongeloPlaylistSongs/ListSongeloPlaylistSongs';
+import Matchup from '../Matchup/Matchup';
 import { useAppState } from '../state/AppStateContext';
 import { useAuthState } from '../state/AuthStateContext';
 import './App.css';
@@ -87,15 +88,15 @@ const App = () => {
 		{configMode === 'DEV' ? (
 			<>
 				<h1>Welcome to Songelo!</h1>
-				<p>This is the home page of the app.</p>
 				{isLoggedIn ? (
 				
 				<div className="logged-in-user-container">
 
-					<div className="headerContent">
+					<div className="header-content">
 					<p>You are logged in with Spotify!</p>
 
 					<div>
+						<SongeloPlaylistsDropdown />
 						{selectedPlaylist && (
 						<button onClick={toggleTopTracks} style={{ padding: '10px 20px', fontSize: '16px' }}>
 						Toggle Top Tracks
@@ -110,19 +111,22 @@ const App = () => {
 					</div>
 					</div>
 
-					<div className="mainContent">
+					<div className="main-content">
 
-					<div className="leftPanel">
-					<h1>Show top tracks? {showTopTracks.toString()}</h1>
+					<div className="left-panel">
 						{selectedPlaylist && showTopTracks && <TopTracks/>}
 					</div>
 
 					
-						<div className="centerContent">
-						<SongeloPlaylistsDropdown />
-						{selectedPlaylist && (
-							<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
-						)}
+						<div className="center-content">
+							
+							{selectedPlaylist && (
+								<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
+							)}
+
+							{selectedPlaylist && (
+								<Matchup />
+							)}
 						</div>
 					
 					</div>
