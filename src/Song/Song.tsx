@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuthState } from '../state/AuthStateContext';
-import { SongProps } from '../interfaces';
+import { SongProps, SpotifyTrack } from '../interfaces';
 import { useAppState } from '../state/AppStateContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpotify } from '@fortawesome/free-brands-svg-icons'
@@ -11,11 +11,11 @@ const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true,
   const { appToken } = useAuthState();
   const { addSongToPlaylist } = useAppState();
 
-  const handleSpotifyClick = (event:React.MouseEvent<HTMLAnchorElement>) => {
+  const handleSpotifyClick = (event:React.MouseEvent<HTMLAnchorElement>,track:SpotifyTrack) => {
     const trackURL = `https://open.spotify.com/track/${track.id}`;
     console.log('trackURL',trackURL);
     // window.open(trackURL, '_blank', 'noopener,noreferrer');
-    onPlay ? onPlay(event) : null;
+    onPlay ? onPlay(event,track) : null;
   }
 
   const handleAddToPlaylist = async () => {
@@ -69,7 +69,7 @@ const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true,
             href="#"
             onClick={(e:React.MouseEvent<HTMLAnchorElement>)=>{
               e.preventDefault();
-              handleSpotifyClick(e);
+              handleSpotifyClick(e,track);
             }} 
             className='spotify-link'
           >
