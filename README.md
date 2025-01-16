@@ -1,6 +1,7 @@
 # Songelo Frontend
 
-This is the frontend for the Songelo project, built with React. It connects to the backend for Spotify authentication and displays related data.
+Songelo is a web application that allows users to create and manage playlists using Spotify that will modify themselves as you select preferred songs vs others. The frontend is built with React and Vite. This is not a completed project
+
 
 ## Prerequisites
 
@@ -58,11 +59,3 @@ If you'd prefer to run the frontend directly, follow these steps:
 - **react-router-dom**: For routing between different pages.
 - **axios**: For making HTTP requests to the backend.
 ```
-
----
-
-### How to Use These README Files
-
-1. **Server (Backend)**: Follow the instructions in the backend `README.md` to either use Docker or run the backend directly with Node.js. You can start the server with Docker Compose or manually via `npm start` once dependencies are installed.
-
-2. **React App (Frontend)**: The frontend `README.md` file has instructions for using Docker or running the app with `npm start`. Docker Compose can simplify the process of both building and running the app in one step.
