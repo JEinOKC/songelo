@@ -15,7 +15,11 @@ const useStateWithLocalStorage = <T>(key: string, initialValue: T) => {
         return parsedValue as T;
       } catch (error) {
         // In case parsing fails, fallback to the initial value
-        console.error('Error parsing localStorage value:', error);
+        // console.error('Error parsing localStorage value:', {
+        //   'error':error,
+        //   'key':key,
+        //   'initialValue':initialValue
+        // });
         return initialValue;
       }
     }

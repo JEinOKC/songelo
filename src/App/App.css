@@ -1,57 +1,77 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+	max-width: 1280px;
+	text-align: center;
 }
 
 .logged-in-user-container {
-  display: flex;
-  flex-direction: column; /* Stack items vertically */
-  gap: 20px; /* Add spacing between sections */
-  padding: 20px;
-  font-family: Arial, sans-serif;
+	display: flex;
+	flex-direction: column; /* Stack items vertically */
+	gap: 0px; 
+	
+	font-family: Arial, sans-serif;
 }
 
 .header-content {
-  display: flex;
-  justify-content: space-between; /* Spread header content */
-  align-items: center;
-  padding: 10px 20px;
-  background-color: #f4f4f4; /* Light background for header */
-  border-radius: 8px;
+	display: flex;
+	justify-content: space-between; /* Spread header content */
+	align-items: center;
+	padding: 10px 20px;
+	background-color: #f4f4f4; /* Light background for header */
+	border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+	.header-content {
+		overflow-x: auto; /*this is temporary until we make this area better */
+	}
+
+	.header-content.hidden{
+		display:none;
+	}
+	
 }
 
 .header-content p {
-  margin: 0;
-  font-size: 16px;
+	margin: 0;
+	font-size: 16px;
 }
 
 .header-content div {
-  display: flex;
-  gap: 10px; /* Spacing between buttons */
+	display: flex;
+	gap: 10px; /* Spacing between buttons */
 }
+
+
 
 .main-content {
-  display: flex;
-  flex-direction: initial;
-  flex: 2; /* Allow it to take up more space compared to the left panel */
-  padding: 20px;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: initial;
+	flex: 2; /* Allow it to take up more space compared to the left panel */
+	padding: 20px;
+	/* background-color: #ffffff;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
 }
 
-  .left-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Add spacing between elements in the left panel */
-    flex: 1; /* Allow it to grow proportionally */
-    max-width: 300px; /* Set a width limit for the panel */
-  }
+@media (max-width: 768px) {
 
-  .center-content{
-    display: flex;
-  }
+}
 
+.left-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 15px; /* Add spacing between elements in the left panel */
+	flex: 1; /* Allow it to grow proportionally */
+	max-width: 300px; /* Set a width limit for the panel */
+}
+
+.center-content{
+	display: flex;
+}
+
+.login-button{
+	margin:20px;
+	font-size: 16px;
+	padding:10px 20px;
+}

@@ -1,0 +1,24 @@
+.matchup-container{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.matchup-container > div {
+	flex: 0 1 calc(50% - 10px); /* Take up 50% of the row minus the gap */
+	box-sizing: border-box;     /* Includes padding/border in the size */
+	padding: 10px;
+	text-align: center;
+}
+
+@media (max-width: 768px) {
+	.matchup-container > div {
+		flex: 0 1 100%; /* Make items full width on smaller screens */
+		padding: 0;
+	}
+}
+
+.shuffle-matchup{
+	display:block;
+	margin-top:25px;
+}

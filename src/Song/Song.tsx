@@ -13,8 +13,7 @@ const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true,
 
   const handleSpotifyClick = (event:React.MouseEvent<HTMLAnchorElement>,track:SpotifyTrack) => {
     const trackURL = `https://open.spotify.com/track/${track.id}`;
-    console.log('trackURL',trackURL);
-    // window.open(trackURL, '_blank', 'noopener,noreferrer');
+    window.open(trackURL, '_blank', 'noopener,noreferrer');
     onPlay ? onPlay(event,track) : null;
   }
 

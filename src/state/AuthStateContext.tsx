@@ -8,13 +8,21 @@ import useStateWithLocalStorage from './useStateWithLocalStorage';
 const AuthStateContext = createContext<AuthState | undefined>(undefined);
 
 export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
+	const [isLoggedIn, setIsLoggedIn] = useStateWithLocalStorage('isLoggedIn',false);//this goes first because the tokens used later can change this value
 	const [spotifyToken,setSpotifyToken] = useStateWithLocalStorage('spotifyToken','');
 	const [spotifyRefreshToken,setSpotifyRefreshToken] = useStateWithLocalStorage('spotifyRefreshToken','');
 	const [spotifyTokenExpiration,setSpotifyTokenExpiration] = useStateWithLocalStorage('spotifyTokenExpiration',0);
 	const [appToken,setAppToken] = useStateWithLocalStorage('appToken','');
 	const [appRefreshToken,setAppRefreshToken] = useStateWithLocalStorage('appRefreshToken','');
 	const [appTokenExpiration, setAppTokenExpiration] = useStateWithLocalStorage('appTokenExpiration',0);
-	const [isLoggedIn, setIsLoggedIn] = useStateWithLocalStorage('isLoggedIn',false);
+
+	const needReLogin = (): boolean => {
+		if(appToken === '' || appRefreshToken === '' || spotifyToken === '' || spotifyRefreshToken === '' ){
+			return true;
+
+		}
+		return false;
+	};
 	
 	const handleLogin = () => {
 		const domainUrl = import.meta.env.VITE_DOMAIN_URL || 'http://localhost:5000';
@@ -81,6 +89,7 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 			setIsLoggedIn(true);// user remains logged in
 		} catch (error) {
 			console.error('Failed to refresh app token:', error);
+			console.log('logging out');
 			setIsLoggedIn(false); // Optionally log the user out on failure
 		}
 	};
@@ -111,6 +120,10 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 		}
 	};
 
+	if(isLoggedIn && needReLogin()){
+		setIsLoggedIn(false);
+	}
+
 	return (
 		<AuthStateContext.Provider
 			value={{
@@ -132,7 +145,8 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 				refreshSpotifyToken,
 				handleLogin,
 				confirmSpotifyLoginCode,
-				isTokenExpired
+				isTokenExpired,
+				needReLogin
 
 			}}>
 				{children}

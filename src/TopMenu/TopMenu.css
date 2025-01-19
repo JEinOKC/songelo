@@ -1,0 +1,46 @@
+/* TopMenu.css */
+.top-menu {
+	background-color: #333;
+	color: #fff;
+	padding: 10px;
+  }
+
+  .nav-top{
+	display:flex;
+	justify-content: space-between;
+  }
+
+  .page-title{
+	flex-grow: 1;
+	text-align: center;
+  }
+  
+  .menu-toggle {
+	background-color: #333;
+	color: #fff;
+	border: none;
+	padding: 10px;
+	cursor: pointer;
+	font-size: 16px;
+  }
+  
+  .menu-items {
+	display: none;
+	flex-direction: column;
+	margin-top: 10px;
+  }
+  
+  .menu-items.open {
+	display: flex;
+  }
+  
+  .menu-items a {
+	color: #fff;
+	text-decoration: none;
+	padding: 10px 0;
+  }
+  
+  .menu-items a:hover {
+	background-color: #555;
+  }
+  

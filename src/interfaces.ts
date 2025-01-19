@@ -15,6 +15,7 @@ export interface SongProps {
 export interface PlaylistSong {
 	id: string;
 	lastPlayed: number | null;
+	score: number;
 	track_info: SpotifyTrack;
 }
 
@@ -59,4 +60,5 @@ export interface AuthState {
 	refreshSpotifyToken: () => Promise<void>;
 	confirmSpotifyLoginCode: (code:string) => Promise<void>;
 	isTokenExpired: (expiration:number) => boolean;
+	needReLogin: () => boolean;
 }

@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react';
 import { useAppState } from '../state/AppStateContext';
 import { PlaylistSong, SpotifyTrack } from '../interfaces';
 import Song from '../Song/Song';
+import './Matchup.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faShuffle } from '@fortawesome/free-solid-svg-icons';
 
 const Matchup = () => {
 
 	const { selectedPlaylist, selectedPlaylistSongs } = useAppState();
-	const [matchupHappening, setMatchupHappening] = useState(false);
+	const [matchupHappening, setMatchupHappening] = useState(true);
 	const [matchupSongs, setMatchupSongs] = useState<PlaylistSong[]>([]);
 	// const recentSongs = new Set<PlaylistSong>();
 
@@ -14,14 +17,16 @@ const Matchup = () => {
 	const decayTime:number = 0.000005//a smaller decay number will theoretically make it take longer for a song to re-appear on a matchup
 
 	useEffect(()=>{
-		console.log('selectedPlaylist',selectedPlaylist);
-		console.log('selectedPlaylistSongs',selectedPlaylistSongs);
 		resetMatchup();
-		console.log('matchupSongs',matchupSongs);
 	},[matchupHappening])
 	useEffect(()=>{
-		//may or may not need this...
-	},[selectedPlaylist]);
+		//may or may not need this..
+		console.log({
+			'selectedPlaylist':selectedPlaylist,
+			'selectedPlaylistSongs':selectedPlaylistSongs
+		})
+		resetMatchup();
+	},[selectedPlaylist,selectedPlaylistSongs]);
 
 	const findRandomSongs = (count: number): PlaylistSong[] => {
 		const usedIndices = new Set<number>();
@@ -49,6 +54,13 @@ const Matchup = () => {
 			// Stretch the sigmoid value to our desired range
 			// For example, transform 0.5 to 0.1, and 1 to 1, by applying a linear transformation
 			const transformedWeight = (sigmoidValue - 0.5) * 0.8 + 0.1;
+			console.log({
+				'song':song,
+				'song score':song.score,
+				'sigmoidValue':sigmoidValue,
+				'transformedWeight':transformedWeight,
+				'timeSincePlayed in seconds':(timeSincePlayed / 1000 )
+			})
 
   			return transformedWeight;
 
@@ -78,7 +90,6 @@ const Matchup = () => {
 	}
 
 	const resetMatchup = ()=>{
-		console.log('resetting the matchup');
 		setMatchupSongs(findRandomSongs(matchupSize));
 	}
 
@@ -102,17 +113,24 @@ const Matchup = () => {
 	return (<div>
 		{matchupHappening ? 
 		<>
-			<span>matchup happening</span>
+			<h2>Choose Your Next Song</h2>
+			<div className='matchup-container'>
+				{matchupSongs.map((song) => (
+					<Song key={song.id} track={song.track_info} playlistId={selectedPlaylist} canAddToPlaylist={false} onPlay={songWasChosen} />
+				))}
+			</div>
 
-			{matchupSongs.map((song) => (
-				<li key={song.id}>
-					<Song track={song.track_info} playlistId={selectedPlaylist} canAddToPlaylist={false} onPlay={songWasChosen} />
-				</li>
-			))}
-
-			<button onClick={resetMatchup}>Shuffle</button>
-			<button onClick={()=>setMatchupHappening(false)}>Done</button>
-			
+			{matchupSongs && (
+				<>
+					<a className="shuffle-matchup" href="#" onClick={(e)=>{
+						e.preventDefault();
+						resetMatchup();
+					}} title='Shuffle'>
+						<FontAwesomeIcon icon={faShuffle} size="3x" />
+					</a>
+					{/* <button onClick={()=>setMatchupHappening(false)}>Done</button> */}
+				</>
+			)}
 		</>
 		:
 		<button onClick={()=>setMatchupHappening(true)}>
