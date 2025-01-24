@@ -8,10 +8,9 @@ import { faShuffle } from '@fortawesome/free-solid-svg-icons';
 
 const Matchup = () => {
 
-	const { selectedPlaylist, selectedPlaylistSongs } = useAppState();
+	const { selectedPlaylist, selectedPlaylistSongs, submitMatchupResult } = useAppState();
 	const [matchupHappening, setMatchupHappening] = useState(true);
 	const [matchupSongs, setMatchupSongs] = useState<PlaylistSong[]>([]);
-	// const recentSongs = new Set<PlaylistSong>();
 
 	const matchupSize = 4;
 	const decayTime:number = 0.000005//a smaller decay number will theoretically make it take longer for a song to re-appear on a matchup
@@ -20,11 +19,6 @@ const Matchup = () => {
 		resetMatchup();
 	},[matchupHappening])
 	useEffect(()=>{
-		//may or may not need this..
-		console.log({
-			'selectedPlaylist':selectedPlaylist,
-			'selectedPlaylistSongs':selectedPlaylistSongs
-		})
 		resetMatchup();
 	},[selectedPlaylist,selectedPlaylistSongs]);
 
@@ -54,13 +48,13 @@ const Matchup = () => {
 			// Stretch the sigmoid value to our desired range
 			// For example, transform 0.5 to 0.1, and 1 to 1, by applying a linear transformation
 			const transformedWeight = (sigmoidValue - 0.5) * 0.8 + 0.1;
-			console.log({
-				'song':song,
-				'song score':song.score,
-				'sigmoidValue':sigmoidValue,
-				'transformedWeight':transformedWeight,
-				'timeSincePlayed in seconds':(timeSincePlayed / 1000 )
-			})
+			// console.log({
+			// 	'song':song,
+			// 	'song score':song.score,
+			// 	'sigmoidValue':sigmoidValue,
+			// 	'transformedWeight':transformedWeight,
+			// 	'timeSincePlayed in seconds':(timeSincePlayed / 1000 )
+			// })
 
   			return transformedWeight;
 
@@ -95,15 +89,30 @@ const Matchup = () => {
 
 	const songWasChosen = (_?:React.MouseEvent<HTMLAnchorElement>,track?:SpotifyTrack)=>{
 		const now = Date.now();
+		let winner:PlaylistSong|null = null;
+		let losers:PlaylistSong[] = [];
 		
 		if(track){
 			//find the spotify track in the selected matchup songs
 			matchupSongs.forEach(song =>{
 				if(song.track_info.id === track.id){
 					song.lastPlayed = now;
-					return;
+					winner = song;
 				}
+				else{
+					losers.push(song);
+				}
+			});
+
+
+		}
+
+		if(winner){
+			console.log({
+				'winner':winner,
+				'losers':losers
 			})
+			submitMatchupResult(winner,losers);
 		}
 		
 		resetMatchup();
@@ -113,6 +122,9 @@ const Matchup = () => {
 	return (<div>
 		{matchupHappening ? 
 		<>
+			<div>
+				{}
+			</div>
 			<h2>Choose Your Next Song</h2>
 			<div className='matchup-container'>
 				{matchupSongs.map((song) => (

@@ -3,15 +3,26 @@
 	padding:0;
 	background-color: #f9f9f9;
 	border:1px solid #ccc;
-	min-width:200px;
+	min-width:300px;
+	min-height:100px;
 }
 
-	.song-container img{
-		margin-right:10px;
-		height:5em;
-		width:5em;
-
+	.song-container .album-cover-container{
+		width: 30%;
 	}
+
+	.song-container .album-cover{
+		height: 100%;
+		background-size: cover;
+		background-position:center;
+		background-repeat: no-repeat;
+	}
+
+		.song-container .album-cover:after{
+			display:block;
+			content: "";
+			padding-bottom:100%;
+		}
 
 	.track-info{
 		display: flex;
@@ -20,6 +31,7 @@
 		justify-content: space-between;
 		padding:5px;
 		text-align: left;
+		gap:5px;
 	}
 
 		.track-info .song, .track-info .artist{
@@ -28,6 +40,11 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 			max-width: 150px;
+		}
+
+		.track-info .score{
+			font-size: 0.8em;
+			opacity: 0.8;
 		}
 
 		.track-info .song{

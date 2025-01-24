@@ -43,7 +43,7 @@ If you'd prefer to run the frontend directly, follow these steps:
 2. Start the React app:
 
    ```bash
-   npm start
+   npm run dev
    ```
 
    The frontend will be running on `http://localhost:5173`.

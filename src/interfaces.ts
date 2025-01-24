@@ -9,6 +9,7 @@ export interface SongProps {
 	track: SpotifyTrack;
 	playlistId: string;
 	canAddToPlaylist?: boolean;
+	score: number;
 	onPlay?: (event?:React.MouseEvent<HTMLAnchorElement>,track?:SpotifyTrack) => void;
 }
 
@@ -26,6 +27,7 @@ export interface AppState {
 	setSelectedPlaylistSongs: (playlistSongArray: PlaylistSong[]) => void;
 	isTrackInPlaylist: (track: SpotifyTrack) => boolean;
 	addSongToPlaylist: (track: PlaylistSong) => void;
+	submitMatchupResult: (winner: PlaylistSong, losers: PlaylistSong[]) => void;
 }
 
 export interface PlaybackControlProps {

@@ -40,6 +40,32 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 
   }
 
+	const submitMatchupResult = async (winner: PlaylistSong, losers: PlaylistSong[]) => {
+		const playlistID = selectedPlaylist;
+
+		if (!appToken || !playlistID) return;
+
+		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/matchup`, {
+			method: 'POST',
+			headers: {
+				'Authorization': `Bearer ${appToken}`,
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				winner: winner.id,
+				losers: losers.map(loser => loser.id)
+			})
+		});
+
+		const data = await response.json();
+		
+		if (data.success && data.songs) {
+			setSelectedPlaylistSongs(data.songs);
+		}
+
+	
+	};
+
   const isTrackInPlaylist = (track:SpotifyTrack) => {
 	
 	return selectedPlaylistSongs.some((playlistTrack: any) => {
@@ -66,7 +92,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 		selectedPlaylist, setSelectedPlaylist,
 		selectedPlaylistSongs, setSelectedPlaylistSongs,
 		isTrackInPlaylist,
-		addSongToPlaylist
+		addSongToPlaylist,
+		submitMatchupResult
 	}}>
 	  {children}
 	</AppStateContext.Provider>

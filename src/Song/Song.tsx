@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpotify } from '@fortawesome/free-brands-svg-icons'
 import './Song.css';
 
-const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true, onPlay }) => {
+const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true, score = -1, onPlay }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const { appToken } = useAuthState();
   const { addSongToPlaylist } = useAppState();
@@ -53,17 +53,29 @@ const Song: React.FC<SongProps> = ({ track, playlistId, canAddToPlaylist = true,
   return (
     <div>
       <div className="song-container" key={track.id}>
-        <img
+        <div className="album-cover-container">
+          <div className="album-cover" style={{ backgroundImage: `url(${track.album.images[2].url})` }}>
+          </div>
+        </div>
+        {/* <img
           src={track.album.images[2].url}
           alt={track.name}
-        />
+        /> */}
         <div className="track-info">
+
+          {score > -1 && (
+            <span className="score">
+              {score.toFixed(2)}
+            </span>
+          )}
+
           <span className="song" title={track.name} >
             {track.name}
           </span>
           <span className="artist" title={track.artists[0].name}>
             {track.artists[0].name}
           </span>
+          
           <a
             href="#"
             onClick={(e:React.MouseEvent<HTMLAnchorElement>)=>{
