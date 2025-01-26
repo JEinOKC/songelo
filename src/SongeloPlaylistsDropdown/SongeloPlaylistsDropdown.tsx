@@ -2,35 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreateSongeloPlaylistForm from '../CreateSongeloPlaylistForm/CreateSongeloPlaylistForm';
 import { useAppState } from '../state/AppStateContext';
-import { useAuthState } from '../state/AuthStateContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faXmark } from '@fortawesome/free-solid-svg-icons';
 import './SongeloPlaylistsDropdown.css';
 
 const SongeloPlaylistsDropdown = () => {
 	const [playlists, setPlaylists] = useState<any[]>([]);
-	const { appToken } = useAuthState();
-	const { selectedPlaylist, setSelectedPlaylist } = useAppState();
+	const { selectedPlaylist, setSelectedPlaylist, fetchPlaylists } = useAppState();
 	const [wantNewPlaylist, setWantNewPlaylist] = useState<boolean>(false);
 	const navigate = useNavigate();
 	const [currentPlaylistName,setCurrentPlaylistName] = useState<string>('');
 	const [dropdownActive,setDropdownActive] = useState<boolean>(false);
-
-	const fetchPlaylists = async () => {
-		if (!appToken) return;
-
-		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists`, {
-			headers: {
-				Authorization: `Bearer ${appToken}`,
-			},
-		});
-
-		const data = await response.json();
-		if (data.success) {
-			setPlaylists(data.playlists);
-		}
-	};
-
+	
 	useEffect(()=>{
 		playlists.forEach((playlist)=>{
 			if(playlist.id === selectedPlaylist){
@@ -49,7 +32,10 @@ const SongeloPlaylistsDropdown = () => {
 	
 
 	useEffect(() => {
-		fetchPlaylists();
+		fetchPlaylists().then((data) => {
+			console.log('fetch playlists worked as planned',data);
+			setPlaylists(data);
+		});
 	}, []);
 
 	// useEffect(() =>{

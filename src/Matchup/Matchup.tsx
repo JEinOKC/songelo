@@ -119,12 +119,9 @@ const Matchup = () => {
 	}
 	
 
-	return (<div>
+	return (<div className='matchup-window-container'>
 		{matchupHappening ? 
 		<>
-			<div>
-				{}
-			</div>
 			<h2>Choose Your Next Song</h2>
 			<div className='matchup-container'>
 				{matchupSongs.map((song) => (

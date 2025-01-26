@@ -28,6 +28,7 @@ export interface AppState {
 	isTrackInPlaylist: (track: SpotifyTrack) => boolean;
 	addSongToPlaylist: (track: PlaylistSong) => void;
 	submitMatchupResult: (winner: PlaylistSong, losers: PlaylistSong[]) => void;
+	fetchPlaylists: () => Promise<any>;
 }
 
 export interface PlaybackControlProps {

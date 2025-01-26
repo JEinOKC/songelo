@@ -19,6 +19,7 @@ const App = () => {
 	const [showTopTracks, setShowTopTracks] = useState(false);
 	const [showPlaylistSongs, setShowPlaylistSongs] = useState(false);
 	const { playlistID } = useParams<{ playlistID: string }>();
+	const { viewStyle } = useParams<{ viewStyle: string }>();
 
 	const toggleTopTracks = () =>{
 		setShowTopTracks(!showTopTracks);
@@ -27,6 +28,16 @@ const App = () => {
 	const togglePlaylistSongs = () =>{
 		setShowPlaylistSongs(!showPlaylistSongs);
 	}
+
+	useEffect(() => {
+		console.log({'viewStyle':viewStyle});
+		if (viewStyle === 'standings') {
+			setShowPlaylistSongs(true);
+		}
+		else{
+			setShowPlaylistSongs(false);
+		}
+	}, [viewStyle]);
 
 	useEffect(() => {
 		if (playlistID) {
@@ -53,7 +64,7 @@ const App = () => {
 	}, []);
 
 	useEffect(() =>{
-		console.log('isLoggedIn changed',isLoggedIn);
+		// console.log('isLoggedIn changed',isLoggedIn);
 	},[isLoggedIn])
 
   
@@ -95,20 +106,28 @@ const App = () => {
 
 					<div className="main-content">
 
-					<div className="left-panel">
-						{selectedPlaylist && showTopTracks && <TopTracks/>}
-					</div>
+						{(selectedPlaylist && showPlaylistSongs) ? (
+								<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
+						) : selectedPlaylist ? (
+								<Matchup />
+						) : (
+							<></>
+						)}
+
+					
+						{selectedPlaylist && showTopTracks && (
+							<div className="left-panel">
+								<TopTracks/>
+							</div>
+						)}
+					
 
 					
 						<div className="center-content">
 							
-							{selectedPlaylist && showPlaylistSongs && (
-								<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
-							)}
+							
 
-							{selectedPlaylist && (
-								<Matchup />
-							)}
+							
 						</div>
 					
 					</div>

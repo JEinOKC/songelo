@@ -8,9 +8,10 @@ const AppStateContext = createContext<AppState | undefined>(undefined);
 export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   const [selectedPlaylist, setRawSelectedPlaylist] = useState<string>('');
   const [selectedPlaylistSongs, setSelectedPlaylistSongs] = useState<PlaylistSong[]>([]);
-  const { appToken } = useAuthState();
+  const { appToken, appTokenExpiration, isTokenExpired, refreshAppToken } = useAuthState();
 
   const setSelectedPlaylist = (playlistID:string) => {
+
 	
 	setRawSelectedPlaylist(playlistID);
 	
@@ -22,6 +23,10 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 	const fetchSongs = async (playlistID:string) => {
 		
 		if (!appToken || !playlistID) return;
+
+		if(isTokenExpired(appTokenExpiration)){
+			await refreshAppToken();
+		}
 
 		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/songs`, {
 			headers: {
@@ -44,6 +49,10 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 		const playlistID = selectedPlaylist;
 
 		if (!appToken || !playlistID) return;
+
+		if(isTokenExpired(appTokenExpiration)){
+			await refreshAppToken();
+		}
 
 		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/matchup`, {
 			method: 'POST',
@@ -74,6 +83,26 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 
   };
 
+  const fetchPlaylists = async () => {
+	if (!appToken) return;
+
+	if(isTokenExpired(appTokenExpiration)){
+		await refreshAppToken();
+	}
+
+	const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists`, {
+		headers: {
+			Authorization: `Bearer ${appToken}`,
+		},
+	});
+
+	const data = await response.json();
+
+	if (data.success) {
+		return data.playlists;
+	}
+};
+
   const addSongToPlaylist = (track: PlaylistSong) => {
 	if (!isTrackInPlaylist(track.track_info)) {
 		setSelectedPlaylistSongs((prevSongs) => [...prevSongs, track]);
@@ -93,7 +122,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 		selectedPlaylistSongs, setSelectedPlaylistSongs,
 		isTrackInPlaylist,
 		addSongToPlaylist,
-		submitMatchupResult
+		submitMatchupResult,
+		fetchPlaylists
 	}}>
 	  {children}
 	</AppStateContext.Provider>

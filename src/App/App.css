@@ -68,6 +68,7 @@
 
 .center-content{
 	display: flex;
+	flex: 2;
 }
 
 .login-button{
