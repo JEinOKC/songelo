@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';  // Import ReactDOM for rendering the app
-import Main from './app/main';  // Import the Main component, which contains your routes
+import Main from './app/Main';  // Import the Main component, which contains your routes
 import { AppStateProvider } from './stores/AppStateContext';
 import { AuthStateProvider } from './stores/AuthStateContext';
 
