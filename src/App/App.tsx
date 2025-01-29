@@ -10,7 +10,7 @@ import './App.css';
 import TopMenu from '../components/TopMenu/TopMenu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpotify } from '@fortawesome/free-brands-svg-icons';
-import SearchSpotify from '../components/SearchSpotify/SearchSpotify';
+// import SearchSpotify from '../components/SearchSpotify/SearchSpotify';
 
 
 const App = () => {
