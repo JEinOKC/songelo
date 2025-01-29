@@ -2,27 +2,10 @@ import { useState, useEffect } from 'react';
 import { useAppState } from '../../stores/AppStateContext';
 import { useAuthState } from '../../stores/AuthStateContext';
 import './PlaylistRecommendedTracks.css';
-import { SpotifyTrack } from '../../types/interfaces';
+import { SpotifyTrack, MatchTrack, SpotifySearchResult  } from '../../types/interfaces';
 import Song from '../Song/Song';
 
-interface MatchTrack {
-	match_artist: string;
-	match_count: number;
-	match_score: number;
-	match_track_name: string;
-	playlist_matches: {
-		track: string;
-		artist: string;
-		spotify_id: string;
-	}[];
-}
 
-interface SpotifySearchResult {
-	tracks: {
-		href: string,
-		items: SpotifyTrack[]
-	}
-}
 
 const PlaylistRecommendedTracks = () => {
 	const { getPlaylistRecommendedTracks, selectedPlaylist } = useAppState();

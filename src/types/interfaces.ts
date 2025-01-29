@@ -66,3 +66,22 @@ export interface AuthState {
 	isTokenExpired: (expiration:number) => boolean;
 	needReLogin: () => boolean;
 }
+
+export interface MatchTrack {
+	match_artist: string;
+	match_count: number;
+	match_score: number;
+	match_track_name: string;
+	playlist_matches: {
+		track: string;
+		artist: string;
+		spotify_id: string;
+	}[];
+}
+
+export interface SpotifySearchResult {
+	tracks: {
+		href: string,
+		items: SpotifyTrack[]
+	}
+}
