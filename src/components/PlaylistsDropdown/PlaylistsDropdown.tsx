@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuthState } from '../state/AuthStateContext';
+import { useAuthState } from '../../stores/AuthStateContext';
 
 const PlaylistsDropdown = () => {
   const [playlists, setPlaylists] = useState<any[]>([]);

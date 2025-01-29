@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAuthState } from '../state/AuthStateContext';
-import { PlaybackControlProps } from '../interfaces';
+import { useAuthState } from '../../stores/AuthStateContext';
+import { PlaybackControlProps } from '../../types/interfaces';
 
 const PlaybackControl: React.FC<PlaybackControlProps> = ({ track, onClose }) => {
   const { spotifyToken } = useAuthState();

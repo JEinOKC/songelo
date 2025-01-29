@@ -1,12 +1,12 @@
 import Song from '../Song/Song';
-import { useAppState } from '../state/AppStateContext';
+import { useAppState } from '../../stores/AppStateContext';
 import './ListSongeloPlaylistSongs.css';
 
 const ListSongeloPlaylistSongs = ({ playlistId }: { playlistId: string }) => {
   const { selectedPlaylistSongs } = useAppState();
 
   return (
-    <div>
+    <div className="playlist-songs">
       <h2>Songs in Playlist</h2>
       <ul>
         {selectedPlaylistSongs

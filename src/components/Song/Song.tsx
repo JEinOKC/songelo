@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useAuthState } from '../state/AuthStateContext';
-import { SongProps, SpotifyTrack } from '../interfaces';
-import { useAppState } from '../state/AppStateContext';
+import { useAuthState } from '../../stores/AuthStateContext';
+import { SongProps, SpotifyTrack } from '../../types/interfaces';
+import { useAppState } from '../../stores/AppStateContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpotify } from '@fortawesome/free-brands-svg-icons'
 import './Song.css';

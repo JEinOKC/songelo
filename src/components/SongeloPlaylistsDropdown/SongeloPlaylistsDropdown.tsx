@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreateSongeloPlaylistForm from '../CreateSongeloPlaylistForm/CreateSongeloPlaylistForm';
-import { useAppState } from '../state/AppStateContext';
+import { useAppState } from '../../stores/AppStateContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faXmark } from '@fortawesome/free-solid-svg-icons';
 import './SongeloPlaylistsDropdown.css';

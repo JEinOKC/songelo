@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Song from '../Song/Song';
-import { useAppState } from '../state/AppStateContext';
-import { useAuthState } from '../state/AuthStateContext';
-import { SpotifyTrack } from '../interfaces';
+import { useAppState } from '../../stores/AppStateContext';
+import { useAuthState } from '../../stores/AuthStateContext';
+import { SpotifyTrack } from '../../types/interfaces';
 
 const TopTracks = () => {
   const [topTracks, setTopTracks] = useState<SpotifyTrack[]>([]);

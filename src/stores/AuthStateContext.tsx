@@ -1,6 +1,6 @@
 import { createContext, useContext, ReactNode } from 'react';
 import axios from 'axios';
-import { AuthState } from '../interfaces';
+import { AuthState } from '../types/interfaces';
 import useStateWithLocalStorage from './useStateWithLocalStorage';
 
 

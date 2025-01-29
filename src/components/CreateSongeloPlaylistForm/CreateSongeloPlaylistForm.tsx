@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuthState } from '../state/AuthStateContext';
+import { useAuthState } from '../../stores/AuthStateContext';
 
 const CreateSongeloPlaylistForm = ({ onCreate }: { onCreate: () => void }) => {
   const [name, setName] = useState<string>('');

@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import './TopMenu.css';
-import { useAuthState } from '../state/AuthStateContext';
-import { useAppState } from '../state/AppStateContext';
+import { useAuthState } from '../../stores/AuthStateContext';
+import { useAppState } from '../../stores/AppStateContext';
 
 const TopMenu: React.FC = () => {
 	const [isOpen, setIsOpen] = useState(false);

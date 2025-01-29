@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useAppState } from '../state/AppStateContext';
-import { PlaylistSong, SpotifyTrack } from '../interfaces';
+import { useAppState } from '../../stores/AppStateContext';
+import { PlaylistSong, SpotifyTrack } from '../../types/interfaces';
 import Song from '../Song/Song';
 import './Matchup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

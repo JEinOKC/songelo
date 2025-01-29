@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import TopTracks from '../TopTracks/TopTracks';
-import SongeloPlaylistsDropdown from '../SongeloPlaylistsDropdown/SongeloPlaylistsDropdown';
-import ListSongeloPlaylistSongs from '../ListSongeloPlaylistSongs/ListSongeloPlaylistSongs';
-import Matchup from '../Matchup/Matchup';
-import { useAppState } from '../state/AppStateContext';
-import { useAuthState } from '../state/AuthStateContext';
+import TopTracks from '../components/TopTracks/TopTracks';
+import SongeloPlaylistsDropdown from '../components/SongeloPlaylistsDropdown/SongeloPlaylistsDropdown';
+import ListSongeloPlaylistSongs from '../components/ListSongeloPlaylistSongs/ListSongeloPlaylistSongs';
+import Matchup from '../components/Matchup/Matchup';
+import { useAppState } from '../stores/AppStateContext';
+import { useAuthState } from '../stores/AuthStateContext';
 import './App.css';
-import TopMenu from '../TopMenu/TopMenu';
+import TopMenu from '../components/TopMenu/TopMenu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpotify } from '@fortawesome/free-brands-svg-icons';
+import SearchSpotify from '../components/SearchSpotify/SearchSpotify';
 
 
 const App = () => {
@@ -30,7 +31,6 @@ const App = () => {
 	}
 
 	useEffect(() => {
-		console.log({'viewStyle':viewStyle});
 		if (viewStyle === 'standings') {
 			setShowPlaylistSongs(true);
 		}
@@ -107,7 +107,17 @@ const App = () => {
 					<div className="main-content">
 
 						{(selectedPlaylist && showPlaylistSongs) ? (
+							<>
 								<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
+								<div>
+									<p>This area is for finding more songs to add to your playlist</p>
+									<TopTracks />
+									{/* <SearchSpotify /> */}
+
+
+								</div>
+								
+							</>
 						) : selectedPlaylist ? (
 								<Matchup />
 						) : (

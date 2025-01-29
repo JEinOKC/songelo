@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { PlaylistSong, AppState, SpotifyTrack} from '../interfaces';
+import { PlaylistSong, AppState, SpotifyTrack} from '../types/interfaces';
 import { useAuthState } from './AuthStateContext';
 
 
