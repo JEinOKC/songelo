@@ -41,7 +41,19 @@ const TopMenu: React.FC = () => {
 					isLoggedIn && selectedPlaylist && viewStyle !== 'standings' &&  (
 					<Link to={`/playlist/${selectedPlaylist}/standings`} onClick={()=>{
 						setIsOpen(false);
-					}}>View Playlist</Link>)
+					}}>Playlist</Link>)
+				}
+				{
+					isLoggedIn && selectedPlaylist && viewStyle !== 'recommended-tracks' &&  (
+					<Link to={`/playlist/${selectedPlaylist}/recommended-tracks`} onClick={()=>{
+						setIsOpen(false);
+					}}>Recommended Tracks</Link>)
+				}
+				{
+					isLoggedIn && selectedPlaylist && viewStyle !== 'top-tracks' &&  (
+					<Link to={`/playlist/${selectedPlaylist}/top-tracks`} onClick={()=>{
+						setIsOpen(false);
+					}}>Top Tracks</Link>)
 				}
 				{
 					isLoggedIn && selectedPlaylist && typeof viewStyle !== 'undefined' &&  (

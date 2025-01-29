@@ -1,3 +1,14 @@
 div{
 	text-align: left;
 }
+
+li.spotify-recommendation{
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	justify-content: space-between;
+}
+
+	li.spotify-recommendation div.spotify-recommendation-actions{
+		vertical-align: middle;
+	}

@@ -20,12 +20,9 @@ const App = () => {
 	const configMode:'DEV'|'PROD' = import.meta.env.VITE_CONFIG;
 	const [showTopTracks, setShowTopTracks] = useState(false);
 	const [showPlaylistSongs, setShowPlaylistSongs] = useState(false);
+	const [showRecommendedTracks, setShowRecommendedTracks] = useState(false);
 	const { playlistID } = useParams<{ playlistID: string }>();
 	const { viewStyle } = useParams<{ viewStyle: string }>();
-
-	const toggleTopTracks = () =>{
-		setShowTopTracks(!showTopTracks);
-	}
 
 	const togglePlaylistSongs = () =>{
 		setShowPlaylistSongs(!showPlaylistSongs);
@@ -37,6 +34,20 @@ const App = () => {
 		}
 		else{
 			setShowPlaylistSongs(false);
+		}
+
+		if(viewStyle === 'recommended-tracks'){
+			setShowRecommendedTracks(true);
+		}
+		else{
+			setShowRecommendedTracks(false);
+		}
+
+		if(viewStyle === 'top-tracks'){
+			setShowTopTracks(true);
+		}
+		else{
+			setShowTopTracks(false);
 		}
 	}, [viewStyle]);
 
@@ -91,11 +102,6 @@ const App = () => {
 							Toggle Playlist Songs
 							</button>	
 							)}
-							{selectedPlaylist && (
-							<button onClick={toggleTopTracks} style={{ padding: '10px 20px', fontSize: '16px' }}>
-							Toggle Top Tracks
-							</button>	
-							)}
 							<button onClick={refreshAppToken} style={{ padding: '10px 20px', fontSize: '16px' }}>
 							Refresh App Token
 							</button>
@@ -108,39 +114,17 @@ const App = () => {
 					<div className="main-content">
 
 						{(selectedPlaylist && showPlaylistSongs) ? (
-							<>
-								<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
-								<div>
-									<p>This area is for finding more songs to add to your playlist</p>
-									<TopTracks />
-									{/* <SearchSpotify /> */}
-									<PlaylistRecommendedTracks />
-
-
-								</div>
-								
-							</>
-						) : selectedPlaylist ? (
-								<Matchup />
+							<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
+						) : (selectedPlaylist && showRecommendedTracks) ? (
+							<PlaylistRecommendedTracks />
+						) : (selectedPlaylist && showTopTracks) ? (
+							<TopTracks/>
+						) : (selectedPlaylist && selectedPlaylist) ? (
+							<Matchup />
 						) : (
 							<></>
 						)}
 
-					
-						{selectedPlaylist && showTopTracks && (
-							<div className="left-panel">
-								<TopTracks/>
-							</div>
-						)}
-					
-
-					
-						<div className="center-content">
-							
-							
-
-							
-						</div>
 					
 					</div>
 

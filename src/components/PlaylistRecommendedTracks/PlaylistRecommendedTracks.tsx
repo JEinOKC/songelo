@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAppState } from '../../stores/AppStateContext';
+import { useAuthState } from '../../stores/AuthStateContext';
 import './PlaylistRecommendedTracks.css';
+import { SpotifyTrack } from '../../types/interfaces';
+import Song from '../Song/Song';
 
 interface MatchTrack {
 	match_artist: string;
@@ -14,20 +17,130 @@ interface MatchTrack {
 	}[];
 }
 
+interface SpotifySearchResult {
+	tracks: {
+		href: string,
+		items: SpotifyTrack[]
+	}
+}
+
 const PlaylistRecommendedTracks = () => {
 	const { getPlaylistRecommendedTracks, selectedPlaylist } = useAppState();
+	const { spotifyToken } = useAuthState();
 	const [tracks, setTracks] = useState<MatchTrack[]>([]);
+	const [tracksLoaded, setTracksLoaded] = useState<boolean>(false);
+	const [spotifyRecommendations, setSpotifyRecommendations] = useState<any[]>([]);
+	const [findMoreTracks, setFindMoreTracks] = useState<boolean>(false);
+	const maxRecommendations = 10;
+	const [hiddenRecommendations, setHiddenRecommendations] = useState<any[]>([]);
+	const [trackRecommendationIndex, setTrackRecommendationIndex] = useState(0);
+
+	// Fetch playlist recommended tracks once when component mounts or playlist changes
+	useEffect(() => {
+
+		if(!selectedPlaylist) return;
+
+		setTracks([]);
+		setTracksLoaded(false);
+
+		getPlaylistRecommendedTracks(selectedPlaylist)
+			.then((data:MatchTrack[]) => {
+			setTracks(data);
+			setTracksLoaded(true);
+			})
+			.catch((error) => {
+				console.error('Error fetching recommended tracks:', error);
+			});
+		
+	}, [selectedPlaylist, getPlaylistRecommendedTracks]);
+
+	//fetch Spotify recommendations when tracks are loaded
+	useEffect(() =>{
+		if(tracksLoaded){
+			setTrackRecommendationIndex(0);
+			findRecommendationOnSpotfiy();
+		}
+	}, [tracksLoaded]);
 
 	useEffect(() => {
-		getPlaylistRecommendedTracks(selectedPlaylist).then((data:MatchTrack[]) => {
-			console.log('fetch recommended tracks worked as planned',data);
-			setTracks(data);
+		if(spotifyRecommendations.length < maxRecommendations && trackRecommendationIndex < tracks.length){
+			setFindMoreTracks(true);
+			findRecommendationOnSpotfiy();
+		}
+		else{
+			setFindMoreTracks(false);
+		}
+
+	}, [spotifyRecommendations]);
+
+	const hideRecommendation = (recommendation: SpotifyTrack) => {
+		// Use functional update to ensure latest state
+		setHiddenRecommendations((prevHidden) => [...prevHidden, recommendation]);
+	
+		// Remove recommendation from spotifyRecommendations
+		setSpotifyRecommendations((prevRecommendations) =>
+			prevRecommendations.filter((rec) => rec.id !== recommendation.id)
+		);
+	};
+	
+
+	const findRecommendationOnSpotfiy = async () => {
+		if (!spotifyToken) return;
+
+		if(trackRecommendationIndex >= tracks.length){
+			return;
+		}
+
+		const track = tracks[trackRecommendationIndex];
+
+		const query = `track:${track.match_track_name} artist:${track.match_artist}`;
+		const encodedQuery = encodeURIComponent(query);
+
+		const response = await fetch(`https://api.spotify.com/v1/search?type=track&limit=1&q=${encodedQuery}`, {
+			headers: {
+			Authorization: `Bearer ${spotifyToken}`,
+			},
 		});
-	}, []);
+
+      	const result:SpotifySearchResult = await response.json();
+
+		if(result.tracks.items.length > 0){	
+			const recommendation = result.tracks.items[0];
+			//only add the recommendation if it is not already in the list
+			if(!spotifyRecommendations.some((rec) => rec.id === recommendation.id) && !hiddenRecommendations.some((rec) => rec.id === recommendation.id)){
+				setSpotifyRecommendations([...spotifyRecommendations,recommendation]);
+			}
+
+			// setSpotifyRecommendations([...spotifyRecommendations,recommendation]);
+		}
+
+		setTrackRecommendationIndex(trackRecommendationIndex+1);
+		
+	}
 
 	return (
 		<div>
-			<h1>Recommended Tracks</h1>
+			
+			{findMoreTracks && (
+				<p>Finding Recommendations...</p>
+			)}
+
+			<h1>Spotify Recommendations</h1>
+			<ul>
+				{spotifyRecommendations.map((recommendation) => (
+					<li className="spotify-recommendation">
+						<Song key={recommendation.id} track={recommendation} playlistId={selectedPlaylist} canAddToPlaylist={true}/>
+						<div className="spotify-recommendation-actions">
+							<a href="#" onClick={(e)=>{
+								e.preventDefault();
+								hideRecommendation(recommendation);
+							}}>Hide Recommendation</a>
+						</div>
+					</li>
+				))}
+			</ul>
+
+			{/* <h1>Last.fm Recommended Tracks</h1>
 			<ul>
 				{tracks.map((track) => (
 					<li key={track.match_track_name}>
@@ -47,7 +160,7 @@ const PlaylistRecommendedTracks = () => {
 						</ul>
 					</li>
 				))}
-			</ul>
+			</ul> */}
 		</div>
 	)
 }
