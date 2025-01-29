@@ -10,6 +10,7 @@ import './App.css';
 import TopMenu from '../components/TopMenu/TopMenu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpotify } from '@fortawesome/free-brands-svg-icons';
+import PlaylistRecommendedTracks from '../components/PlaylistRecommendedTracks/PlaylistRecommendedTracks';
 // import SearchSpotify from '../components/SearchSpotify/SearchSpotify';
 
 
@@ -113,6 +114,7 @@ const App = () => {
 									<p>This area is for finding more songs to add to your playlist</p>
 									<TopTracks />
 									{/* <SearchSpotify /> */}
+									<PlaylistRecommendedTracks />
 
 
 								</div>

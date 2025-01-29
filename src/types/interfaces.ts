@@ -29,6 +29,7 @@ export interface AppState {
 	addSongToPlaylist: (track: PlaylistSong) => void;
 	submitMatchupResult: (winner: PlaylistSong, losers: PlaylistSong[]) => void;
 	fetchPlaylists: () => Promise<any>;
+	getPlaylistRecommendedTracks: (playlistID: string) => Promise<any>;
 }
 
 export interface PlaybackControlProps {

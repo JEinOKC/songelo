@@ -10,6 +10,27 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   const [selectedPlaylistSongs, setSelectedPlaylistSongs] = useState<PlaylistSong[]>([]);
   const { appToken, appTokenExpiration, isTokenExpired, refreshAppToken } = useAuthState();
 
+  const getPlaylistRecommendedTracks = async (playlistID:string) => {
+	if (!appToken || !playlistID) return;
+
+	if(isTokenExpired(appTokenExpiration)){
+		await refreshAppToken();
+	}
+
+	const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/recommended/tracks`, {
+		headers: {
+			Authorization: `Bearer ${appToken}`,
+		},
+	});
+
+	const data = await response.json();
+
+	if (data.success) {
+		return data.tracks;
+	}
+
+  }
+
   const setSelectedPlaylist = (playlistID:string) => {
 
 	
@@ -123,7 +144,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 		isTrackInPlaylist,
 		addSongToPlaylist,
 		submitMatchupResult,
-		fetchPlaylists
+		fetchPlaylists,
+		getPlaylistRecommendedTracks
 	}}>
 	  {children}
 	</AppStateContext.Provider>
