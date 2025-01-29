@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthState } from '../stores/AuthStateContext';
+import { useAuthState } from '../../stores/AuthStateContext';
 
 const Callback = () => {
   // const { isLoggedIn, setIsLoggedIn, handleLogin, refreshAppToken, refreshSpotifyToken } = useAuthState();

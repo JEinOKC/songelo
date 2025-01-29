@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import App from './App';
-import Callback from '../Callback/Callback';
+import Callback from '../components/Callback/Callback';
 
 const Main = () => {
   return (
