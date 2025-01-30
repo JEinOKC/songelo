@@ -1,9 +1,34 @@
 import Song from '../Song/Song';
 import { useAppState } from '../../stores/AppStateContext';
 import './ListSongeloPlaylistSongs.css';
+import { ListSongeloPlaylistSongsProps } from '../../types/props';
 
-const ListSongeloPlaylistSongs = ({ playlistId }: { playlistId: string }) => {
-  const { selectedPlaylistSongs } = useAppState();
+
+const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ playlistId, enqueued }) => {
+  const { selectedPlaylistSongs, selectedPlaylistWaitingList } = useAppState();
+
+  if(enqueued){
+
+    if(selectedPlaylistWaitingList.length === 0){
+      return <></>;
+    }
+
+    return (
+      <div className="playlist-songs">
+        <h2>Songs in Waiting List</h2>
+        <ul>
+          {selectedPlaylistWaitingList
+            .sort((a, b) => new Date(a.insert_date).getTime() - new Date(b.insert_date).getTime())
+            .map((song) => (
+            <li key={song.id}>
+              <Song track={song.track_info} playlistId={playlistId} canAddToPlaylist={false} canPromote={true} score={song.score} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+    
+  }
 
   return (
     <div className="playlist-songs">

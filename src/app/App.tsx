@@ -24,10 +24,6 @@ const App = () => {
 	const { playlistID } = useParams<{ playlistID: string }>();
 	const { viewStyle } = useParams<{ viewStyle: string }>();
 
-	const togglePlaylistSongs = () =>{
-		setShowPlaylistSongs(!showPlaylistSongs);
-	}
-
 	useEffect(() => {
 		if (viewStyle === 'standings') {
 			setShowPlaylistSongs(true);
@@ -96,12 +92,6 @@ const App = () => {
 						<p>You are logged in with Spotify!</p>
 
 						<div>
-							
-							{selectedPlaylist && (
-							<button onClick={togglePlaylistSongs} style={{ padding: '10px 20px', fontSize: '16px' }}>
-							Toggle Playlist Songs
-							</button>	
-							)}
 							<button onClick={refreshAppToken} style={{ padding: '10px 20px', fontSize: '16px' }}>
 							Refresh App Token
 							</button>
@@ -114,7 +104,10 @@ const App = () => {
 					<div className="main-content">
 
 						{(selectedPlaylist && showPlaylistSongs) ? (
-							<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
+							<>
+								<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
+								<ListSongeloPlaylistSongs playlistId={selectedPlaylist} enqueued={true}/>
+							</>
 						) : (selectedPlaylist && showRecommendedTracks) ? (
 							<PlaylistRecommendedTracks />
 						) : (selectedPlaylist && showTopTracks) ? (

@@ -30,7 +30,7 @@ const TopMenu: React.FC = () => {
 	return (
 		<div className="top-menu">
 			<div className="nav-top">
-				<h1 className="page-title">Songelo {viewStyle}</h1>
+				<h1 className="page-title">Songelo</h1>
 				<button className="menu-toggle" onClick={toggleMenu}>
 					<FontAwesomeIcon icon={faBars} size='lg' title={isOpen ? 'Close Menu' : 'Open Menu'}/>
 				</button>

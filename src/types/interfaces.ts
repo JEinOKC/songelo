@@ -5,19 +5,13 @@ export interface SpotifyTrack {
 	album: { images: { url: string }[] };
 }
 
-export interface SongProps {
-	track: SpotifyTrack;
-	playlistId: string;
-	canAddToPlaylist?: boolean;
-	score?: number;
-	onPlay?: (event?:React.MouseEvent<HTMLAnchorElement>,track?:SpotifyTrack) => void;
-}
-
 export interface PlaylistSong {
 	id: string;
 	lastPlayed: number | null;
 	score: number;
 	track_info: SpotifyTrack;
+	insert_date: string;
+	queue_id: string;
 }
 
 export interface AppState {
@@ -30,11 +24,9 @@ export interface AppState {
 	submitMatchupResult: (winner: PlaylistSong, losers: PlaylistSong[]) => void;
 	fetchPlaylists: () => Promise<any>;
 	getPlaylistRecommendedTracks: (playlistID: string) => Promise<any>;
-}
-
-export interface PlaybackControlProps {
-	track: any;
-	onClose: () => void;
+	saveSongInPlaylist: (track: SpotifyTrack, enqueue:boolean) => Promise<void>;
+	selectedPlaylistWaitingList: PlaylistSong[];
+	promoteSongInPlaylist: (track: SpotifyTrack) => Promise<void>;
 }
 
 export interface AuthState {
