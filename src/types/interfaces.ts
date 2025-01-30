@@ -11,6 +11,7 @@ export interface PlaylistSong {
 	score: number;
 	track_info: SpotifyTrack;
 	insert_date: string;
+	active: boolean;
 	queue_id: string;
 }
 

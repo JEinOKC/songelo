@@ -8,7 +8,7 @@ import Song from '../Song/Song';
 
 
 const PlaylistRecommendedTracks = () => {
-	const { getPlaylistRecommendedTracks, selectedPlaylist } = useAppState();
+	const { getPlaylistRecommendedTracks, selectedPlaylist, selectedPlaylistSongs } = useAppState();
 	const { spotifyToken } = useAuthState();
 	const [tracks, setTracks] = useState<MatchTrack[]>([]);
 	const [tracksLoaded, setTracksLoaded] = useState<boolean>(false);
@@ -35,7 +35,7 @@ const PlaylistRecommendedTracks = () => {
 				console.error('Error fetching recommended tracks:', error);
 			});
 		
-	}, [selectedPlaylist, getPlaylistRecommendedTracks]);
+	}, [selectedPlaylist]);
 
 	//fetch Spotify recommendations when tracks are loaded
 	useEffect(() =>{
@@ -89,8 +89,14 @@ const PlaylistRecommendedTracks = () => {
 
 		if(result.tracks.items.length > 0){	
 			const recommendation = result.tracks.items[0];
+			const alreadyExists = selectedPlaylistSongs.some(item => item.track_info.id === recommendation.id);
+
+			if(alreadyExists){
+				console.log({'this recommendation already exists in the playlist':recommendation});
+				setSpotifyRecommendations([...spotifyRecommendations]);
+			}
 			//only add the recommendation if it is not already in the list
-			if(!spotifyRecommendations.some((rec) => rec.id === recommendation.id) && !hiddenRecommendations.some((rec) => rec.id === recommendation.id)){
+			else if(!spotifyRecommendations.some((rec) => rec.id === recommendation.id) && !hiddenRecommendations.some((rec) => rec.id === recommendation.id)){
 				setSpotifyRecommendations([...spotifyRecommendations,recommendation]);
 			}
 
@@ -100,6 +106,11 @@ const PlaylistRecommendedTracks = () => {
 		setTrackRecommendationIndex(trackRecommendationIndex+1);
 		
 	}
+
+	// console.log('line 104');
+	// spotifyRecommendations.map((recommendation) => {
+	// 	console.log({'recommendation':recommendation});
+	// });
 
 	return (
 		<div>
@@ -111,8 +122,8 @@ const PlaylistRecommendedTracks = () => {
 			<h1>Spotify Recommendations</h1>
 			<ul>
 				{spotifyRecommendations.map((recommendation) => (
-					<li className="spotify-recommendation">
-						<Song key={recommendation.id} track={recommendation} playlistId={selectedPlaylist} canAddToPlaylist={true}/>
+					<li key={recommendation.id} className="spotify-recommendation">
+						<Song track={recommendation} playlistId={selectedPlaylist} canAddToPlaylist={true}/>
 						<div className="spotify-recommendation-actions">
 							<a href="#" onClick={(e)=>{
 								e.preventDefault();

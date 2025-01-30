@@ -99,6 +99,10 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			setSelectedPlaylistSongs(data.songs);
 		}
 
+		if( data.success && data.waitingList){
+			setSelectedPlaylistWaitingList(data.waitingList);
+		}
+
 	
 	};
 
@@ -147,8 +151,11 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 		//return the updated playlist
 		if(response.ok){
 			const data = await response.json();
-			if(data.success){
+			if(data.success && data.songs){
 				setSelectedPlaylistSongs(data.songs);
+			}
+			if(data.success && data.waitingList){
+				setSelectedPlaylistWaitingList(data.waitingList);
 			}
 		}
 	}

@@ -35,10 +35,11 @@ const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ pla
       <h2>Songs in Playlist</h2>
       <ul>
         {selectedPlaylistSongs
+          .filter((song) => song.active === true)
           .sort((a, b) => b.score - a.score)
           .map((song) => (
           <li key={song.id}>
-            Score: {song.score}: <Song track={song.track_info} playlistId={playlistId} canAddToPlaylist={false} score={song.score} />
+            <Song track={song.track_info} playlistId={playlistId} canAddToPlaylist={false} score={song.score} />
           </li>
         ))}
       </ul>

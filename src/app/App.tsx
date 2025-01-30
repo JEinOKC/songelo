@@ -88,7 +88,7 @@ const App = () => {
 					
 					<SongeloPlaylistsDropdown />
 
-					<div className="header-content hidden">
+					{/* <div className="header-content hidden">
 						<p>You are logged in with Spotify!</p>
 
 						<div>
@@ -99,7 +99,7 @@ const App = () => {
 							Refresh Spotify Token
 							</button>
 						</div>
-					</div>
+					</div> */}
 
 					<div className="main-content">
 

@@ -33,7 +33,6 @@ const SongeloPlaylistsDropdown = () => {
 
 	useEffect(() => {
 		fetchPlaylists().then((data) => {
-			console.log('fetch playlists worked as planned',data);
 			setPlaylists(data);
 		});
 	}, []);

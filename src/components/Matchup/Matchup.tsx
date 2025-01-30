@@ -26,14 +26,15 @@ const Matchup = () => {
 		const usedIndices = new Set<number>();
 		const result: PlaylistSong[] = [];
 		const currentTime = Date.now();
-		
+
+		const selectablePlaylistSongs = selectedPlaylistSongs.filter((song) => song.active === true);
 	  
-		if (count >= selectedPlaylistSongs.length) {
-		  return [...selectedPlaylistSongs];
+		if (count >= selectablePlaylistSongs.length) {
+		  return [...selectablePlaylistSongs];
 		}
 	  
 		// Step 1: Calculate weights for all songs
-		const weights = selectedPlaylistSongs.map((song) => {
+		const weights = selectablePlaylistSongs.map((song) => {
 
 			const lastPlayed = song.lastPlayed ?? 0;
 
@@ -48,13 +49,6 @@ const Matchup = () => {
 			// Stretch the sigmoid value to our desired range
 			// For example, transform 0.5 to 0.1, and 1 to 1, by applying a linear transformation
 			const transformedWeight = (sigmoidValue - 0.5) * 0.8 + 0.1;
-			// console.log({
-			// 	'song':song,
-			// 	'song score':song.score,
-			// 	'sigmoidValue':sigmoidValue,
-			// 	'transformedWeight':transformedWeight,
-			// 	'timeSincePlayed in seconds':(timeSincePlayed / 1000 )
-			// })
 
   			return transformedWeight;
 
@@ -70,11 +64,11 @@ const Matchup = () => {
 		  const random = Math.random();
 		  let cumulative = 0;
 	  
-		  for (let i = 0; i < selectedPlaylistSongs.length; i++) {
+		  for (let i = 0; i < selectablePlaylistSongs.length; i++) {
 			cumulative += normalizedWeights[i];
 			if (random <= cumulative && !usedIndices.has(i)) {
 			  usedIndices.add(i);
-			  result.push(selectedPlaylistSongs[i]);
+			  result.push(selectablePlaylistSongs[i]);
 			  break;
 			}
 		  }
@@ -108,10 +102,6 @@ const Matchup = () => {
 		}
 
 		if(winner){
-			console.log({
-				'winner':winner,
-				'losers':losers
-			})
 			submitMatchupResult(winner,losers);
 		}
 		
