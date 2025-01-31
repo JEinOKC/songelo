@@ -17,7 +17,7 @@ import PlaylistRecommendedTracks from '../components/PlaylistRecommendedTracks/P
 const App = () => {
 	const { selectedPlaylist, setSelectedPlaylist } = useAppState();
 	const { isLoggedIn, appTokenExpiration, spotifyTokenExpiration , handleLogin, refreshAppToken, refreshSpotifyToken, isTokenExpired } = useAuthState();
-	const configMode:'DEV'|'PROD' = import.meta.env.VITE_CONFIG;
+	// const configMode:'DEV'|'PROD' = import.meta.env.VITE_CONFIG;
 	const [showTopTracks, setShowTopTracks] = useState(false);
 	const [showPlaylistSongs, setShowPlaylistSongs] = useState(false);
 	const [showRecommendedTracks, setShowRecommendedTracks] = useState(false);
@@ -79,60 +79,52 @@ const App = () => {
 
   return (
 	<div>
-		{configMode === 'DEV' ? (
-			<>
-				<TopMenu />
-				{isLoggedIn ? (
-				
-				<div className="logged-in-user-container">
-					
-					<SongeloPlaylistsDropdown />
+		<TopMenu />
+		{isLoggedIn ? (
+		
+		<div className="logged-in-user-container">
+			
+			<SongeloPlaylistsDropdown />
 
-					{/* <div className="header-content hidden">
-						<p>You are logged in with Spotify!</p>
+			{/* <div className="header-content hidden">
+				<p>You are logged in with Spotify!</p>
 
-						<div>
-							<button onClick={refreshAppToken} style={{ padding: '10px 20px', fontSize: '16px' }}>
-							Refresh App Token
-							</button>
-							<button onClick={refreshSpotifyToken} style={{ padding: '10px 20px', fontSize: '16px' }}>
-							Refresh Spotify Token
-							</button>
-						</div>
-					</div> */}
-
-					<div className="main-content">
-
-						{(selectedPlaylist && showPlaylistSongs) ? (
-							<>
-								<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
-								<ListSongeloPlaylistSongs playlistId={selectedPlaylist} enqueued={true}/>
-							</>
-						) : (selectedPlaylist && showRecommendedTracks) ? (
-							<PlaylistRecommendedTracks />
-						) : (selectedPlaylist && showTopTracks) ? (
-							<TopTracks/>
-						) : (selectedPlaylist && selectedPlaylist) ? (
-							<Matchup />
-						) : (
-							<></>
-						)}
-
-					
-					</div>
-
-					
+				<div>
+					<button onClick={refreshAppToken} style={{ padding: '10px 20px', fontSize: '16px' }}>
+					Refresh App Token
+					</button>
+					<button onClick={refreshSpotifyToken} style={{ padding: '10px 20px', fontSize: '16px' }}>
+					Refresh Spotify Token
+					</button>
 				</div>
+			</div> */}
+
+			<div className="main-content">
+
+				{(selectedPlaylist && showPlaylistSongs) ? (
+					<>
+						<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
+						<ListSongeloPlaylistSongs playlistId={selectedPlaylist} enqueued={true}/>
+					</>
+				) : (selectedPlaylist && showRecommendedTracks) ? (
+					<PlaylistRecommendedTracks />
+				) : (selectedPlaylist && showTopTracks) ? (
+					<TopTracks/>
+				) : (selectedPlaylist && selectedPlaylist) ? (
+					<Matchup />
 				) : (
-				<button className="login-button" onClick={handleLogin} >
-					Login with Spotify&nbsp;&nbsp;<FontAwesomeIcon icon={faSpotify} size='xl'/>
-				</button>
+					<></>
 				)}
-			</>
+
+			
+			</div>
+
+			
+		</div>
 		) : (
-			<>
-				<h1>Coming Soon!</h1>
-			</>
+		<button className="login-button" onClick={handleLogin} >
+			Login with Spotify&nbsp;&nbsp;<FontAwesomeIcon icon={faSpotify} size='xl'/>
+		</button>
 		)}
 	  
 	</div>
