@@ -132,6 +132,10 @@ const PlaylistRecommendedTracks = () => {
 						</div>
 					</li>
 				))}
+
+				{spotifyRecommendations.length === 0 && (
+					<li>No recommendations available. Please come back as you add more songs.</li>
+				)}
 			</ul>
 
 			{/* <h1>Last.fm Recommended Tracks</h1>

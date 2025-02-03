@@ -30,6 +30,14 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 		window.location.href = loginUrl;
 	};
 
+	const handleLogout = () => {
+		setIsLoggedIn(false);
+		setAppToken('');
+		setAppRefreshToken('');
+		setSpotifyToken('');
+		setSpotifyRefreshToken('');
+	}
+
 	const isTokenExpired = (expiration:number): boolean => {
 		expiration = expiration * 1000;
 		if (expiration) {
@@ -66,7 +74,7 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
         })
         .catch((error) => {
           console.error('Error during OAuth callback:', error);
-		  setIsLoggedIn(false);
+		  handleLogout();
         });
 	}
 
@@ -85,12 +93,17 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 
 			const data = await response.json();
 
-			setAppToken(data.app_token);
-			setIsLoggedIn(true);// user remains logged in
+			if(response.ok){
+				setAppToken(data.app_token);
+				setIsLoggedIn(true);// user remains logged in
+			}
+			else{
+				handleLogout();
+			}
+
+			
 		} catch (error) {
-			console.error('Failed to refresh app token:', error);
-			console.log('logging out');
-			setIsLoggedIn(false); // Optionally log the user out on failure
+			handleLogout();
 		}
 	};
 
@@ -106,22 +119,28 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 				body: JSON.stringify({ refresh_token: spotifyRefreshToken }),
 			});
 
-			const data = await response.json();
+			if(response.ok){
+				const data = await response.json();
 
-			setSpotifyToken(data.access_token);
+				setSpotifyToken(data.access_token);
 
-			// Calculate expiration timestamp
-			const expirationTime = Math.floor(new Date().getTime() / 1000) + data.expires_in;//convert to seconds so it is standardized with the other timestamps
-			setSpotifyTokenExpiration(expirationTime);
+				// Calculate expiration timestamp
+				const expirationTime = Math.floor(new Date().getTime() / 1000) + data.expires_in;//convert to seconds so it is standardized with the other timestamps
+				setSpotifyTokenExpiration(expirationTime);
+			}
+			else{
+				handleLogout();
+			}
+
+			
 
 		} catch (error) {
-			console.error('Failed to refresh Spotify token:', error);
-			setIsLoggedIn(false); // Optionally log the user out on failure
+			handleLogout();
 		}
 	};
 
 	if(isLoggedIn && needReLogin()){
-		setIsLoggedIn(false);
+		handleLogout();
 	}
 
 	return (
@@ -144,10 +163,10 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 				refreshAppToken,
 				refreshSpotifyToken,
 				handleLogin,
+				handleLogout,
 				confirmSpotifyLoginCode,
 				isTokenExpired,
 				needReLogin
-
 			}}>
 				{children}
 		</AuthStateContext.Provider>

@@ -20,6 +20,9 @@ export interface AppState {
 	setSelectedPlaylist: (playlistId: string) => void;
 	selectedPlaylistSongs: PlaylistSong[];
 	setSelectedPlaylistSongs: (playlistSongArray: PlaylistSong[]) => void;
+	playlists: Playlist[];
+	setPlaylists: (playlistArray:Playlist[]) => void;
+
 	isTrackInPlaylist: (track: SpotifyTrack) => boolean;
 	addSongToPlaylist: (track: PlaylistSong) => void;
 	submitMatchupResult: (winner: PlaylistSong, losers: PlaylistSong[]) => void;
@@ -28,6 +31,7 @@ export interface AppState {
 	saveSongInPlaylist: (track: SpotifyTrack, enqueue:boolean) => Promise<void>;
 	selectedPlaylistWaitingList: PlaylistSong[];
 	promoteSongInPlaylist: (track: SpotifyTrack) => Promise<void>;
+	createNewPlaylist: (name: string, isPublic: boolean, maxSize: number) => Promise<string>;
 }
 
 export interface AuthState {
@@ -53,6 +57,7 @@ export interface AuthState {
 	setAppTokenExpiration: (token: number) => void;
 
 	handleLogin: () => void;
+	handleLogout: () => void;
 	refreshAppToken: () => Promise<void>;
 	refreshSpotifyToken: () => Promise<void>;
 	confirmSpotifyLoginCode: (code:string) => Promise<void>;
@@ -77,4 +82,16 @@ export interface SpotifySearchResult {
 		href: string,
 		items: SpotifyTrack[]
 	}
+}
+
+
+export interface Playlist{
+	id: string;
+	creator_id: string;
+	date_created: string;
+	date_last_edited: string;
+	is_active: boolean;
+	is_public: boolean;
+	max_length: number;
+	name: string;	
 }

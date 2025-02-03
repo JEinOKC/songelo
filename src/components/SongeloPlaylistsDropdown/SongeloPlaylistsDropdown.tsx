@@ -7,8 +7,7 @@ import { faPen, faXmark } from '@fortawesome/free-solid-svg-icons';
 import './SongeloPlaylistsDropdown.css';
 
 const SongeloPlaylistsDropdown = () => {
-	const [playlists, setPlaylists] = useState<any[]>([]);
-	const { selectedPlaylist, setSelectedPlaylist, fetchPlaylists } = useAppState();
+	const { selectedPlaylist, setSelectedPlaylist, playlists, setPlaylists, fetchPlaylists } = useAppState();
 	const [wantNewPlaylist, setWantNewPlaylist] = useState<boolean>(false);
 	const navigate = useNavigate();
 	const [currentPlaylistName,setCurrentPlaylistName] = useState<string>('');

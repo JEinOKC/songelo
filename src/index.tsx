@@ -10,11 +10,11 @@ const root = ReactDOM.createRoot(rootElement);
 
 // Render the Main component inside the root div
 root.render(
-  <React.StrictMode>
-    <AuthStateProvider>
-      <AppStateProvider>
-        <Main />  {/* Main handles routing */}
-      </AppStateProvider>
-    </AuthStateProvider>
-  </React.StrictMode>
+	<React.StrictMode>
+		<AuthStateProvider>
+			<AppStateProvider>
+				<Main />  {/* Main handles routing */}
+			</AppStateProvider>
+		</AuthStateProvider>
+	</React.StrictMode>
 );

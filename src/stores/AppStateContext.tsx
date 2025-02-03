@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { PlaylistSong, AppState, SpotifyTrack} from '../types/interfaces';
+import { PlaylistSong, AppState, SpotifyTrack, Playlist} from '../types/interfaces';
 import { useAuthState } from './AuthStateContext';
 
 
@@ -7,6 +7,7 @@ const AppStateContext = createContext<AppState | undefined>(undefined);
 
 export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 	const [selectedPlaylist, setRawSelectedPlaylist] = useState<string>('');
+	const [playlists, setPlaylists] = useState<Playlist[]>([]);
 	const [selectedPlaylistSongs, setSelectedPlaylistSongs] = useState<PlaylistSong[]>([]);
 	const [selectedPlaylistWaitingList, setSelectedPlaylistWaitingList] = useState<PlaylistSong[]>([]);
 	const { appToken, appTokenExpiration, isTokenExpired, refreshAppToken } = useAuthState();
@@ -24,10 +25,18 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			},
 		});
 
-		const data = await response.json();
+		if(response.ok){
 
-		if (data.success) {
-			return data.tracks;
+			const data = await response.json();
+
+			if (data.success) {
+				return data.tracks;
+			}
+
+		}
+		else{
+			await refreshAppToken();
+			getPlaylistRecommendedTracks(playlistID);
 		}
 
 	}
@@ -57,14 +66,22 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 				},
 			});
 
-			const data = await response.json();
-			
-			if (data.success && data.songs) {
-				setSelectedPlaylistSongs(data.songs);
-			}
+			if(response.ok){
 
-			if(data.success && data.waitingList){
-				setSelectedPlaylistWaitingList(data.waitingList);
+				const data = await response.json();
+				
+				if (data.success && data.songs) {
+					setSelectedPlaylistSongs(data.songs);
+				}
+
+				if(data.success && data.waitingList){
+					setSelectedPlaylistWaitingList(data.waitingList);
+				}
+
+			}
+			else{
+				await refreshAppToken();
+				fetchSongs(playlistID);
 			}
 		};
 
@@ -93,14 +110,22 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			})
 		});
 
-		const data = await response.json();
-		
-		if (data.success && data.songs) {
-			setSelectedPlaylistSongs(data.songs);
-		}
+		if(response.ok){
 
-		if( data.success && data.waitingList){
-			setSelectedPlaylistWaitingList(data.waitingList);
+			const data = await response.json();
+			
+			if (data.success && data.songs) {
+				setSelectedPlaylistSongs(data.songs);
+			}
+
+			if( data.success && data.waitingList){
+				setSelectedPlaylistWaitingList(data.waitingList);
+			}
+
+		}
+		else{
+			await refreshAppToken();
+			submitMatchupResult(winner, losers);
 		}
 
 	
@@ -109,7 +134,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 	const isTrackInPlaylist = (track:SpotifyTrack) => {
 		
 		return selectedPlaylistSongs.some((playlistTrack: any) => {
-		return playlistTrack.track_info.id === track.id;
+			return playlistTrack.track_info.id === track.id;
 		});
 
 	};
@@ -127,16 +152,30 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			},
 		});
 
-		const data = await response.json();
+		if(response.ok){
 
-		if (data.success) {
-			return data.playlists;
+			const data = await response.json();
+
+			if (data.success) {
+				console.log({'playlists':data.playlists});
+				setPlaylists(data.playlists);
+				return data.playlists;
+			}
 		}
+		else{
+			await refreshAppToken();
+			fetchPlaylists();
+		}
+
 	};
 
 	const promoteSongInPlaylist = async (track: SpotifyTrack) => {
 		if (!appToken || !selectedPlaylist) {
 			return;
+		}
+
+		if(isTokenExpired(appTokenExpiration)){
+			await refreshAppToken();
 		}
 
 		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${selectedPlaylist}/promote`, {
@@ -158,12 +197,62 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 				setSelectedPlaylistWaitingList(data.waitingList);
 			}
 		}
+		else{
+			await refreshAppToken();
+			promoteSongInPlaylist(track);
+		}
+	}
+
+	const createNewPlaylist = async (name:string, isPublic:boolean, maxSize:number) => {
+		if (!appToken) {
+			return '';
+		}
+
+		if(isTokenExpired(appTokenExpiration)){
+			await refreshAppToken();
+		}
+
+		if(maxSize > 200 || maxSize < 1){
+			return '';
+		}
+
+		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${appToken}`,
+			},
+			body: JSON.stringify({ 
+				'name' : name, 
+				'is_public' : isPublic, 
+				'max_length' : maxSize 
+			}),
+		});
+
+		if(response.ok){
+			const data = await response.json();
+			if(data.success && data.playlist){
+				return data.playlist.id
+			}
+			else{
+				return '';
+			}
+			
+		}
+		else{
+			await refreshAppToken();
+			return createNewPlaylist(name, isPublic, maxSize);
+		}
 	}
 
 	const saveSongInPlaylist = async (track: SpotifyTrack, active:boolean=false) => {
 
 		if (!appToken || !selectedPlaylist) {
 			return;
+		}
+
+		if(isTokenExpired(appTokenExpiration)){
+			await refreshAppToken();
 		}
 
 
@@ -183,15 +272,15 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			  addSongToPlaylist(data.song);
 			}
 			
-		} else if (!response.ok) {
-			console.error('Failed to add song to playlist.');
+		} else {
+			await refreshAppToken();
+			saveSongInPlaylist(track,active);
 		}
 	};
 
 	const addSongToPlaylist = (track: PlaylistSong) => {
 		if (!isTrackInPlaylist(track.track_info)) {
 			setSelectedPlaylistSongs((prevSongs) => [...prevSongs, track]);
-			console.log('New playlist:', [...selectedPlaylistSongs, track]);
 		}
 	};
   
@@ -205,6 +294,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 		value={{ 
 			selectedPlaylist, setSelectedPlaylist,
 			selectedPlaylistSongs, setSelectedPlaylistSongs,
+			playlists, setPlaylists,
 			isTrackInPlaylist,
 			addSongToPlaylist,
 			submitMatchupResult,
@@ -212,7 +302,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			getPlaylistRecommendedTracks,
 			saveSongInPlaylist,
 			selectedPlaylistWaitingList,
-			promoteSongInPlaylist
+			promoteSongInPlaylist,
+			createNewPlaylist
 		}}>
 		{children}
 		</AppStateContext.Provider>
