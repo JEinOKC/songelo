@@ -3,6 +3,13 @@
 	text-align: center;
 }
 
+body {
+	background-color: #6683b3; 
+	color: #fff;
+	margin: 0;
+	padding: 0;
+}
+
 .logged-in-user-container {
 	display: flex;
 	flex-direction: column; /* Stack items vertically */

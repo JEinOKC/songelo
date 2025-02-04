@@ -73,17 +73,20 @@ const SongeloPlaylistsDropdown = () => {
 							<div>No Playlists Available</div>
 						)
 					}
-					{
-						wantNewPlaylist && <CreateSongeloPlaylistForm onCreate={fetchPlaylists} />}
-					
-					{
-						wantNewPlaylist ? 
-						(
-							<button onClick={() => {setWantNewPlaylist(false)}}>Cancel</button>
-						) 
-						:
-						(<button onClick={() => {setWantNewPlaylist(true)}}>Create New Playlist</button>)
-					}
+					{wantNewPlaylist && (
+						<div className="new-playlist-container">
+							<button className="cancel-button" onClick={() => setWantNewPlaylist(false)}>
+								Cancel <FontAwesomeIcon icon={faXmark} />
+							</button>
+							<CreateSongeloPlaylistForm onCreate={fetchPlaylists} />
+						</div>
+					)}
+
+					{!wantNewPlaylist && (
+						<button className="create-playlist-button" onClick={() => setWantNewPlaylist(true)}>
+							➕ Create New Playlist
+						</button>
+					)}
 					{currentPlaylistName !== '' && (
 						<FontAwesomeIcon className='show-dropdown-toggler' icon={faXmark} onClick={()=>{
 							setDropdownActive(false);

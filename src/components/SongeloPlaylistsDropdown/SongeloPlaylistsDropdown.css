@@ -2,3 +2,49 @@
 	margin-left:10px;
 	margin-right:10px;
 }
+
+/* Container to keep the cancel button and form grouped */
+.new-playlist-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 1rem;
+  }
+  
+  /* Cancel button styling */
+  .cancel-button {
+	background: none;
+	color: #bbb;
+	border: none;
+	font-size: 0.9rem;
+	cursor: pointer;
+	transition: color 0.2s ease-in-out;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem; /* Space between text and icon */
+  }
+  
+  .cancel-button:hover {
+	color: #ff6b6b;
+  }
+  
+  /* Create Playlist button */
+  .create-playlist-button {
+	background: #1DB954;
+	color: #fff;
+	padding: 10px 15px;
+	font-size: 1rem;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background 0.2s ease-in-out;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem; /* Space between icon and text */
+  }
+  
+  .create-playlist-button:hover {
+	background: #17a74b;
+  }
+  

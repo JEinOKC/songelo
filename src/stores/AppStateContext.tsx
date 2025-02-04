@@ -151,7 +151,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 				Authorization: `Bearer ${appToken}`,
 			},
 		});
-
+console.log(response);
 		if(response.ok){
 
 			const data = await response.json();
