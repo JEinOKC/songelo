@@ -1,4 +1,8 @@
 /* Form container */
+
+@import "tailwindcss";
+@reference "../../app/App.css";
+
 .playlist-form {
 	background: #333;
 	padding: 2rem;
@@ -23,6 +27,7 @@
   .form-group {
 	display: flex;
 	flex-direction: column;
+	text-align: left;
 	gap: 0.5rem;
   }
   
@@ -36,16 +41,16 @@
   .playlist-form input {
 	padding: 0.5rem;
 	border-radius: 5px;
-	border: 1px solid #ccc;
+	border: 1px solid;
 	font-size: 1rem;
 	background: #333;
-	color: #fff;
+	@apply text-lightest border-lighter-5;
 	outline: none;
 	transition: border 0.2s ease-in-out;
   }
   
   .playlist-form input:focus {
-	border-color: #1DB954;
+	@apply border-success;
 	box-shadow: 0 0 5px rgba(29, 185, 84, 0.5);
   }
   
@@ -58,7 +63,7 @@
   
   /* Submit button */
   .submit-button {
-	background: #1DB954;
+	@apply bg-success;
 	color: #fff;
 	padding: 10px;
 	font-size: 1rem;
@@ -69,6 +74,6 @@
   }
   
   .submit-button:hover {
-	background: #17a74b;
+	opacity: .8;
   }
   

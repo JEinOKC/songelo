@@ -68,11 +68,11 @@ const App = () => {
 		// 		refreshSpotifyToken();
 		// 	}
 		// }
-
+		console.log('isLoggedIn info',isLoggedIn);
 	}, []);
 
 	useEffect(() =>{
-		// console.log('isLoggedIn changed',isLoggedIn);
+		console.log('isLoggedIn changed',isLoggedIn);
 	},[isLoggedIn])
 
   

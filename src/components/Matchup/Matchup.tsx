@@ -112,7 +112,7 @@ const Matchup = () => {
 	return (<div className='matchup-window-container'>
 		{matchupHappening ? 
 		<>
-			<h2>Choose Your Next Song</h2>
+			<h2 className="text-2xl mb-6">Choose Your Next Song</h2>
 			<div className='matchup-container'>
 				{matchupSongs.map((song) => (
 					<Song key={song.id} track={song.track_info} playlistId={selectedPlaylist} canAddToPlaylist={false} onPlay={songWasChosen} />

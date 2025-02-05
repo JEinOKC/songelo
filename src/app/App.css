@@ -24,6 +24,11 @@
   --color-lighter-6: #c0cce1;
   --color-lighter-7: #cfd9e9;
   --color-lightest: #dfe5f0;
+
+  /* these colors are the tetrad of the primary */
+  --color-success: #66b36f;
+  --color-danger: #b366a9;
+  --color-neutral: #b39666
 }
 
 

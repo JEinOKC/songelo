@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@reference "../../app/App.css";
+
 .matchup-window-container{
 	display: block;
 	width: 100%;
@@ -24,7 +27,7 @@
 
 .shuffle-matchup{
 	display:block;
-	margin-top:25px;
+	@apply mt-6;
 	text-align: center;
 	color: #dfe5f0;
 }

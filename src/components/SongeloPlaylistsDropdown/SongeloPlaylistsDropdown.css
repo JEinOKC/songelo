@@ -17,32 +17,37 @@
 
   .cancel-button-container{
 	max-width:400px;
-	@apply text-right;
+	@apply text-center;
 	padding-left:2rem;
 	padding-right:2rem;
   }
   
 	/* Cancel button styling */
 	.cancel-button {
-		@apply bg-red-700 text-lightest rounded-md p-1.5;
+		@apply bg-danger text-lightest rounded-md pt-1.5 pb-2.5 pl-3.5 pr-3.5 text-xl;
+		/* width: 200px; */
 	}
   
   /* Create Playlist button */
   .create-playlist-button {
-	background: #1DB954;
-	color: #fff;
+	@apply rounded-md bg-success text-lightest;
 	padding: 10px 15px;
 	font-size: 1rem;
-	border: none;
-	border-radius: 5px;
 	cursor: pointer;
 	transition: background 0.2s ease-in-out;
-	display: flex;
-	align-items: center;
-	gap: 0.5rem; /* Space between icon and text */
   }
   
   .create-playlist-button:hover {
-	background: #17a74b;
+	opacity: 0.8;
   }
   
+
+  .current-playlist-info-container{
+	@apply mb-2;
+  }
+
+  	.current-playlist-info-container .current-playlist-name{
+		@apply p-2 border-b-1 border-lightest;
+
+
+	}
