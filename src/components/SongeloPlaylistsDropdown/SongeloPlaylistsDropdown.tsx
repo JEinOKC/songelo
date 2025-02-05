@@ -75,9 +75,11 @@ const SongeloPlaylistsDropdown = () => {
 					}
 					{wantNewPlaylist && (
 						<div className="new-playlist-container">
-							<button className="cancel-button" onClick={() => setWantNewPlaylist(false)}>
-								Cancel <FontAwesomeIcon icon={faXmark} />
-							</button>
+							<div className='cancel-button-container'>
+								<button className="cancel-button" onClick={() => setWantNewPlaylist(false)}>
+									Cancel <FontAwesomeIcon icon={faXmark} />
+								</button>
+							</div>
 							<CreateSongeloPlaylistForm onCreate={fetchPlaylists} />
 						</div>
 					)}

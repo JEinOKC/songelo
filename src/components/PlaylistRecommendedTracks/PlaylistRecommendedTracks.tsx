@@ -4,6 +4,8 @@ import { useAuthState } from '../../stores/AuthStateContext';
 import './PlaylistRecommendedTracks.css';
 import { SpotifyTrack, MatchTrack, SpotifySearchResult  } from '../../types/interfaces';
 import Song from '../Song/Song';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -113,7 +115,7 @@ const PlaylistRecommendedTracks = () => {
 	// });
 
 	return (
-		<div>
+		<div className="container_PlaylistRecommendedTracks" >
 			
 			{findMoreTracks && (
 				<p>Finding Recommendations...</p>
@@ -123,12 +125,16 @@ const PlaylistRecommendedTracks = () => {
 			<ul>
 				{spotifyRecommendations.map((recommendation) => (
 					<li key={recommendation.id} className="spotify-recommendation">
-						<Song track={recommendation} playlistId={selectedPlaylist} canAddToPlaylist={true}/>
-						<div className="spotify-recommendation-actions">
-							<a href="#" onClick={(e)=>{
-								e.preventDefault();
-								hideRecommendation(recommendation);
-							}}>Hide Recommendation</a>
+						<div className=" bg-darker-2 border-darkest p-2 mb-2 rounded-md">
+							<div className='text-right'>
+								<a href="#" onClick={(e)=>{
+									e.preventDefault();
+									hideRecommendation(recommendation);
+								}}>Hide&nbsp;&nbsp;<FontAwesomeIcon icon={faClose}/></a>
+							</div>
+
+							<Song track={recommendation} playlistId={selectedPlaylist} canAddToPlaylist={true}/>
+							
 						</div>
 					</li>
 				))}

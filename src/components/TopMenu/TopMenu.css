@@ -1,46 +1,55 @@
 /* TopMenu.css */
+@import "tailwindcss";
+@reference "../../app/App.css";
+
 .top-menu {
-	background-color: #83b366;
-	color: #fff;
 	padding: 10px;
   }
 
-  .nav-top{
+  .top-menu .nav-top{
 	display:flex;
 	justify-content: space-between;
   }
 
-  .page-title{
+  .top-menu .page-title{
 	flex-grow: 1;
 	text-align: center;
+	margin-left:38px;
+	@apply text-3xl;
+	
   }
   
-  .menu-toggle {
-	background-color: #83b366;
-	color: #fff;
+  .top-menu .menu-toggle {
 	border: none;
 	padding: 10px;
 	cursor: pointer;
 	font-size: 16px;
+	width: 38px;
   }
   
-  .menu-items {
+  .top-menu .menu-items {
 	display: none;
+	text-align: right;
 	flex-direction: column;
 	margin-top: 10px;
   }
   
-  .menu-items.open {
+  .top-menu .menu-items.open {
 	display: flex;
   }
   
-  .menu-items a {
-	color: #fff;
+  .top-menu .menu-items a {
+	@apply text-lightest;
 	text-decoration: none;
-	padding: 10px 0;
+	padding: 10px 20px;
   }
   
-  .menu-items a:hover {
-	background-color: #555;
+  .top-menu .menu-items a:hover {
+	/* background-color: #555; */
+	@apply bg-darker-4;
   }
   
+
+  .logged-out-page-title{
+	@apply text-6xl text-darkest m-7;
+  }

@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, ReactNode, useState } from 'react';
 import axios from 'axios';
 import { AuthState } from '../types/interfaces';
 import useStateWithLocalStorage from './useStateWithLocalStorage';
@@ -10,10 +10,10 @@ const AuthStateContext = createContext<AuthState | undefined>(undefined);
 export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 	const [isLoggedIn, setIsLoggedIn] = useStateWithLocalStorage('isLoggedIn',false);//this goes first because the tokens used later can change this value
 	const [spotifyToken,setSpotifyToken] = useStateWithLocalStorage('spotifyToken','');
-	const [spotifyRefreshToken,setSpotifyRefreshToken] = useStateWithLocalStorage('spotifyRefreshToken','');
+	const [spotifyRefreshToken,setSpotifyRefreshToken] = useState<string>('');
 	const [spotifyTokenExpiration,setSpotifyTokenExpiration] = useStateWithLocalStorage('spotifyTokenExpiration',0);
 	const [appToken,setAppToken] = useStateWithLocalStorage('appToken','');
-	const [appRefreshToken,setAppRefreshToken] = useStateWithLocalStorage('appRefreshToken','');
+	const [appRefreshToken,setAppRefreshToken] = useState<string>('');
 	const [appTokenExpiration, setAppTokenExpiration] = useStateWithLocalStorage('appTokenExpiration',0);
 
 	const needReLogin = (): boolean => {
@@ -80,8 +80,7 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 
 	// Function to refresh app token
 	const refreshAppToken = async () => {
-		// const appRefreshToken = localStorage.getItem('app_refresh_token');
-
+		
 		try {
 			const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/refresh-token`, {
 				method: 'POST',

@@ -16,7 +16,7 @@ import PlaylistRecommendedTracks from '../components/PlaylistRecommendedTracks/P
 
 const App = () => {
 	const { selectedPlaylist, setSelectedPlaylist } = useAppState();
-	const { isLoggedIn, appTokenExpiration, spotifyTokenExpiration , handleLogin, refreshAppToken, refreshSpotifyToken, isTokenExpired } = useAuthState();
+	const { isLoggedIn, handleLogin } = useAuthState();
 	// const configMode:'DEV'|'PROD' = import.meta.env.VITE_CONFIG;
 	const [showTopTracks, setShowTopTracks] = useState(false);
 	const [showPlaylistSongs, setShowPlaylistSongs] = useState(false);
@@ -60,14 +60,14 @@ const App = () => {
 
 		//in theory this should check to see if the user has expired tokens and re-fetch them, but instead this is just running an endless loop
 		//it believes that the spotify token is always expired
-		if(isLoggedIn){
-			if(isTokenExpired(appTokenExpiration)){
-				refreshAppToken();
-			}
-			if(isTokenExpired(spotifyTokenExpiration)){
-				refreshSpotifyToken();
-			}
-		}
+		// if(isLoggedIn){
+		// 	if(isTokenExpired(appTokenExpiration)){
+		// 		refreshAppToken();
+		// 	}
+		// 	if(isTokenExpired(spotifyTokenExpiration)){
+		// 		refreshSpotifyToken();
+		// 	}
+		// }
 
 	}, []);
 
@@ -85,19 +85,6 @@ const App = () => {
 		<div className="logged-in-user-container">
 			
 			<SongeloPlaylistsDropdown />
-
-			{/* <div className="header-content hidden">
-				<p>You are logged in with Spotify!</p>
-
-				<div>
-					<button onClick={refreshAppToken} style={{ padding: '10px 20px', fontSize: '16px' }}>
-					Refresh App Token
-					</button>
-					<button onClick={refreshSpotifyToken} style={{ padding: '10px 20px', fontSize: '16px' }}>
-					Refresh Spotify Token
-					</button>
-				</div>
-			</div> */}
 
 			<div className="main-content">
 
@@ -122,9 +109,11 @@ const App = () => {
 			
 		</div>
 		) : (
-		<button className="login-button" onClick={handleLogin} >
-			Login with Spotify&nbsp;&nbsp;<FontAwesomeIcon icon={faSpotify} size='xl'/>
-		</button>
+		<div className="content-center">
+			<button className="bg-darker-4 rounded-md login-button" onClick={handleLogin} >
+				Login with Spotify&nbsp;&nbsp;<FontAwesomeIcon icon={faSpotify} size='xl'/>
+			</button>
+		</div>
 		)}
 	  
 	</div>

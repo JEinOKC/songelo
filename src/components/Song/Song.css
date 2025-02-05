@@ -1,9 +1,12 @@
+@import 'tailwindcss';
+@reference "../../app/App.css";
+
 .song-container{
 	display:flex;
 	padding:0;
-	background-color: #f9f9f9;
-	color: #6683b3;
-	border:1px solid #ccc;
+	@apply text-darker-3 bg-lightest border-lighter-5;
+	border-width: 1px;
+	border-style: solid;
 	min-width:300px;
 	min-height:100px;
 	max-height:200px;
@@ -11,10 +14,10 @@
 
 	.song-container .album-cover-container{
 		width: 30%;
-		max-width: 150px;;
+		max-width: 150px;
 	}
 
-	.song-container .album-cover{
+.song-container .album-cover{
 		height: 100%;
 		background-size: cover;
 		background-position:center;
@@ -64,7 +67,7 @@
 		}
 
 		.track-info .spotify-link:hover{
-			background-color: #ccc;
+			@apply bg-lighter-7;
 			opacity: 0.75;
 		}
 
@@ -75,7 +78,8 @@
 		display: block;
 		padding:5px;	
 		text-decoration: none;
-		background-color: #ccc;
+		@apply bg-lighter-2 text-lightest;
+
 	}
 
 	.add-to-playlist-container a:hover{
