@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import CreateSongeloPlaylistForm from '../CreateSongeloPlaylistForm/CreateSongeloPlaylistForm';
 import { useAppState } from '../../stores/AppStateContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faWrench, faXmark } from '@fortawesome/free-solid-svg-icons';
 import './SongeloPlaylistsDropdown.css';
 
 const SongeloPlaylistsDropdown = () => {
@@ -50,7 +50,7 @@ const SongeloPlaylistsDropdown = () => {
 			{currentPlaylistName !== '' && !dropdownActive  && (
 				<div className="current-playlist-info-container">
 					<div className="current-playlist-name">
-						{currentPlaylistName}&nbsp;&nbsp;<FontAwesomeIcon className='show-dropdown-toggler' icon={faPen} onClick={()=>{
+						{currentPlaylistName}&nbsp;&nbsp;<FontAwesomeIcon className='show-dropdown-toggler' icon={faWrench} onClick={()=>{
 					setDropdownActive(true);
 					}} />
 

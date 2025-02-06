@@ -1,14 +1,22 @@
-div.container_PlaylistRecommendedTracks{
-	text-align: left;
+@import "tailwindcss";
+@reference "../../app/App.css";
+
+div.PlaylistRecommendedTracks-container{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	width: 100%;
+	gap: 10px;
 }
 
-	div.container_PlaylistRecommendedTracks li.spotify-recommendation{
+	div.PlaylistRecommendedTracks-container li.spotify-recommendation{
 		display: flex;
 		align-items: center;
 		gap: 20px;
 		justify-content: space-between;
 	}
 
-		div.container_PlaylistRecommendedTracks li.spotify-recommendation div.spotify-recommendation-actions{
+		div.PlaylistRecommendedTracks-container li.spotify-recommendation div.spotify-recommendation-actions{
 			vertical-align: middle;
 		}

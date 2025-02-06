@@ -15,7 +15,7 @@ const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ pla
 
     return (
       <div className="playlist-songs">
-        <h2>Songs in Waiting List</h2>
+        <h2 className="page-header">Songs in Waiting List</h2>
         <ul>
           {selectedPlaylistWaitingList
             .sort((a, b) => new Date(a.insert_date).getTime() - new Date(b.insert_date).getTime())
@@ -32,7 +32,7 @@ const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ pla
 
   return (
     <div className="playlist-songs">
-      <h2>Songs in Playlist</h2>
+      <h2 className="page-header">Songs in Playlist</h2>
       <ul>
         {selectedPlaylistSongs
           .filter((song) => song.active === true)

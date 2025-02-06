@@ -45,6 +45,10 @@ body {
 	padding: 0;
 }
 
+h2.page-header{
+	@apply text-2xl mb-6;
+}
+
 .logged-in-user-container {
 	display: flex;
 	flex-direction: column; /* Stack items vertically */

@@ -48,7 +48,7 @@ const SpotifyRecommendations = () => {
 		<>
 			{searchResults && searchResults.length > 0 ? (
 				<div>
-					<h2>Your Search Results</h2>
+					<h2 className="page-header">Your Search Results</h2>
 					<ul>
 						{searchResults
 						.filter((track: SpotifyTrack) => !isTrackInPlaylist(track))

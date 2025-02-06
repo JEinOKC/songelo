@@ -110,16 +110,16 @@ const Matchup = () => {
 	
 
 	return (<div className='matchup-window-container'>
-		{matchupHappening ? 
+		{(matchupHappening && matchupSongs.length > 0) ? 
 		<>
-			<h2 className="text-2xl mb-6">Choose Your Next Song</h2>
+			<h2 className="page-header">Choose Your Next Song</h2>
 			<div className='matchup-container'>
 				{matchupSongs.map((song) => (
 					<Song key={song.id} track={song.track_info} playlistId={selectedPlaylist} canAddToPlaylist={false} onPlay={songWasChosen} />
 				))}
 			</div>
 
-			{matchupSongs && (
+			{matchupSongs.length > 0 && (
 				<>
 					<a className="shuffle-matchup" href="#" onClick={(e)=>{
 						e.preventDefault();
@@ -132,9 +132,10 @@ const Matchup = () => {
 			)}
 		</>
 		:
-		<button onClick={()=>setMatchupHappening(true)}>
-			Create Matchup
-		</button>
+		<p>Not enough songs</p>
+		// <button onClick={()=>setMatchupHappening(true)}>
+		// 	Create Matchup
+		// </button>
 		}
 		
 	</div>

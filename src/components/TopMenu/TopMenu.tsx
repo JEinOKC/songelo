@@ -17,14 +17,6 @@ const TopMenu: React.FC = () => {
 	const toggleMenu = () => setIsOpen(!isOpen);
 
 	useEffect(() => {
-	// 	console.log({'viewStyle':viewStyle});
-	// 	if () {
-	// 		setShowPlaylistSongs(true);
-	// 	}
-	// 	else{
-	// 		setShowPlaylistSongs(false);
-	// 	}
-	// console.log({'viewStyle':viewStyle});
 	}, [viewStyle]);
 
 	return (
@@ -46,16 +38,16 @@ const TopMenu: React.FC = () => {
 							}}>Playlist</Link>)
 						}
 						{
-							isLoggedIn && selectedPlaylist && viewStyle !== 'recommended-tracks' &&  (
-							<Link to={`/playlist/${selectedPlaylist}/recommended-tracks`} onClick={()=>{
-								setIsOpen(false);
-							}}>Recommended Tracks</Link>)
-						}
-						{
 							isLoggedIn && selectedPlaylist && viewStyle !== 'top-tracks' &&  (
 							<Link to={`/playlist/${selectedPlaylist}/top-tracks`} onClick={()=>{
 								setIsOpen(false);
 							}}>Top Tracks</Link>)
+						}
+						{
+							isLoggedIn && selectedPlaylist && viewStyle !== 'recommended-tracks' &&  (
+							<Link to={`/playlist/${selectedPlaylist}/recommended-tracks`} onClick={()=>{
+								setIsOpen(false);
+							}}>Recommended Tracks</Link>)
 						}
 						{
 							isLoggedIn && selectedPlaylist && typeof viewStyle !== 'undefined' &&  (
@@ -74,7 +66,7 @@ const TopMenu: React.FC = () => {
 				</div>
 			}
 			{!isLoggedIn  &&
-				<h1 className="logged-out-page-title">Songelo</h1>				
+			<h1 className="logged-out-page-title">Songelo</h1>				
 			}
 		</>
 	);

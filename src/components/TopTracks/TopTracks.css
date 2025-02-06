@@ -1,0 +1,23 @@
+@import "tailwindcss";
+@reference "../../app/App.css";
+
+div.TopTracks-container{
+	display: flex;
+	align-items: center;
+  	justify-content: center;
+	flex-direction: column;
+	width: 100%;
+	gap: 10px;
+
+}
+
+	div.TopTracks-container ul{
+		/* max-width: 400px; */
+		display: flex;
+		flex-direction: column;
+		
+	}
+
+		div.TopTracks-container ul li{
+			gap: 5px;	
+		}

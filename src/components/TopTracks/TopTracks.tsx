@@ -4,6 +4,7 @@ import Song from '../Song/Song';
 import { useAppState } from '../../stores/AppStateContext';
 import { useAuthState } from '../../stores/AuthStateContext';
 import { SpotifyTrack } from '../../types/interfaces';
+import './TopTracks.css';
 
 const TopTracks = () => {
   const [topTracks, setTopTracks] = useState<SpotifyTrack[]>([]);
@@ -34,8 +35,8 @@ const TopTracks = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div>
-      <h2>Your Top Tracks</h2>
+    <div className="TopTracks-container">
+      <h2 className="page-header">Your Top Tracks</h2>
       <ul>
         {topTracks
         .filter((track: SpotifyTrack) => !isTrackInPlaylist(track))

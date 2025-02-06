@@ -115,13 +115,13 @@ const PlaylistRecommendedTracks = () => {
 	// });
 
 	return (
-		<div className="container_PlaylistRecommendedTracks" >
+		<div className="PlaylistRecommendedTracks-container" >
 			
 			{findMoreTracks && (
 				<p>Finding Recommendations...</p>
 			)}
 
-			<h1>Spotify Recommendations</h1>
+			<h2 className="page-header">Spotify Recommendations</h2>
 			<ul>
 				{spotifyRecommendations.map((recommendation) => (
 					<li key={recommendation.id} className="spotify-recommendation">
