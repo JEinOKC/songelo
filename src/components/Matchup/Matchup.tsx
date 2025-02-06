@@ -9,7 +9,7 @@ import { faShuffle } from '@fortawesome/free-solid-svg-icons';
 const Matchup = () => {
 
 	const { selectedPlaylist, selectedPlaylistSongs, submitMatchupResult } = useAppState();
-	const [matchupHappening, setMatchupHappening] = useState(true);
+	const [matchupHappening] = useState(true);
 	const [matchupSongs, setMatchupSongs] = useState<PlaylistSong[]>([]);
 
 	const matchupSize = 4;
