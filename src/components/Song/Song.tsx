@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SpotifyTrack } from '../../types/interfaces';
+import { SpotifyTrack, Playlist } from '../../types/interfaces';
 import { SongProps } from '../../types/props';
 
 import { useAppState } from '../../stores/AppStateContext';
@@ -32,24 +32,21 @@ const Song: React.FC<SongProps> = ({ track, canAddToPlaylist = true, canPromote 
 
 	useEffect(()=>{
 		const activeTracks = selectedPlaylistSongs.filter((song) => song.active === true);
-		var currentPlaylist:Playlist|null = null;
-
+		
 		playlists.forEach((playlist)=>{
 			if(playlist.id === selectedPlaylist){
-				currentPlaylist = playlist;
+				const currentPlaylist:Playlist = playlist;
+				const maxPlaylistLength = currentPlaylist.max_length;
+
+				if(maxPlaylistLength > activeTracks.length){
+					setMaxReached(false);
+				}
+				else{
+					setMaxReached(true);
+				}
+
 			};
 		})
-
-		if(currentPlaylist !== null){
-			const maxPlaylistLength = currentPlaylist.max_length;
-
-			if(maxPlaylistLength > activeTracks.length){
-				setMaxReached(false);
-			}
-			else{
-				setMaxReached(true);
-			}
-		}
 
 
 	},[selectedPlaylistSongs,selectedPlaylist])
