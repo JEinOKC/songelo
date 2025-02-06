@@ -1,7 +1,8 @@
 import Song from '../Song/Song';
 import { useAppState } from '../../stores/AppStateContext';
-import './ListSongeloPlaylistSongs.css';
+import '../../tailwind-components.css';
 import { ListSongeloPlaylistSongsProps } from '../../types/props';
+import TopTracks from '../TopTracks/TopTracks';
 
 
 const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ playlistId, enqueued }) => {
@@ -32,7 +33,7 @@ const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ pla
 
   return (
     <div className="playlist-songs">
-      <h2 className="page-header">Songs in Playlist</h2>
+      <h2 className="page-header">Tracks in Playlist</h2>
       <ul>
         {selectedPlaylistSongs
           .filter((song) => song.active === true)
@@ -42,6 +43,16 @@ const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ pla
             <Song track={song.track_info} playlistId={playlistId} canAddToPlaylist={false} score={song.score} />
           </li>
         ))}
+        {selectedPlaylistSongs
+          .filter((song) => song.active === true).length === 0 && (
+            <>
+              <div className="alert-message">
+                You currently have no active tracks in your playlist. <br/>Please add more.
+              </div>
+              <TopTracks/>
+            </>
+          )
+        }
       </ul>
     </div>
   );

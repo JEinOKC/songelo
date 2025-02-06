@@ -10,34 +10,24 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 	const [playlists, setPlaylists] = useState<Playlist[]>([]);
 	const [selectedPlaylistSongs, setSelectedPlaylistSongs] = useState<PlaylistSong[]>([]);
 	const [selectedPlaylistWaitingList, setSelectedPlaylistWaitingList] = useState<PlaylistSong[]>([]);
-	const { appToken, appTokenExpiration, isTokenExpired, refreshAppToken } = useAuthState();
+	const { appToken, appAxiosInstance } = useAuthState();
 
 	const getPlaylistRecommendedTracks = async (playlistID:string) => {
 		if (!appToken || !playlistID) return;
 
-		if(isTokenExpired(appTokenExpiration)){
-			await refreshAppToken();
-		}
+		const response = await appAxiosInstance.get(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/recommended/tracks`);
 
-		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/recommended/tracks`, {
-			headers: {
-				Authorization: `Bearer ${appToken}`,
-			},
-		});
-
-		if(response.ok){
-
-			const data = await response.json();
+		if(response.status === 200){
+			const data = await response.data;
 
 			if (data.success) {
 				return data.tracks;
 			}
-
 		}
 		else{
-			await refreshAppToken();
-			getPlaylistRecommendedTracks(playlistID);
+			//failure
 		}
+			
 
 	}
 
@@ -56,20 +46,11 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			
 			if (!appToken || !playlistID) return;
 
-			if(isTokenExpired(appTokenExpiration)){
-				await refreshAppToken();
-			}
+			const response = await appAxiosInstance.get(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/songs`);
 
-			const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/songs`, {
-				headers: {
-				Authorization: `Bearer ${appToken}`,
-				},
-			});
+			if(response.status === 200){
+				const data = await response.data;
 
-			if(response.ok){
-
-				const data = await response.json();
-				
 				if (data.success && data.songs) {
 					setSelectedPlaylistSongs(data.songs);
 				}
@@ -77,12 +58,11 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 				if(data.success && data.waitingList){
 					setSelectedPlaylistWaitingList(data.waitingList);
 				}
-
 			}
 			else{
-				await refreshAppToken();
-				fetchSongs(playlistID);
+				//failure
 			}
+			
 		};
 
 		fetchSongs(playlistID);
@@ -94,25 +74,14 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 
 		if (!appToken || !playlistID) return;
 
-		if(isTokenExpired(appTokenExpiration)){
-			await refreshAppToken();
-		}
-
-		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/matchup`, {
-			method: 'POST',
-			headers: {
-				'Authorization': `Bearer ${appToken}`,
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				winner: winner.id,
-				losers: losers.map(loser => loser.id)
-			})
+		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/songs`,{
+			winner: winner.id,
+			losers: losers.map(loser => loser.id)
 		});
 
-		if(response.ok){
+		if(response.status === 200){
 
-			const data = await response.json();
+			const data = await response.data;
 			
 			if (data.success && data.songs) {
 				setSelectedPlaylistSongs(data.songs);
@@ -124,8 +93,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 
 		}
 		else{
-			await refreshAppToken();
-			submitMatchupResult(winner, losers);
+			//failure
 		}
 
 	
@@ -142,29 +110,19 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 	const fetchPlaylists = async () => {
 		if (!appToken) return;
 
-		if(isTokenExpired(appTokenExpiration)){
-			await refreshAppToken();
-		}
+		const response = await appAxiosInstance.get(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists`);
+		
+		if(response.status === 200){
 
-		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists`, {
-			headers: {
-				Authorization: `Bearer ${appToken}`,
-			},
-		});
-console.log(response);
-		if(response.ok){
-
-			const data = await response.json();
+			const data = await response.data;
 
 			if (data.success) {
-				console.log({'playlists':data.playlists});
 				setPlaylists(data.playlists);
 				return data.playlists;
 			}
 		}
 		else{
-			await refreshAppToken();
-			fetchPlaylists();
+			//failure
 		}
 
 	};
@@ -174,22 +132,15 @@ console.log(response);
 			return;
 		}
 
-		if(isTokenExpired(appTokenExpiration)){
-			await refreshAppToken();
-		}
-
-		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${selectedPlaylist}/promote`, {
-			method: 'POST',
-			headers: {
-			  'Content-Type': 'application/json',
-			  Authorization: `Bearer ${appToken}`,
-			},
-			body: JSON.stringify({ track_id: track.id }),
+		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${selectedPlaylist}/promote`, {
+			track_id: track.id
 		});
 
 		//return the updated playlist
-		if(response.ok){
-			const data = await response.json();
+		if(response.status === 200){
+
+			const data = await response.data;
+
 			if(data.success && data.songs){
 				setSelectedPlaylistSongs(data.songs);
 			}
@@ -198,8 +149,7 @@ console.log(response);
 			}
 		}
 		else{
-			await refreshAppToken();
-			promoteSongInPlaylist(track);
+			//failure
 		}
 	}
 
@@ -208,29 +158,19 @@ console.log(response);
 			return '';
 		}
 
-		if(isTokenExpired(appTokenExpiration)){
-			await refreshAppToken();
-		}
-
 		if(maxSize > 200 || maxSize < 1){
 			return '';
 		}
 
-		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${appToken}`,
-			},
-			body: JSON.stringify({ 
-				'name' : name, 
-				'is_public' : isPublic, 
-				'max_length' : maxSize 
-			}),
+		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists`, {
+			name : name, 
+			is_public : isPublic, 
+			max_length : maxSize 
 		});
 
-		if(response.ok){
-			const data = await response.json();
+		if(response.status === 200){
+
+			const data = await response.data;
 			if(data.success && data.playlist){
 				return data.playlist.id
 			}
@@ -240,8 +180,7 @@ console.log(response);
 			
 		}
 		else{
-			await refreshAppToken();
-			return createNewPlaylist(name, isPublic, maxSize);
+			//failure
 		}
 	}
 
@@ -251,30 +190,22 @@ console.log(response);
 			return;
 		}
 
-		if(isTokenExpired(appTokenExpiration)){
-			await refreshAppToken();
-		}
-
-
-		const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${selectedPlaylist}/songs`, {
-			method: 'POST',
-			headers: {
-			  'Content-Type': 'application/json',
-			  Authorization: `Bearer ${appToken}`,
-			},
-			body: JSON.stringify({ track_id: track.id, track_info: track, active: active }),
+		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${selectedPlaylist}/songs`, {
+			track_id: track.id, 
+			track_info: track, 
+			active: active
 		});
 
-		if (response.ok) {
-			const data = await response.json();
+		if(response.status === 200){
+
+			const data = await response.data;
 			
 			if(data.success){
 			  addSongToPlaylist(data.song);
 			}
 			
 		} else {
-			await refreshAppToken();
-			saveSongInPlaylist(track,active);
+			//failure
 		}
 	};
 

@@ -11,7 +11,7 @@ import { faClose } from '@fortawesome/free-solid-svg-icons';
 
 const PlaylistRecommendedTracks = () => {
 	const { getPlaylistRecommendedTracks, selectedPlaylist, selectedPlaylistSongs } = useAppState();
-	const { spotifyToken } = useAuthState();
+	const { spotifyToken, spotifyAxiosInstance } = useAuthState();
 	const [tracks, setTracks] = useState<MatchTrack[]>([]);
 	const [tracksLoaded, setTracksLoaded] = useState<boolean>(false);
 	const [spotifyRecommendations, setSpotifyRecommendations] = useState<any[]>([]);
@@ -80,21 +80,16 @@ const PlaylistRecommendedTracks = () => {
 
 		const query = `track:${track.match_track_name} artist:${track.match_artist}`;
 		const encodedQuery = encodeURIComponent(query);
+		
+		const response = await spotifyAxiosInstance.get(`https://api.spotify.com/v1/search?type=track&limit=1&q=${encodedQuery}`);
 
-		const response = await fetch(`https://api.spotify.com/v1/search?type=track&limit=1&q=${encodedQuery}`, {
-			headers: {
-			Authorization: `Bearer ${spotifyToken}`,
-			},
-		});
-
-      	const result:SpotifySearchResult = await response.json();
+      	const result:SpotifySearchResult = await response.data;
 
 		if(result.tracks.items.length > 0){	
 			const recommendation = result.tracks.items[0];
 			const alreadyExists = selectedPlaylistSongs.some(item => item.track_info.id === recommendation.id);
 
 			if(alreadyExists){
-				console.log({'this recommendation already exists in the playlist':recommendation});
 				setSpotifyRecommendations([...spotifyRecommendations]);
 			}
 			//only add the recommendation if it is not already in the list
@@ -108,11 +103,6 @@ const PlaylistRecommendedTracks = () => {
 		setTrackRecommendationIndex(trackRecommendationIndex+1);
 		
 	}
-
-	// console.log('line 104');
-	// spotifyRecommendations.map((recommendation) => {
-	// 	console.log({'recommendation':recommendation});
-	// });
 
 	return (
 		<div className="PlaylistRecommendedTracks-container" >

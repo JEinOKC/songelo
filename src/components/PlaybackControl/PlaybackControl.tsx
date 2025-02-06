@@ -3,19 +3,12 @@ import { useAuthState } from '../../stores/AuthStateContext';
 import { PlaybackControlProps } from '../../types/props';
 
 const PlaybackControl: React.FC<PlaybackControlProps> = ({ track, onClose }) => {
-  const { spotifyToken } = useAuthState();
+  const { spotifyToken, spotifyAxiosInstance } = useAuthState();
   const playTrack = async () => {
     if (spotifyToken) {
       try {
-        await fetch('https://api.spotify.com/v1/me/player/play', {
-          method: 'PUT',
-          headers: {
-            Authorization: `Bearer ${spotifyToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            uris: [track.uri], // Play the selected track
-          }),
+        await spotifyAxiosInstance.put('https://api.spotify.com/v1/me/player/play', {
+          uris: [track.uri], // Play the selected track
         });
       } catch (error) {
         console.error('Error playing track:', error);

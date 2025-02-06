@@ -57,25 +57,11 @@ const App = () => {
 	}, [playlistID]);
 
 	useEffect(() => {
-
-		//in theory this should check to see if the user has expired tokens and re-fetch them, but instead this is just running an endless loop
-		//it believes that the spotify token is always expired
-		// if(isLoggedIn){
-		// 	if(isTokenExpired(appTokenExpiration)){
-		// 		refreshAppToken();
-		// 	}
-		// 	if(isTokenExpired(spotifyTokenExpiration)){
-		// 		refreshSpotifyToken();
-		// 	}
-		// }
-		console.log('isLoggedIn info',isLoggedIn);
 	}, []);
 
 	useEffect(() =>{
-		console.log('isLoggedIn changed',isLoggedIn);
 	},[isLoggedIn])
 
-  
 
   return (
 	<div>
@@ -87,6 +73,7 @@ const App = () => {
 			<SongeloPlaylistsDropdown />
 
 			<div className="main-content">
+
 
 				{(selectedPlaylist && showPlaylistSongs) ? (
 					<>

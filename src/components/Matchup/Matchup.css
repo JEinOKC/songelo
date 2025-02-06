@@ -1,5 +1,4 @@
-@import "tailwindcss";
-@reference "../../app/App.css";
+@import "../../tailwind-components.css";
 
 .matchup-window-container{
 	display: block;

@@ -1,6 +1,12 @@
-import { createContext, useContext, ReactNode, useState } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
 import { AuthState } from '../types/interfaces';
 import useStateWithLocalStorage from './useStateWithLocalStorage';
+import useStateWithCookies from './useStateWithCookies';
+import axios from 'axios';
+
+/** 
+ * Axios interceptor logic brought in from https://medium.com/@velja/token-refresh-with-axios-interceptors-for-a-seamless-authentication-experience-854b06064bde
+ * **/
 
 
 
@@ -9,11 +15,111 @@ const AuthStateContext = createContext<AuthState | undefined>(undefined);
 export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 	const [isLoggedIn, setIsLoggedIn] = useStateWithLocalStorage('isLoggedIn',false);//this goes first because the tokens used later can change this value
 	const [spotifyToken,setSpotifyToken] = useStateWithLocalStorage('spotifyToken','');
-	const [spotifyRefreshToken,setSpotifyRefreshToken] = useState<string>('');
+	const [spotifyRefreshToken,setSpotifyRefreshToken] = useStateWithCookies('spotifyRefreshToken','');
 	const [spotifyTokenExpiration,setSpotifyTokenExpiration] = useStateWithLocalStorage('spotifyTokenExpiration',0);
 	const [appToken,setAppToken] = useStateWithLocalStorage('appToken','');
-	const [appRefreshToken,setAppRefreshToken] = useState<string>('');
+	const [appRefreshToken,setAppRefreshToken] = useStateWithCookies('appRefreshToken','');
 	const [appTokenExpiration, setAppTokenExpiration] = useStateWithLocalStorage('appTokenExpiration',0);
+
+	const spotifyAxiosInstance = axios.create({
+		baseURL: import.meta.env.VITE_DOMAIN_URL,
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+
+	spotifyAxiosInstance.interceptors.request.use(request => {
+			const accessToken = spotifyToken;
+			
+			if (accessToken) {
+				request.headers['Authorization'] = `Bearer ${accessToken}`;
+			}
+			return request;
+		}, error => {
+			return Promise.reject(error);
+	});
+
+	spotifyAxiosInstance.interceptors.response.use(
+		response => response, // Directly return successful responses.
+		async error => {
+			const originalRequest = error.config;
+			
+			if (error.response.status === 401 && !originalRequest._retry) {
+				originalRequest._retry = true; // Mark the request as retried to avoid infinite loops.
+
+				try {
+
+					const refreshToken = spotifyRefreshToken; // Retrieve the stored refresh token.
+					// Make a request to your auth server to refresh the token.
+					const response = await axios.post(`${import.meta.env.VITE_DOMAIN_URL}/api/refresh-spotify-token`, {
+						refreshToken,
+					});
+					const { accessToken, refreshToken: newRefreshToken } = response.data;
+					setSpotifyToken(accessToken);
+					setSpotifyRefreshToken(newRefreshToken);
+
+					// Update the authorization header with the new access token.
+					appAxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+					return spotifyAxiosInstance(originalRequest); // Retry the original request with the new access token.
+
+				} catch (refreshError) {
+					// Handle refresh token errors by clearing stored tokens and redirecting to the login page.
+					handleLogout();
+				}
+			}
+			return Promise.reject(error); // For all other errors, return the error as is.
+		}
+	);
+
+	const appAxiosInstance = axios.create({
+		baseURL: import.meta.env.VITE_DOMAIN_URL,
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+
+	appAxiosInstance.interceptors.request.use(request => {
+			const accessToken = appToken;
+			if (accessToken) {
+				request.headers['Authorization'] = `Bearer ${accessToken}`;
+			}
+			return request;
+		}, error => {
+			return Promise.reject(error);
+	});
+
+	appAxiosInstance.interceptors.response.use(
+		response => response, // Directly return successful responses.
+		async error => {
+			const originalRequest = error.config;
+			
+			if (error.response.status === 401 && !originalRequest._retry) {
+				originalRequest._retry = true; // Mark the request as retried to avoid infinite loops.
+
+				try {
+
+					const refreshToken = appRefreshToken; // Retrieve the stored refresh token.
+					// Make a request to your auth server to refresh the token.
+					const response = await axios.post(`${import.meta.env.VITE_DOMAIN_URL}/api/refresh-token`, {
+						refreshToken,
+					});
+					const { accessToken, refreshToken: newRefreshToken } = response.data;
+					setAppToken(accessToken);
+					setAppRefreshToken(newRefreshToken);
+					setIsLoggedIn(true);
+
+					// Update the authorization header with the new access token.
+					appAxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+					return appAxiosInstance(originalRequest); // Retry the original request with the new access token.
+
+				} catch (refreshError) {
+					// Handle refresh token errors by clearing stored tokens and redirecting to the login page.
+					handleLogout();
+				}
+			}
+			return Promise.reject(error); // For all other errors, return the error as is.
+		}
+	);
 
 	const needReLogin = (): boolean => {
 		if(appToken === '' || appRefreshToken === '' || spotifyToken === '' || spotifyRefreshToken === '' ){
@@ -49,33 +155,28 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 	const confirmSpotifyLoginCode = async (code:string) => {
 
 		try {
-			const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/spotify/callback`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ code: code }),
+			const response = await axios.post(`${import.meta.env.VITE_DOMAIN_URL}/api/spotify/callback`, {
+				code: code
 			});
 
-			if(response.ok){
-				const data = await response.json();
+			if(response.status === 200){
+				const data = await response.data;
 				const { access_token, expires_in, app_token, app_token_expiration, refresh_token, app_refresh_token } = data;
 
 				// Calculate expiration timestamp
 				const expirationTime = Math.floor(new Date().getTime() / 1000) + expires_in;//convert to seconds so it is standardized with the other timestamps
-		console.log('storing spotify info');
+		
 				//store spotify token information
 				setSpotifyToken(access_token);
 				setSpotifyRefreshToken(refresh_token);
 				setSpotifyTokenExpiration(expirationTime);
-		console.log('storing app token info');
+		
 				//store app token information
 				setAppToken(app_token);
 				setAppRefreshToken(app_refresh_token);
 				setAppTokenExpiration(app_token_expiration);
 		
 				//we are all logged in
-				console.log('setting logged in');
 				setIsLoggedIn(true);
 			}
 			else{
@@ -92,66 +193,6 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 
 
 	}
-
-	// Function to refresh app token
-	const refreshAppToken = async () => {
-		
-		try {
-			const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/refresh-token`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ refresh_token: appRefreshToken }),
-			});
-
-			const data = await response.json();
-
-			if(response.ok){
-				setAppToken(data.app_token);
-				setIsLoggedIn(true);// user remains logged in
-			}
-			else{
-				handleLogout();
-			}
-
-			
-		} catch (error) {
-			handleLogout();
-		}
-	};
-
-	// Function to refresh Spotify token
-	const refreshSpotifyToken = async () => {
-		//not ready yet...
-		try {
-			const response = await fetch(`${import.meta.env.VITE_DOMAIN_URL}/api/refresh-spotify-token`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ refresh_token: spotifyRefreshToken }),
-			});
-
-			if(response.ok){
-				const data = await response.json();
-
-				setSpotifyToken(data.access_token);
-
-				// Calculate expiration timestamp
-				const expirationTime = Math.floor(new Date().getTime() / 1000) + data.expires_in;//convert to seconds so it is standardized with the other timestamps
-				setSpotifyTokenExpiration(expirationTime);
-			}
-			else{
-				handleLogout();
-			}
-
-			
-
-		} catch (error) {
-			handleLogout();
-		}
-	};
 
 	if(isLoggedIn && needReLogin()){
 		handleLogout();
@@ -174,13 +215,13 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 				setAppTokenExpiration,
 				isLoggedIn, 
 				setIsLoggedIn,
-				refreshAppToken,
-				refreshSpotifyToken,
 				handleLogin,
 				handleLogout,
 				confirmSpotifyLoginCode,
 				isTokenExpired,
-				needReLogin
+				needReLogin,
+				appAxiosInstance,
+				spotifyAxiosInstance
 			}}>
 				{children}
 		</AuthStateContext.Provider>

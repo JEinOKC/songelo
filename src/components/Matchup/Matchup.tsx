@@ -5,6 +5,7 @@ import Song from '../Song/Song';
 import './Matchup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShuffle } from '@fortawesome/free-solid-svg-icons';
+import TopTracks from '../TopTracks/TopTracks';
 
 const Matchup = () => {
 
@@ -132,7 +133,14 @@ const Matchup = () => {
 			)}
 		</>
 		:
-		<p>Not enough songs</p>
+		<>
+			<div className="alert-message">
+				There are not enough tracks in your playlist. <br/>Please add more.
+			</div>
+			<TopTracks/>
+		</>
+		
+		
 		// <button onClick={()=>setMatchupHappening(true)}>
 		// 	Create Matchup
 		// </button>

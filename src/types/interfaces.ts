@@ -1,3 +1,4 @@
+import { AxiosInstance } from "axios";
 export interface SpotifyTrack {
 	id: string;
 	name: string;
@@ -58,11 +59,12 @@ export interface AuthState {
 
 	handleLogin: () => void;
 	handleLogout: () => void;
-	refreshAppToken: () => Promise<void>;
-	refreshSpotifyToken: () => Promise<void>;
 	confirmSpotifyLoginCode: (code:string) => Promise<void>;
 	isTokenExpired: (expiration:number) => boolean;
 	needReLogin: () => boolean;
+
+	appAxiosInstance: AxiosInstance;
+	spotifyAxiosInstance: AxiosInstance;
 }
 
 export interface MatchTrack {
