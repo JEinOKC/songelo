@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SpotifyTrack } from '../../types/interfaces';
 import { SongProps } from '../../types/props';
 
@@ -9,7 +9,8 @@ import './Song.css';
 
 const Song: React.FC<SongProps> = ({ track, canAddToPlaylist = true, canPromote = false, score = -1, onPlay }) => {
 	const [isAdding, setIsAdding] = useState<boolean>(false);
-	const { saveSongInPlaylist, promoteSongInPlaylist } = useAppState();
+	const [maxReached, setMaxReached] = useState<boolean>(false);
+	const { selectedPlaylist, playlists, saveSongInPlaylist, promoteSongInPlaylist, selectedPlaylistSongs } = useAppState();
 
 	const handleSpotifyClick = (event:React.MouseEvent<HTMLAnchorElement>,track:SpotifyTrack) => {
 		const trackURL = `https://open.spotify.com/track/${track.id}`;
@@ -28,6 +29,30 @@ const Song: React.FC<SongProps> = ({ track, canAddToPlaylist = true, canPromote 
 		await saveSongInPlaylist(track, active); 
 		setIsAdding(false);
 	};
+
+	useEffect(()=>{
+		const activeTracks = selectedPlaylistSongs.filter((song) => song.active === true);
+		var currentPlaylist:Playlist|null = null;
+
+		playlists.forEach((playlist)=>{
+			if(playlist.id === selectedPlaylist){
+				currentPlaylist = playlist;
+			};
+		})
+
+		if(currentPlaylist !== null){
+			const maxPlaylistLength = currentPlaylist.max_length;
+
+			if(maxPlaylistLength > activeTracks.length){
+				setMaxReached(false);
+			}
+			else{
+				setMaxReached(true);
+			}
+		}
+
+
+	},[selectedPlaylistSongs,selectedPlaylist])
 
 	return (
 		<div>
@@ -80,7 +105,7 @@ const Song: React.FC<SongProps> = ({ track, canAddToPlaylist = true, canPromote 
 				</a>
 			</div>
 		)}
-		{canAddToPlaylist && (
+		{canAddToPlaylist && !maxReached && (
 			<div className='add-to-playlist-container'>
 				<a 
 					href="#" 
