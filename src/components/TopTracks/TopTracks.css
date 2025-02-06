@@ -19,5 +19,5 @@ div.TopTracks-container{
 	}
 
 		div.TopTracks-container ul li{
-			gap: 5px;	
+			@apply mb-2.5;
 		}
