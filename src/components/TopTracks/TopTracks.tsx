@@ -31,7 +31,9 @@ const TopTracks = () => {
     }
   }, []);
 
-  if (loading) return <div>Loading top tracks...</div>;
+  if (loading) return (
+    <div className="w-full alert-message">Loading top tracks...</div>
+  );
   if (error) return <div>{error}</div>;
 
   return (

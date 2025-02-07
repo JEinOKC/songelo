@@ -29,6 +29,16 @@
   --color-success: #66b36f;
   --color-danger: #b366a9;
   --color-neutral: #b39666
+
+  /* different hues */
+  --color-hue-left-4: #b3669d;
+  --color-hue-left-3: #a966b3;
+  --color-hue-left-2: #8966b3;
+  --color-hue-left-1: #6966b3;
+  --color-hue-right-1: #66a3b3;
+  --color-hue-right-2: #66b3a3;
+  --color-hue-right-3: #66b383;
+  --color-hue-right-4: #69b366;
 }
 
 

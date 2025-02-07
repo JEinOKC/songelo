@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import TopTracks from '../components/TopTracks/TopTracks';
 import SongeloPlaylistsDropdown from '../components/SongeloPlaylistsDropdown/SongeloPlaylistsDropdown';
-import ListSongeloPlaylistSongs from '../components/ListSongeloPlaylistSongs/ListSongeloPlaylistSongs';
 import Matchup from '../components/Matchup/Matchup';
 import { useAppState } from '../stores/AppStateContext';
 import { useAuthState } from '../stores/AuthStateContext';
@@ -11,6 +10,7 @@ import TopMenu from '../components/TopMenu/TopMenu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpotify } from '@fortawesome/free-brands-svg-icons';
 import PlaylistRecommendedTracks from '../components/PlaylistRecommendedTracks/PlaylistRecommendedTracks';
+import SongeloPlaylistViewer from '../components/SongeloPlaylistViewer/SongeloPlaylistViewer';
 // import SearchSpotify from '../components/SearchSpotify/SearchSpotify';
 
 
@@ -76,10 +76,7 @@ const App = () => {
 
 
 				{(selectedPlaylist && showPlaylistSongs) ? (
-					<>
-						<ListSongeloPlaylistSongs playlistId={selectedPlaylist} />
-						<ListSongeloPlaylistSongs playlistId={selectedPlaylist} enqueued={true}/>
-					</>
+					<SongeloPlaylistViewer/>
 				) : (selectedPlaylist && showRecommendedTracks) ? (
 					<PlaylistRecommendedTracks />
 				) : (selectedPlaylist && showTopTracks) ? (

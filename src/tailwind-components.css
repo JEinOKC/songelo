@@ -4,5 +4,8 @@
 /*Global Tailwind-specific components*/
 div.alert-message{
 	@apply p-2 bg-neutral rounded-md text-lightest mt-2 mb-2 text-center;
+}
 
+div.alert-message.bg-danger{
+	@apply bg-danger;
 }

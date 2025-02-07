@@ -108,7 +108,9 @@ const PlaylistRecommendedTracks = () => {
 		<div className="PlaylistRecommendedTracks-container" >
 			
 			{findMoreTracks && (
-				<p>Finding Recommendations...</p>
+				<div className="w-full alert-message">
+					Finding Recommendations...
+				</div>
 			)}
 
 			<h2 className="page-header">Spotify Recommendations</h2>
@@ -128,11 +130,13 @@ const PlaylistRecommendedTracks = () => {
 						</div>
 					</li>
 				))}
-
-				{spotifyRecommendations.length === 0 && (
-					<li>No recommendations available. Please come back as you add more songs.</li>
-				)}
 			</ul>
+
+			{spotifyRecommendations.length === 0 && (
+				<div className="w-full alert-message bg-danger">
+					No recommendations available. Please come back as you add more songs.
+				</div>
+			)}
 
 			{/* <h1>Last.fm Recommended Tracks</h1>
 			<ul>
