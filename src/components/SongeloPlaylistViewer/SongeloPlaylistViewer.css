@@ -1,5 +1,3 @@
-@import '../../tailwind-components.css';
-
 .SongeloPlaylistViewer-container{
 	display: flex;
 	align-items: center;
@@ -46,14 +44,6 @@
 		transition: .4s;
 	}
 	
-	.SongeloPlaylistViewer-container input:checked + .slider {
-		@apply bg-hue-left-2;
-	}
-	
-	.SongeloPlaylistViewer-container input:focus + .slider {
-		@apply shadow-hue-left-2;
-	}
-	
 	.SongeloPlaylistViewer-container input:checked + .slider:before {
 		-webkit-transform: translateX(26px);
 		-ms-transform: translateX(26px);
@@ -63,7 +53,6 @@
 	/* Rounded sliders */
 	.SongeloPlaylistViewer-container .slider.round {
 		border-radius: 34px;
-		@apply bg-hue-right-2;
 	}
 	
 	.SongeloPlaylistViewer-container .slider.round:before {

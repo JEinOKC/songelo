@@ -130,7 +130,7 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 	};
 	
 	const handleLogin = () => {
-		const domainUrl = import.meta.env.VITE_DOMAIN_URL || 'http://localhost:5000';
+		const domainUrl = import.meta.env.VITE_DOMAIN_URL || 'http://127.0.0.1:3500';
 		const loginUrl = `${domainUrl}/login`;
 		window.location.href = loginUrl;
 	};

@@ -1,6 +1,3 @@
-@import "tailwindcss";
-@import "./app/App.css";
-
 /*Global Tailwind-specific components*/
 div.alert-message{
 	@apply p-2 bg-neutral rounded-md text-lightest mt-2 mb-2 text-center;

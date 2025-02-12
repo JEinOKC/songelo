@@ -1,10 +1,6 @@
-@import 'tailwindcss';
-@reference "../../app/App.css";
-
 .song-container{
 	display:flex;
 	padding:0;
-	@apply text-darker-3 bg-lightest border-lighter-5;
 	border-width: 1px;
 	border-style: solid;
 	min-width:300px;
@@ -67,7 +63,6 @@
 		}
 
 		.track-info .spotify-link:hover{
-			@apply bg-lighter-7;
 			opacity: 0.75;
 		}
 
@@ -78,7 +73,6 @@
 		display: block;
 		padding:5px;	
 		text-decoration: none;
-		@apply bg-lighter-2 text-lightest;
 
 	}
 

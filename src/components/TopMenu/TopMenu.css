@@ -1,7 +1,3 @@
-/* TopMenu.css */
-@import "tailwindcss";
-@reference "../../app/App.css";
-
 .top-menu {
 	padding: 10px;
   }
@@ -15,7 +11,6 @@
 	flex-grow: 1;
 	text-align: center;
 	margin-left:38px;
-	@apply text-3xl;
 	
   }
   
@@ -39,17 +34,6 @@
   }
   
   .top-menu .menu-items a {
-	@apply text-lightest;
 	text-decoration: none;
 	padding: 10px 20px;
-  }
-  
-  .top-menu .menu-items a:hover {
-	/* background-color: #555; */
-	@apply bg-darker-4;
-  }
-  
-
-  .logged-out-page-title{
-	@apply text-6xl text-darkest m-7;
   }

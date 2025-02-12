@@ -38,7 +38,7 @@ const CreateSongeloPlaylistForm = ({ onCreate }: { onCreate: () => void }) => {
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className="playlist-form">
+		<form onSubmit={handleSubmit} className="playlist-form text-lightest border-lighter-5">
 		<h1>Create a New Playlist</h1>
 	
 		<div className="form-group">
@@ -81,7 +81,7 @@ const CreateSongeloPlaylistForm = ({ onCreate }: { onCreate: () => void }) => {
 			/>
 		</div>
 	
-		<button type="submit" className="submit-button">Create Playlist</button>
+		<button type="submit" className="submit-button bg-success focus:border-success">Create Playlist</button>
 		</form>
 	);
   

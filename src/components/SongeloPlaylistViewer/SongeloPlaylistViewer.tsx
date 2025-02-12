@@ -27,7 +27,7 @@ const SongeloPlaylistViewer = () => {
 				<input onChange={()=>{
 					setToggleOn(!toggleOn);
 				}} type="checkbox" />
-				<span className="slider round"></span>
+				<span className="slider round bg-hue-right-2 peer-checked:bg-hue-left-2 peer-focused:shadow-hue-left-2"></span>
 			</label>
 			<div className="tracks-container">
 				{selectedPlaylist && (

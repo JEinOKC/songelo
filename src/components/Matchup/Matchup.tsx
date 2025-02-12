@@ -122,7 +122,7 @@ const Matchup = () => {
 
 			{matchupSongs.length > 0 && (
 				<>
-					<a className="shuffle-matchup" href="#" onClick={(e)=>{
+					<a className="shuffle-matchup mt-6" href="#" onClick={(e)=>{
 						e.preventDefault();
 						resetMatchup();
 					}} title='Shuffle'>

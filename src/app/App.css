@@ -1,4 +1,16 @@
 @import "tailwindcss";
+@import '../tailwind-components.css';
+@import '../components/CreateSongeloPlaylistForm/CreateSongeloPlaylistForm.css';
+@import '../components/ListSongeloPlaylistSongs/ListSongeloPlaylistSongs.css';
+@import '../components/Matchup/Matchup.css';
+@import '../components/PlaylistRecommendedTracks/PlaylistRecommendedTracks.css';
+@import '../components/SearchSpotify/SearchSpotify.css';
+@import '../components/Song/Song.css';
+@import '../components/SongeloPlaylistsDropdown/SongeloPlaylistsDropdown.css';
+@import '../components/SongeloPlaylistViewer/SongeloPlaylistViewer.css';
+@import '../components/TopMenu/TopMenu.css';
+@import '../components/TopTracks/TopTracks.css';
+
 
 /* @import 'fonts.css' layer(base); */
 /* @import 'base.css' layer(base); */
@@ -72,10 +84,6 @@ h2.page-header{
 	flex-direction: initial;
 	flex: 2; /* Allow it to take up more space compared to the left panel */
 	padding: 20px;
-}
-
-@media (max-width: 768px) {
-
 }
 
 .left-panel {

@@ -1,6 +1,5 @@
 import Song from '../Song/Song';
 import { useAppState } from '../../stores/AppStateContext';
-import "./ListSongeloPlaylistSongs.css";
 import { ListSongeloPlaylistSongsProps } from '../../types/props';
 import TopTracks from '../TopTracks/TopTracks';
 import { useEffect, useState } from 'react';
@@ -69,6 +68,9 @@ const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ pla
 	return (
 		<div className="playlist-songs">
 			<h2 className="page-header">Tracks in Playlist</h2>
+			<div className="track-info">
+
+			</div>
 			<ul>
 				{filteredActiveSongs.map((song) => (
 					<li key={song.id}>

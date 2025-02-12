@@ -1,5 +1,3 @@
-@import "../../tailwind-components.css";
-
 div.TopTracks-container{
 	display: flex;
 	align-items: center;
@@ -16,7 +14,3 @@ div.TopTracks-container{
 		flex-direction: column;
 		
 	}
-
-		div.TopTracks-container ul li{
-			@apply mb-2.5;
-		}

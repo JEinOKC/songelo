@@ -53,7 +53,7 @@ const Song: React.FC<SongProps> = ({ track, canAddToPlaylist = true, canPromote 
 
 	return (
 		<div>
-		<div className="song-container" key={track.id}>
+		<div className="song-container text-darker-3 bg-lightest border-lighter-5" key={track.id}>
 			<div className="album-cover-container">
 			<div className="album-cover" style={{ backgroundImage: `url(${track.album.images[2].url})` }}>
 			</div>
@@ -83,7 +83,7 @@ const Song: React.FC<SongProps> = ({ track, canAddToPlaylist = true, canPromote 
 				e.preventDefault();
 				handleSpotifyClick(e,track);
 				}} 
-				className='spotify-link'
+				className='spotify-link hover:bg-lighter-7'
 			>
 				Play On Spotify <FontAwesomeIcon icon={faSpotify} size="lg" />
 			</a>
@@ -97,7 +97,7 @@ const Song: React.FC<SongProps> = ({ track, canAddToPlaylist = true, canPromote 
 					e.preventDefault();
 					handlePromotionToPlaylist();
 					}} 
-					className={isAdding ? 'disabled' : ''}>
+					className={'bg-lighter-2 text-lightest' + (isAdding ? 'disabled' : '')}>
 					{isAdding ? 'Promoting...' : 'Promote to Active Playlist'}
 				</a>
 			</div>
@@ -110,7 +110,7 @@ const Song: React.FC<SongProps> = ({ track, canAddToPlaylist = true, canPromote 
 					e.preventDefault();
 					handleAddToPlaylist(true);
 					}} 
-					className={isAdding ? 'disabled' : ''}>
+					className={'bg-lighter-2 text-lightest' + (isAdding ? 'disabled' : '')}>
 					{isAdding ? 'Adding...' : 'Add to Playlist'}
 				</a>
 				<a 

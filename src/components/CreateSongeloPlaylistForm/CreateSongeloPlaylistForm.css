@@ -1,8 +1,4 @@
 /* Form container */
-
-@import "tailwindcss";
-@reference "../../app/App.css";
-
 .playlist-form {
 	background: #333;
 	padding: 2rem;
@@ -44,13 +40,11 @@
 	border: 1px solid;
 	font-size: 1rem;
 	background: #333;
-	@apply text-lightest border-lighter-5;
 	outline: none;
 	transition: border 0.2s ease-in-out;
   }
   
   .playlist-form input:focus {
-	@apply border-success;
 	box-shadow: 0 0 5px rgba(29, 185, 84, 0.5);
   }
   
@@ -63,7 +57,6 @@
   
   /* Submit button */
   .submit-button {
-	@apply bg-success;
 	color: #fff;
 	padding: 10px;
 	font-size: 1rem;

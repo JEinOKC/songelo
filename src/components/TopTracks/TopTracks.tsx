@@ -43,7 +43,7 @@ const TopTracks = () => {
         {topTracks
         .filter((track: SpotifyTrack) => !isTrackInPlaylist(track))
         .map((track: SpotifyTrack) => (
-          <li key={track.id}>
+          <li key={track.id} className="mb-2.5">
             <Song track={track} playlistId={selectedPlaylist} canAddToPlaylist={true}/>
           </li>
         ))}

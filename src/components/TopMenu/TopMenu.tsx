@@ -24,49 +24,49 @@ const TopMenu: React.FC = () => {
 			{isLoggedIn  &&
 				<div className="top-menu bg-darkest text-lightest">
 					<div className="nav-top">
-						<h1 className="page-title text-lighter-6">Songelo</h1>
+						<h1 className="page-title text-3xl text-lighter-6">Songelo</h1>
 						<button className="menu-toggle text-lightest" onClick={toggleMenu}>
 							<FontAwesomeIcon icon={faBars} size='lg' title={isOpen ? 'Close Menu' : 'Open Menu'}/>
 						</button>
 					</div>
 					<nav className={`menu-items ${isOpen ? 'open' : ''}`}>
-						<Link to="/" onClick={()=>setIsOpen(false)}>Home</Link>
+						<Link to="/" onClick={()=>setIsOpen(false)}  className="text-lightest hover:bg-darker-4">Home</Link>
 						{
 							isLoggedIn && selectedPlaylist && viewStyle !== 'standings' &&  (
 							<Link to={`/playlist/${selectedPlaylist}/standings`} onClick={()=>{
 								setIsOpen(false);
-							}}>Playlist</Link>)
+							}} className="text-lightest hover:bg-darker-4">Playlist</Link>)
 						}
 						{
 							isLoggedIn && selectedPlaylist && viewStyle !== 'top-tracks' &&  (
 							<Link to={`/playlist/${selectedPlaylist}/top-tracks`} onClick={()=>{
 								setIsOpen(false);
-							}}>Top Tracks</Link>)
+							}} className="text-lightest hover:bg-darker-4">Top Tracks</Link>)
 						}
 						{
 							isLoggedIn && selectedPlaylist && viewStyle !== 'recommended-tracks' &&  (
 							<Link to={`/playlist/${selectedPlaylist}/recommended-tracks`} onClick={()=>{
 								setIsOpen(false);
-							}}>Recommended Tracks</Link>)
+							}} className="text-lightest hover:bg-darker-4">Recommended Tracks</Link>)
 						}
 						{
 							isLoggedIn && selectedPlaylist && typeof viewStyle !== 'undefined' &&  (
 							<Link to={`/playlist/${selectedPlaylist}`} onClick={()=>{
 								setIsOpen(false);
-							}}>Play Songs</Link>)
+							}} className="text-lightest hover:bg-darker-4">Play Songs</Link>)
 						}
 						{
 							isLoggedIn && (
 							<Link to="/" onClick={()=>{
 								setIsOpen(false);
 								setIsLoggedIn(false);
-							}}>Logout</Link>)
+							}} className="text-lightest hover:bg-darker-4">Logout</Link>)
 						}
 					</nav>
 				</div>
 			}
 			{!isLoggedIn  &&
-			<h1 className="logged-out-page-title">Songelo</h1>				
+			<h1 className="logged-out-page-title text-6xl text-darkest m-7">Songelo</h1>				
 			}
 		</>
 	);

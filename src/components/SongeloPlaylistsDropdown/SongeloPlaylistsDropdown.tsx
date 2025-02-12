@@ -48,8 +48,8 @@ const SongeloPlaylistsDropdown = () => {
 	return (
 		<div>
 			{currentPlaylistName !== '' && !dropdownActive  && (
-				<div className="current-playlist-info-container">
-					<div className="current-playlist-name">
+				<div className="current-playlist-info-container mb-2">
+					<div className="current-playlist-name p-2 border-b-1 border-lightest">
 						{currentPlaylistName}&nbsp;&nbsp;<FontAwesomeIcon className='show-dropdown-toggler' icon={faWrench} onClick={()=>{
 					setDropdownActive(true);
 					}} />
@@ -81,10 +81,10 @@ const SongeloPlaylistsDropdown = () => {
 						)
 					}
 					{wantNewPlaylist && (
-						<div className="new-playlist-container">
+						<div className="new-playlist-container  m-2 mt-4">
 							<CreateSongeloPlaylistForm onCreate={fetchPlaylists} />
-							<div className='cancel-button-container'>
-								<button className="cancel-button" onClick={() => setWantNewPlaylist(false)}>
+							<div className='cancel-button-container text-center'>
+								<button className="cancel-button bg-danger text-lightest rounded-md pt-1.5 pb-2.5 pl-3.5 pr-3.5 text-xl" onClick={() => setWantNewPlaylist(false)}>
 									Cancel
 								</button>
 							</div>
@@ -93,7 +93,7 @@ const SongeloPlaylistsDropdown = () => {
 
 					{!wantNewPlaylist && (
 						<div className="text-center">
-							<button className="create-playlist-button" onClick={() => setWantNewPlaylist(true)}>
+							<button className="create-playlist-button rounded-md bg-success text-lightest" onClick={() => setWantNewPlaylist(true)}>
 								Create New Playlist&nbsp;&nbsp;<FontAwesomeIcon icon={faPlus}/>
 							</button>
 						</div>

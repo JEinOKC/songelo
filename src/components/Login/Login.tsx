@@ -1,6 +1,6 @@
 const Login = () => {
     const handleLogin = () => {
-        window.location.href = 'http://localhost:5000/login'; // Backend endpoint
+        window.location.href = (import.meta.env.VITE_DOMAIN_URL || 'http://127.0.0.1:3500') + '/login'; // Backend endpoint
     };
 
     return (
