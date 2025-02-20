@@ -80,6 +80,9 @@ export interface AuthState {
 	spotifyTokenExpiration: number;
 	setSpotifyTokenExpiration: (token: number) => void;
 
+	spotifyID: string;
+	setSpotifyID: (token: string) => void;
+
 	appToken: string;
 	setAppToken: (token: string) => void;
 

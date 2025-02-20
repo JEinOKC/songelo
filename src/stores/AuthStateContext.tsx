@@ -17,6 +17,7 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 	const [spotifyToken,setSpotifyToken] = useStateWithLocalStorage('spotifyToken','');
 	const [spotifyRefreshToken,setSpotifyRefreshToken] = useStateWithCookies('spotifyRefreshToken','');
 	const [spotifyTokenExpiration,setSpotifyTokenExpiration] = useStateWithLocalStorage('spotifyTokenExpiration',0);
+	const [spotifyID,setSpotifyID] = useStateWithLocalStorage('spotifyID','');
 	const [appToken,setAppToken] = useStateWithLocalStorage('appToken','');
 	const [appRefreshToken,setAppRefreshToken] = useStateWithCookies('appRefreshToken','');
 	const [appTokenExpiration, setAppTokenExpiration] = useStateWithLocalStorage('appTokenExpiration',0);
@@ -161,7 +162,7 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 
 			if(response.status === 200){
 				const data = await response.data;
-				const { access_token, expires_in, app_token, app_token_expiration, refresh_token, app_refresh_token } = data;
+				const { access_token, expires_in, app_token, app_token_expiration, refresh_token, app_refresh_token, spotify_id } = data;
 
 				// Calculate expiration timestamp
 				const expirationTime = Math.floor(new Date().getTime() / 1000) + expires_in;//convert to seconds so it is standardized with the other timestamps
@@ -170,6 +171,7 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 				setSpotifyToken(access_token);
 				setSpotifyRefreshToken(refresh_token);
 				setSpotifyTokenExpiration(expirationTime);
+				setSpotifyID(spotify_id);
 		
 				//store app token information
 				setAppToken(app_token);
@@ -207,6 +209,8 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 				setSpotifyToken,
 				setSpotifyRefreshToken,
 				setSpotifyTokenExpiration,
+				spotifyID,
+				setSpotifyID,
 				appToken,
 				appRefreshToken,
 				appTokenExpiration,
