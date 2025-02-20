@@ -16,6 +16,38 @@ export interface PlaylistSong {
 	queue_id: string;
 }
 
+export interface SpotifyPlaylist {
+	collaborative: boolean;
+	description: string|null;
+	external_urls: object;
+	href: string;
+	id: string;
+	images: {
+		height: number;
+		width: number;
+		url: string;
+	}[];
+	name: string;
+	owner: {
+		display_name: string;
+		external_urls: object;
+		href: string;
+		id: string;
+		type: string;
+		uri: string;
+	}
+	primary_color: string|null;
+	public: boolean;
+	snapshot_id: string;
+	tracks: {
+		href: string;
+		total: number;
+	}
+	type: "playlist";
+	uri: string;
+
+}
+
 export interface AppState {
 	selectedPlaylist: string;
 	setSelectedPlaylist: (playlistId: string) => void;
