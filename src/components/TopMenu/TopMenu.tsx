@@ -50,6 +50,12 @@ const TopMenu: React.FC = () => {
 							}} className="text-lightest hover:bg-darker-4">Recommended Tracks</Link>)
 						}
 						{
+							isLoggedIn && selectedPlaylist && viewStyle !== 'import' &&  (
+							<Link to={`/playlist/${selectedPlaylist}/import`} onClick={()=>{
+								setIsOpen(false);
+							}} className="text-lightest hover:bg-darker-4">Import From Spotify Playlist</Link>)
+						}
+						{
 							isLoggedIn && selectedPlaylist && typeof viewStyle !== 'undefined' &&  (
 							<Link to={`/playlist/${selectedPlaylist}`} onClick={()=>{
 								setIsOpen(false);

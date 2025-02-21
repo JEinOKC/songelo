@@ -3,43 +3,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthState } from '../../stores/AuthStateContext';
 import { useAppState } from "../../stores/AppStateContext";
-import { SpotifyPlaylist, SpotifyTrack, Playlist, PlaylistSong } from '../../types/interfaces';
+import { PlaylistItemsResponse, PlaylistItem, PlaylistResponse, SpotifyPlaylist, Playlist, PlaylistSong } from '../../types/interfaces';
 import Song from "../Song/Song";
 
-interface PlaylistResponse {
-	href: string;
-	limit: number;
-	next: string;
-	offset: number;
-	previous: string|null;
-	total: number;
-	items: SpotifyPlaylist[];
-}
-
-interface PlaylistItem {
-	track: SpotifyTrack;
-	is_local: boolean;
-	added_at: string;
-	added_by: {
-		href: string;
-		id: string;
-		type: string;
-		uri: string;	
-	}
-}
-
-interface PlaylistItemsResponse {
-	href: string;
-	items: PlaylistItem[];
-	limit: number;
-	next: null;
-	offset: number;
-	previous: null;
-	total: number;
-}
-
-const InDevelopment = () => {
-	const { selectedPlaylist, playlists, selectedPlaylistSongs, selectedPlaylistWaitingList, isTrackInPlaylist } = useAppState();
+const PlaylistImport = () => {
+	const { selectedPlaylist, playlists, selectedPlaylistSongs, selectedPlaylistWaitingList, isTrackInPlaylist, saveMultipleSongsInPlaylist } = useAppState();
 	const { spotifyToken, isLoggedIn, /*spotifyID*/ } = useAuthState();
 	const [spotifyPlaylists,setSpotifyPlaylists] = useState<SpotifyPlaylist[]>([]);
 	const [selectedSpotifyPlaylist,setSelectedSpotifyPlaylist] = useState<SpotifyPlaylist|null>();
@@ -77,10 +45,8 @@ const InDevelopment = () => {
 	},[selectedPlaylistSongs,selectedPlaylistWaitingList]);
 
 	const findPlaylistInPlaylists = () => {
-		console.log({'selectedPlaylist':selectedPlaylist});
 		playlists.forEach((playlist)=>{
 			if(playlist.id === selectedPlaylist){
-				console.log({'playlist':playlist})
 				setCurrentPlaylistObject(playlist);
 			};
 		})
@@ -111,13 +77,27 @@ const InDevelopment = () => {
 			if(response.status === 200){
 				const data:PlaylistResponse = response.data;
 				setSpotifyPlaylists(data.items);
-				console.log({'data':data});
 			}
 		}	
 	}
 
 	const importSpotifySongs = async () => {
-		console.log('this does nothing,,, for now!!');
+		if(typeof currentPlaylistObject === 'undefined'){
+			return;
+		}
+		
+		const currentPlaylistMaxLength = currentPlaylistObject.max_length;
+
+		const allowedSongs = selectedSpotifyPlaylistSongs
+			.filter((song) => !isTrackInPlaylist(song.track))
+			.map((song) => {
+				return song.track
+			})
+			.slice(0, currentPlaylistMaxLength);
+
+		console.log({'allowedSongs':allowedSongs});
+		saveMultipleSongsInPlaylist(allowedSongs,true);
+		
 	}
 
 	return (
@@ -175,4 +155,4 @@ const InDevelopment = () => {
 	);
 };
 
-export default InDevelopment;
+export default PlaylistImport;

@@ -184,6 +184,35 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 		}
 	}
 
+	const saveMultipleSongsInPlaylist = async (tracks: SpotifyTrack[], active:boolean=true) =>{
+		if (!appToken || !selectedPlaylist) {
+			return;
+		}
+
+		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${selectedPlaylist}/songssss`, {
+			tracks: tracks.map((song) =>{
+				return {
+					track_id: song.id,
+					track_info: song,
+					active: active
+				}
+			}),
+			active: active
+		});
+
+		if(response.status === 200){
+
+			const data = await response.data;
+			
+			if(data.success){
+			  addMultipleSongsToPlaylist(data.songs);
+			}
+			
+		} else {
+			//failure
+		}
+	}
+
 	const saveSongInPlaylist = async (track: SpotifyTrack, active:boolean=false) => {
 
 		if (!appToken || !selectedPlaylist) {
@@ -214,6 +243,15 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			setSelectedPlaylistSongs((prevSongs) => [...prevSongs, track]);
 		}
 	};
+
+	const addMultipleSongsToPlaylist = (tracks: PlaylistSong[]) => {
+		
+		setSelectedPlaylistSongs((prevSongs) => [...prevSongs, ...tracks.filter((track) => {
+			!isTrackInPlaylist(track.track_info)
+		})]);
+
+		
+	}
   
 
   // const addTrackToPlaylist = (track:SpotifyTrack) => {
@@ -232,6 +270,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			fetchPlaylists,
 			getPlaylistRecommendedTracks,
 			saveSongInPlaylist,
+			saveMultipleSongsInPlaylist,
 			selectedPlaylistWaitingList,
 			promoteSongInPlaylist,
 			createNewPlaylist

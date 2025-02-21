@@ -62,6 +62,7 @@ export interface AppState {
 	fetchPlaylists: () => Promise<any>;
 	getPlaylistRecommendedTracks: (playlistID: string) => Promise<any>;
 	saveSongInPlaylist: (track: SpotifyTrack, enqueue:boolean) => Promise<void>;
+	saveMultipleSongsInPlaylist: (tracks: SpotifyTrack[], enqueue:boolean) => Promise<void>;
 	selectedPlaylistWaitingList: PlaylistSong[];
 	promoteSongInPlaylist: (track: SpotifyTrack) => Promise<void>;
 	createNewPlaylist: (name: string, isPublic: boolean, maxSize: number) => Promise<string>;
@@ -131,4 +132,36 @@ export interface Playlist{
 	is_public: boolean;
 	max_length: number;
 	name: string;	
+}
+
+export interface PlaylistResponse {
+	href: string;
+	limit: number;
+	next: string;
+	offset: number;
+	previous: string|null;
+	total: number;
+	items: SpotifyPlaylist[];
+}
+
+export interface PlaylistItem {
+	track: SpotifyTrack;
+	is_local: boolean;
+	added_at: string;
+	added_by: {
+		href: string;
+		id: string;
+		type: string;
+		uri: string;	
+	}
+}
+
+export interface PlaylistItemsResponse {
+	href: string;
+	items: PlaylistItem[];
+	limit: number;
+	next: null;
+	offset: number;
+	previous: null;
+	total: number;
 }

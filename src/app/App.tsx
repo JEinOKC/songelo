@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpotify } from '@fortawesome/free-brands-svg-icons';
 import PlaylistRecommendedTracks from '../components/PlaylistRecommendedTracks/PlaylistRecommendedTracks';
 import SongeloPlaylistViewer from '../components/SongeloPlaylistViewer/SongeloPlaylistViewer';
+import PlaylistImport from '../components/PlaylistImport/PlaylistImport';
 // import SearchSpotify from '../components/SearchSpotify/SearchSpotify';
 
 
@@ -21,10 +22,14 @@ const App = () => {
 	const [showTopTracks, setShowTopTracks] = useState(false);
 	const [showPlaylistSongs, setShowPlaylistSongs] = useState(false);
 	const [showRecommendedTracks, setShowRecommendedTracks] = useState(false);
+	const [showImportFromSpotify, setShowImportFromSpotify] = useState(false);
 	const { playlistID } = useParams<{ playlistID: string }>();
 	const { viewStyle } = useParams<{ viewStyle: string }>();
 
 	useEffect(() => {
+		console.log({
+			'viewStyle':viewStyle
+		});
 		if (viewStyle === 'standings') {
 			setShowPlaylistSongs(true);
 		}
@@ -44,6 +49,13 @@ const App = () => {
 		}
 		else{
 			setShowTopTracks(false);
+		}
+
+		if(viewStyle === 'import'){
+			setShowImportFromSpotify(true);
+		}
+		else{
+			setShowImportFromSpotify(false);
 		}
 	}, [viewStyle]);
 
@@ -81,7 +93,9 @@ const App = () => {
 					<PlaylistRecommendedTracks />
 				) : (selectedPlaylist && showTopTracks) ? (
 					<TopTracks/>
-				) : (selectedPlaylist && selectedPlaylist) ? (
+				) : (selectedPlaylist && showImportFromSpotify) ? (
+					<PlaylistImport />
+				) : (selectedPlaylist) ? (
 					<Matchup />
 				) : (
 					<></>
