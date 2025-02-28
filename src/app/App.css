@@ -71,19 +71,19 @@ h2.page-header{
 }
 
 .logged-in-user-container {
-  @apply max-w-[480px] mx-auto text-center;
+  @apply md:max-w-[480px] mx-auto text-center sm:w-full;
+
+
 	display: flex;
 	flex-direction: column; /* Stack items vertically */
 	gap: 0px; 
-	
-	font-family: Arial, sans-serif;
 }
 
 .main-content {
 	display: flex;
 	flex-direction: initial;
-	flex: 2; /* Allow it to take up more space compared to the left panel */
 	padding: 20px;
+  overflow-x: scroll;
 }
 
 .left-panel {

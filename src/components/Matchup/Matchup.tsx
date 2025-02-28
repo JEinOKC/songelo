@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAppState } from '../../stores/AppStateContext';
 import { PlaylistSong, SpotifyTrack } from '../../types/interfaces';
 import Song from '../Song/Song';
 import './Matchup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShuffle } from '@fortawesome/free-solid-svg-icons';
-import TopTracks from '../TopTracks/TopTracks';
 
 const Matchup = () => {
 
@@ -137,7 +137,15 @@ const Matchup = () => {
 			<div className="alert-message">
 				There are not enough tracks in your playlist. <br/>Please add more.
 			</div>
-			<TopTracks/>
+			<ul className='text-center'>
+				<li>
+					<Link to={`/playlist/${selectedPlaylist}/top-tracks`} className="btn btn-default mb-4">Browse My Top Spotify Tracks</Link>
+				</li>
+				<li>
+					<Link to={`/playlist/${selectedPlaylist}/import`} className="btn btn-default">Import From Spotify Playlist</Link>
+				</li>
+			</ul>
+
 		</>
 		
 		

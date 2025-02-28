@@ -5,6 +5,8 @@ import { useAuthState } from '../../stores/AuthStateContext';
 import { useAppState } from "../../stores/AppStateContext";
 import { PlaylistItemsResponse, PlaylistItem, PlaylistResponse, SpotifyPlaylist, Playlist, PlaylistSong } from '../../types/interfaces';
 import Song from "../Song/Song";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 const PlaylistImport = () => {
 	const { selectedPlaylist, playlists, selectedPlaylistSongs, selectedPlaylistWaitingList, isTrackInPlaylist, saveMultipleSongsInPlaylist } = useAppState();
@@ -101,8 +103,8 @@ const PlaylistImport = () => {
 	}
 
 	return (
-		<>
-			<div>
+		<div>
+			{/* <div>
 				<div>
 					{currentPlaylistObject?.id}
 					<hr/>
@@ -110,18 +112,18 @@ const PlaylistImport = () => {
 					<br/>
 					Songelo Playlist - {JSON.stringify(currentPlaylistObject)}
 				</div>
-				<h1>Your Playlists On Spotify:</h1>
-			</div>
+				
+			</div> */}
 
 			{!selectedSpotifyPlaylist && (
 				<>
-					<h2>Playlists</h2>
+					<h3 className="text-left">Your Playlists On Spotify:</h3>
 					<ul className="text-left">
 						{spotifyPlaylists
 							// .filter((playlist) => playlist.owner.id === spotifyID)
 							.map((playlist) => (
 							<li key={playlist.id} className="mb-5">
-								<h2 className="hover:cursor-pointer" onClick={()=>setSelectedSpotifyPlaylist(playlist)}><strong>{playlist.name}</strong></h2>
+								<h2 className="hover:cursor-pointe link" onClick={()=>setSelectedSpotifyPlaylist(playlist)}><strong>{playlist.name}</strong></h2>
 								<p>Owner ID: {playlist.owner.id}</p>
 							</li>
 						))}		
@@ -133,14 +135,18 @@ const PlaylistImport = () => {
 				<div className="text-left">
 
 					{(filteredActiveSongs.length == 0 && selectedSpotifyPlaylistSongs.length > 0) && (
-						<button onClick={importSpotifySongs.bind(this)}>Import Playlist (up to 100 songs or {currentPlaylistObject?.max_length} (whichever is smaller)</button>
+						<div className="text-center">
+							<div className="alert-message bg-danger mb-4">You may import up to 100 songs or {currentPlaylistObject?.max_length} (whichever is smaller)</div>
+							<button className="btn btn-primary btn mb-4" onClick={importSpotifySongs.bind(this)}>Import Playlist</button>
+						</div>
 					)}
 
-					<h2> Playlist Tracks - {selectedSpotifyPlaylist.name}</h2>
+					<h3 className="text-left">Playlist Tracks - {selectedSpotifyPlaylist.name}</h3>
 					<button className="hover:cursor-pointer" onClick={()=>{
 							setSelectedSpotifyPlaylist(null);
 							setSelectedSpotifyPlaylistSongs([]);
-						}}>Cancel</button>
+						}}><FontAwesomeIcon icon={faChevronLeft} />&nbsp; Go Back</button>
+					<hr className="mb-2 mt-2"/>
 					<ul className="text-left">
 						{selectedSpotifyPlaylistSongs.map((song)=> (
 							<li key={song.track.id}>
@@ -151,7 +157,7 @@ const PlaylistImport = () => {
 				</div>
 			)}
 			
-		</>
+		</div>
 	);
 };
 
