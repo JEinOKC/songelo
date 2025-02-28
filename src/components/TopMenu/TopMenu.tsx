@@ -72,7 +72,7 @@ const TopMenu: React.FC = () => {
 				</div>
 			}
 			{!isLoggedIn  &&
-			<h1 className="logged-out-page-title text-6xl text-darkest m-7">Songelo</h1>				
+			<h1 className="logged-out-page-title max-w-[480px] mx-auto text-center text-6xl text-darkest m-7">Songelo</h1>				
 			}
 		</>
 	);

@@ -24,7 +24,7 @@ const Callback = () => {
 		
 	}, [navigate]);
 
-	return <div className='m-4 text-2xl'>Logging In...</div>;
+	return <div className='m-4 text-2xl max-w-[480px] mx-auto text-center'>Logging In...</div>;
 };
 
 export default Callback;

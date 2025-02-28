@@ -107,7 +107,7 @@ const App = () => {
 			
 		</div>
 		) : (
-		<div className="content-center">
+		<div className="max-w-[480px] mx-auto text-center">
 			<button className="bg-darker-4 rounded-md login-button" onClick={handleLogin} >
 				Login with Spotify&nbsp;&nbsp;<FontAwesomeIcon icon={faSpotify} size='xl'/>
 			</button>
