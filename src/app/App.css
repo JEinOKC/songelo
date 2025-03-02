@@ -40,7 +40,7 @@
   /* these colors are the tetrad of the primary */
   --color-success: #66b36f;
   --color-danger: #b366a9;
-  --color-neutral: #b39666
+  --color-neutral: #b39666;
 
   /* different hues */
   --color-hue-left-4: #b3669d;
@@ -83,7 +83,7 @@ h2.page-header{
 	display: flex;
 	flex-direction: initial;
 	padding: 20px;
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 
 .left-panel {

@@ -27,9 +27,7 @@ const App = () => {
 	const { viewStyle } = useParams<{ viewStyle: string }>();
 
 	useEffect(() => {
-		console.log({
-			'viewStyle':viewStyle
-		});
+		
 		if (viewStyle === 'standings') {
 			setShowPlaylistSongs(true);
 		}

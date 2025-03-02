@@ -10,7 +10,7 @@ import { faClose } from '@fortawesome/free-solid-svg-icons';
 
 
 const PlaylistRecommendedTracks = () => {
-	const { getPlaylistRecommendedTracks, selectedPlaylist, selectedPlaylistSongs } = useAppState();
+	const { getPlaylistRecommendedTracks, selectedPlaylist, selectedPlaylistSongs, isTrackInPlaylist } = useAppState();
 	const { spotifyToken, spotifyAxiosInstance } = useAuthState();
 	const [tracks, setTracks] = useState<MatchTrack[]>([]);
 	const [tracksLoaded, setTracksLoaded] = useState<boolean>(false);
@@ -115,7 +115,13 @@ const PlaylistRecommendedTracks = () => {
 
 			<h2 className="page-header">Spotify Recommendations</h2>
 			<ul>
-				{spotifyRecommendations.map((recommendation) => (
+				{spotifyRecommendations
+					.filter((recommendation) => {
+						// console.log({recommendation:recommendation})
+						// console.log({'selectedPlaylistSongs':selectedPlaylistSongs});
+						return !isTrackInPlaylist(recommendation);
+					})
+					.map((recommendation) => (
 					<li key={recommendation.id} className="spotify-recommendation">
 						<div className=" bg-darker-2 border-darkest p-2 mb-2 rounded-md">
 							<div className='text-right'>

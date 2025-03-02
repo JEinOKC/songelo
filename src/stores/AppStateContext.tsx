@@ -74,7 +74,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 
 		if (!appToken || !playlistID) return;
 
-		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/songs`,{
+		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/matchup`,{
 			winner: winner.id,
 			losers: losers.map(loser => loser.id)
 		});
@@ -100,7 +100,6 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	const isTrackInPlaylist = (track:SpotifyTrack) => {
-		
 		return selectedPlaylistSongs.some((playlistTrack: any) => {
 			return playlistTrack.track_info.id === track.id;
 		});
@@ -189,7 +188,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			return;
 		}
 
-		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${selectedPlaylist}/songssss`, {
+		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${selectedPlaylist}/songs`, {
 			tracks: tracks.map((song) =>{
 				return {
 					track_id: song.id,
@@ -205,7 +204,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			const data = await response.data;
 			
 			if(data.success){
-			  addMultipleSongsToPlaylist(data.songs);
+				addMultipleSongsToPlaylist(data.songs);
 			}
 			
 		} else {
@@ -213,29 +212,9 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 		}
 	}
 
+	//this was created before the save multiple functionality and now they are the same.
 	const saveSongInPlaylist = async (track: SpotifyTrack, active:boolean=false) => {
-
-		if (!appToken || !selectedPlaylist) {
-			return;
-		}
-
-		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${selectedPlaylist}/songs`, {
-			track_id: track.id, 
-			track_info: track, 
-			active: active
-		});
-
-		if(response.status === 200){
-
-			const data = await response.data;
-			
-			if(data.success){
-			  addSongToPlaylist(data.song);
-			}
-			
-		} else {
-			//failure
-		}
+		return saveMultipleSongsInPlaylist([track], active);
 	};
 
 	const addSongToPlaylist = (track: PlaylistSong) => {
@@ -247,9 +226,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 	const addMultipleSongsToPlaylist = (tracks: PlaylistSong[]) => {
 		
 		setSelectedPlaylistSongs((prevSongs) => [...prevSongs, ...tracks.filter((track) => {
-			!isTrackInPlaylist(track.track_info)
+			return !isTrackInPlaylist(track.track_info)
 		})]);
-
 		
 	}
   

@@ -8,6 +8,10 @@ div.alert-message{
 div.alert-message.bg-danger{
 	@apply bg-danger;
 }
+
+div.alert-message.bg-neutral{
+	@apply bg-neutral;
+}
 /*END ALERTS*/
 
 /* replicate a standard anchor tag */

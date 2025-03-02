@@ -16,6 +16,7 @@ const PlaylistImport = () => {
 	const [selectedSpotifyPlaylistSongs,setSelectedSpotifyPlaylistSongs] = useState<PlaylistItem[]>([]);
 	const [currentPlaylistObject,setCurrentPlaylistObject] = useState<Playlist>();
 	const [filteredActiveSongs,setFilteredActiveSongs] = useState<PlaylistSong[]>([]);
+	const [importingAllSongs,setImportingAllSongs] = useState<boolean>(false);
 	const navigate = useNavigate();
 	
 
@@ -63,7 +64,6 @@ const PlaylistImport = () => {
 			if(response.status === 200){
 				const data:PlaylistItemsResponse = response.data;
 				setSelectedSpotifyPlaylistSongs(data.items);
-				console.log({'data':data});
 			}
 
 		}
@@ -84,7 +84,7 @@ const PlaylistImport = () => {
 	}
 
 	const importSpotifySongs = async () => {
-		if(typeof currentPlaylistObject === 'undefined'){
+		if(typeof currentPlaylistObject === 'undefined' || !selectedSpotifyPlaylist){
 			return;
 		}
 		
@@ -97,8 +97,12 @@ const PlaylistImport = () => {
 			})
 			.slice(0, currentPlaylistMaxLength);
 
-		console.log({'allowedSongs':allowedSongs});
-		saveMultipleSongsInPlaylist(allowedSongs,true);
+		setImportingAllSongs(true);
+
+		saveMultipleSongsInPlaylist(allowedSongs,true).then(()=>{
+			setImportingAllSongs(false);
+			navigate(`/playlist/${selectedPlaylist}`);
+		});
 		
 	}
 
@@ -134,7 +138,14 @@ const PlaylistImport = () => {
 			{selectedSpotifyPlaylist && (
 				<div className="text-left">
 
-					{(filteredActiveSongs.length == 0 && selectedSpotifyPlaylistSongs.length > 0) && (
+					{importingAllSongs && (
+						<div className="alert-message bg-neutral mb-4">
+							Importing Songs. Please wait...
+						</div>
+					)}
+					
+					
+					{(filteredActiveSongs.length == 0 && selectedSpotifyPlaylistSongs.length > 0 && !importingAllSongs) && (
 						<div className="text-center">
 							<div className="alert-message bg-danger mb-4">You may import up to 100 songs or {currentPlaylistObject?.max_length} (whichever is smaller)</div>
 							<button className="btn btn-primary btn mb-4" onClick={importSpotifySongs.bind(this)}>Import Playlist</button>
@@ -150,7 +161,7 @@ const PlaylistImport = () => {
 					<ul className="text-left">
 						{selectedSpotifyPlaylistSongs.map((song)=> (
 							<li key={song.track.id}>
-								<Song track={song.track} playlistId={selectedPlaylist} canAddToPlaylist={!isTrackInPlaylist(song.track)}/>
+								<Song track={song.track} playlistId={selectedPlaylist} canAddToPlaylist={!isTrackInPlaylist(song.track) && !importingAllSongs}/>
 							</li>
 						))} 
 					</ul>
