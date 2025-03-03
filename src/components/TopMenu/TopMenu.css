@@ -9,9 +9,11 @@
 
   .top-menu .page-title{
 	flex-grow: 1;
-	text-align: center;
-	margin-left:38px;
-	
+	margin-bottom: 0;
+  }
+  .top-menu .page-title span{
+	position: relative;
+	bottom:-10px;
   }
   
   .top-menu .menu-toggle {

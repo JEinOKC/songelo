@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import './TopMenu.css';
 import { useAuthState } from '../../stores/AuthStateContext';
 import { useAppState } from '../../stores/AppStateContext';
+import Logo from '../Logo/Logo';
 
 const TopMenu: React.FC = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +25,9 @@ const TopMenu: React.FC = () => {
 			{isLoggedIn  &&
 				<div className="top-menu bg-darkest text-lightest">
 					<div className="nav-top">
-						<h1 className="page-title text-3xl text-lighter-6">Songelo</h1>
+					<h1 className="page-title text-3xl text-lighter-6"><Logo className='stroke-darkest text-lightest h-10 w-10 inline' />&nbsp;<span>Songelo</span></h1>
+						
+						{/* <h1 className="page-title text-3xl text-lighter-6">Songelo</h1> */}
 						<button className="menu-toggle text-lightest" onClick={toggleMenu}>
 							<FontAwesomeIcon icon={faBars} size='lg' title={isOpen ? 'Close Menu' : 'Open Menu'}/>
 						</button>
@@ -72,7 +75,11 @@ const TopMenu: React.FC = () => {
 				</div>
 			}
 			{!isLoggedIn  &&
-			<h1 className="logged-out-page-title max-w-[480px] mx-auto text-center text-6xl text-darkest m-7">Songelo</h1>				
+			<div className="text-center">
+				<Logo className='stroke-lightest text-darkest h-20 w-20 mx-auto' />
+				<h1 className="logged-out-page-title max-w-[480px] my-0 mx-auto text-center text-6xl text-darkest">Songelo</h1>				
+			</div>
+			
 			}
 		</>
 	);
