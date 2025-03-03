@@ -55,13 +55,9 @@ const Song: React.FC<SongProps> = ({ track, canAddToPlaylist = true, canPromote 
 		<div>
 		<div className="song-container text-darker-3 bg-lightest border-lighter-5" key={track.id}>
 			<div className="album-cover-container">
-			<div className="album-cover" style={{ backgroundImage: `url(${track.album.images[2].url})` }}>
+			<div className="album-cover" style={{ backgroundImage: `url(${track.album.images[0].url})` }}>
 			</div>
 			</div>
-			{/* <img
-			src={track.album.images[2].url}
-			alt={track.name}
-			/> */}
 			<div className="track-info">
 
 			{score > -1 && (
