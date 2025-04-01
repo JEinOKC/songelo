@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import Song from '../Song/Song';
 import { useAppState } from '../../stores/AppStateContext';
 import { useAuthState } from '../../stores/AuthStateContext';
 import { SpotifyTrack } from '../../types/interfaces';
 import './TopTracks.css';
+import SpotifyComms from '../../utils/SpotifyComms';
 
 const TopTracks = () => {
   const [topTracks, setTopTracks] = useState<SpotifyTrack[]>([]);
@@ -12,24 +12,27 @@ const TopTracks = () => {
   const [error, setError] = useState<string | null>(null);
   const { selectedPlaylist, isTrackInPlaylist } = useAppState();
   const { spotifyToken } = useAuthState();
+  const { getTopTracks } = SpotifyComms();
   
 
   useEffect(() => {
-    if (spotifyToken) {
-      axios
-        .get('https://api.spotify.com/v1/me/top/tracks?limit=50', {
-          headers: { Authorization: `Bearer ${spotifyToken}` },
-        })
-        .then((response) => {
-          setTopTracks(response.data.items);
-          setLoading(false);
-        })
-        .catch(() => {
-          setError('Failed to fetch top tracks');
-          setLoading(false);
-        });
-    }
+    loadTopTracks();
   }, []);
+
+  const loadTopTracks = async () => {
+    if (spotifyToken) {
+      try{
+        const response:SpotifyTrack[] = await getTopTracks();
+        setTopTracks(response);
+      }
+      catch(error){
+        console.error('Error fetching top tracks:', error);
+        setError('Failed to fetch top tracks');
+      }
+
+      setLoading(false);
+    }
+  }
 
   if (loading) return (
     <div className="w-full alert-message">Loading top tracks...</div>

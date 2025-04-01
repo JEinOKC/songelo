@@ -2,16 +2,17 @@ import { useState, useEffect } from 'react';
 import { useAppState } from '../../stores/AppStateContext';
 import { useAuthState } from '../../stores/AuthStateContext';
 import './PlaylistRecommendedTracks.css';
-import { SpotifyTrack, MatchTrack, SpotifySearchResult  } from '../../types/interfaces';
+import { SpotifyTrack, MatchTrack  } from '../../types/interfaces';
 import Song from '../Song/Song';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
+import SpotifyComms from '../../utils/SpotifyComms';
 
 
 
 const PlaylistRecommendedTracks = () => {
 	const { getPlaylistRecommendedTracks, selectedPlaylist, selectedPlaylistSongs, isTrackInPlaylist } = useAppState();
-	const { spotifyToken, spotifyAxiosInstance } = useAuthState();
+	const { spotifyToken } = useAuthState();
 	const [tracks, setTracks] = useState<MatchTrack[]>([]);
 	const [tracksLoaded, setTracksLoaded] = useState<boolean>(false);
 	const [spotifyRecommendations, setSpotifyRecommendations] = useState<any[]>([]);
@@ -19,6 +20,7 @@ const PlaylistRecommendedTracks = () => {
 	const maxRecommendations = 10;
 	const [hiddenRecommendations, setHiddenRecommendations] = useState<any[]>([]);
 	const [trackRecommendationIndex, setTrackRecommendationIndex] = useState(0);
+	const { spotifyTrackSearch } = SpotifyComms();
 
 	// Fetch playlist recommended tracks once when component mounts or playlist changes
 	useEffect(() => {
@@ -81,9 +83,7 @@ const PlaylistRecommendedTracks = () => {
 		const query = `track:${track.match_track_name} artist:${track.match_artist}`;
 		const encodedQuery = encodeURIComponent(query);
 		
-		const response = await spotifyAxiosInstance.get(`https://api.spotify.com/v1/search?type=track&limit=1&q=${encodedQuery}`);
-
-      	const result:SpotifySearchResult = await response.data;
+		const result = await spotifyTrackSearch(encodedQuery);
 
 		if(result.tracks.items.length > 0){	
 			const recommendation = result.tracks.items[0];
