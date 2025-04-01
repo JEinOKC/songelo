@@ -75,11 +75,25 @@ const SpotifyComms = () => {
 		return result;
 	}
 
+	const getPlaylists = async ():Promise<SpotifyPlaylist[]> => {
+		if(!spotifyToken){
+			throw new Error("Spotify token is not available");
+		}
+		const response = await spotifyAxiosInstance.get('https://api.spotify.com/v1/me/playlists');
+		if(response.status !== 200){
+			//failure
+			throw new Error("Failed to fetch playlists");
+		}
+		const data:PlaylistResponse = await response.data;
+		return data.items;
+	}
+
 	return {
 		findPlaylistSongs,
 		performPlaylistSearch,
 		spotifyTrackSearch,
-		getTopTracks
+		getTopTracks,
+		getPlaylists
 	};
 }
 

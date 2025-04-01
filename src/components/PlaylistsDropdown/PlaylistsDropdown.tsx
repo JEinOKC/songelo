@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useAuthState } from '../../stores/AuthStateContext';
+import SpotifyComms from '../../utils/SpotifyComms';
 
 const PlaylistsDropdown = () => {
   const [playlists, setPlaylists] = useState<any[]>([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState<string>('');
-  const { spotifyToken, spotifyAxiosInstance } = useAuthState();
+  const { spotifyToken } = useAuthState();
+  const { getPlaylists } = SpotifyComms();
 
   useEffect(() => {
     const fetchPlaylists = async () => {
       if (!spotifyToken) return;
 
-      const response = await spotifyAxiosInstance.get('https://api.spotify.com/v1/me/playlists');
-
-      const data = response.data;
-
-      setPlaylists(data.items);
+      try {
+        const response = await getPlaylists();
+        setPlaylists(response);  
+      } catch (error) {
+        console.error('Error fetching playlists:', error);
+      }
+      
     };
 
     fetchPlaylists();
