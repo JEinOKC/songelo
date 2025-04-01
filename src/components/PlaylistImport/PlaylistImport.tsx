@@ -1,27 +1,28 @@
-import axios from "axios";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthState } from '../../stores/AuthStateContext';
 import { useAppState } from "../../stores/AppStateContext";
-import { PlaylistItemsResponse, PlaylistItem, PlaylistResponse, SpotifyPlaylist, Playlist, PlaylistSong } from '../../types/interfaces';
+import { PlaylistItem, SpotifyPlaylist, Playlist, PlaylistSong } from '../../types/interfaces';
 import Song from "../Song/Song";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import SpotifyComms from '../../utils/SpotifyComms';
 
 const PlaylistImport = () => {
 	const { selectedPlaylist, playlists, selectedPlaylistSongs, selectedPlaylistWaitingList, isTrackInPlaylist, saveMultipleSongsInPlaylist } = useAppState();
-	const { spotifyToken, isLoggedIn, /*spotifyID*/ } = useAuthState();
+	const { isLoggedIn, /*spotifyID*/ } = useAuthState();
 	const [spotifyPlaylists,setSpotifyPlaylists] = useState<SpotifyPlaylist[]>([]);
 	const [selectedSpotifyPlaylist,setSelectedSpotifyPlaylist] = useState<SpotifyPlaylist|null>();
 	const [selectedSpotifyPlaylistSongs,setSelectedSpotifyPlaylistSongs] = useState<PlaylistItem[]>([]);
 	const [currentPlaylistObject,setCurrentPlaylistObject] = useState<Playlist>();
 	const [filteredActiveSongs,setFilteredActiveSongs] = useState<PlaylistSong[]>([]);
 	const [importingAllSongs,setImportingAllSongs] = useState<boolean>(false);
+	const { findPlaylistSongs, performPlaylistSearch } = SpotifyComms();
 	const navigate = useNavigate();
 	
 
 	useEffect(() => {
-		performPlaylistSearch();
+		_performPlaylistSearch();
 
 		if(!isLoggedIn){
 			navigate('/');
@@ -31,7 +32,7 @@ const PlaylistImport = () => {
 	}, []);
 
 	useEffect(() => {
-		findPlaylistSongs();
+		_findPlaylistSongs();
 	},[selectedSpotifyPlaylist])
 
 	useEffect(()=>{
@@ -55,32 +56,33 @@ const PlaylistImport = () => {
 		})
 	}
 
-	const findPlaylistSongs = async () => {
-		if(spotifyToken && selectedSpotifyPlaylist){
-			const response = await axios.get(`https://api.spotify.com/v1/playlists/${selectedSpotifyPlaylist.id}/tracks`,{
-				headers: { Authorization: `Bearer ${spotifyToken}` }
-			});
+	const _findPlaylistSongs = async () => {
+		if(selectedSpotifyPlaylist){
 
-			if(response.status === 200){
-				const data:PlaylistItemsResponse = response.data;
-				setSelectedSpotifyPlaylistSongs(data.items);
+			try {
+
+				const items:PlaylistItem[] = await findPlaylistSongs(selectedSpotifyPlaylist.id);
+				setSelectedSpotifyPlaylistSongs(items);
+				
+			} catch (error) {
+				console.error("Error fetching playlist songs:", error);
+				
 			}
+
+			
 
 		}
 		
 	}
 	
-	const performPlaylistSearch = async () => {
-		if(spotifyToken){
-			const response = await axios.get('https://api.spotify.com/v1/me/playlists',{
-				headers: { Authorization: `Bearer ${spotifyToken}` }
-			});
-
-			if(response.status === 200){
-				const data:PlaylistResponse = response.data;
-				setSpotifyPlaylists(data.items);
-			}
-		}	
+	const _performPlaylistSearch = async () => {
+		try{
+			const playlists:SpotifyPlaylist[] = await performPlaylistSearch();
+			setSpotifyPlaylists(playlists);
+		}
+		catch(error){
+			console.error("Error fetching playlists:", error);
+		}
 	}
 
 	const importSpotifySongs = async () => {
