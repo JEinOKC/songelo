@@ -34,9 +34,9 @@ const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ pla
 				{filteredActiveSongs.length > 0 &&
 				(
 					<>
-						<h2 className="page-header">Track Risking Relegation</h2>
+						<h2 className="page-header">Song Risking Relegation</h2>
 						<div className="alert-message bg-danger">
-							Promoting a track from the waiting list will result in this track being deactivated from the playlist
+							Promoting a song from the waiting list will result in this song being deactivated from the playlist
 						</div>
 						<ul>
 							<li key={filteredActiveSongs[filteredActiveSongs.length - 1].id}>
@@ -52,7 +52,7 @@ const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ pla
 				)}
 				
 
-				<h2 className="page-header">Tracks in Waiting List</h2>
+				<h2 className="page-header">Songs in Waiting List</h2>
 				<ul>
 				{filteredInactiveSongs.map((song) => (
 					<li key={song.id}>
@@ -67,7 +67,7 @@ const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ pla
 
 	return (
 		<div className="playlist-songs">
-			<h2 className="page-header">Tracks in Playlist</h2>
+			<h2 className="page-header">Songs in Playlist</h2>
 			<div className="track-info">
 
 			</div>
@@ -80,7 +80,7 @@ const ListSongeloPlaylistSongs: React.FC<ListSongeloPlaylistSongsProps> = ({ pla
 				{filteredActiveSongs.length === 0 && (
 					<>
 						<div className="alert-message">
-							You currently have no active tracks in your playlist. <br/>Please add more.
+							You currently have no active songs in your playlist. <br/>Please add more.
 						</div>
 						<TopTracks/>
 					</>

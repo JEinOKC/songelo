@@ -12,6 +12,7 @@ import { faSpotify } from '@fortawesome/free-brands-svg-icons';
 import PlaylistRecommendedTracks from '../components/PlaylistRecommendedTracks/PlaylistRecommendedTracks';
 import SongeloPlaylistViewer from '../components/SongeloPlaylistViewer/SongeloPlaylistViewer';
 import PlaylistImport from '../components/PlaylistImport/PlaylistImport';
+import PlaylistHome from '../components/PlaylistHome/PlaylistHome';
 // import SearchSpotify from '../components/SearchSpotify/SearchSpotify';
 
 
@@ -23,10 +24,18 @@ const App = () => {
 	const [showPlaylistSongs, setShowPlaylistSongs] = useState(false);
 	const [showRecommendedTracks, setShowRecommendedTracks] = useState(false);
 	const [showImportFromSpotify, setShowImportFromSpotify] = useState(false);
+	const [showVoting, setShowVoting] = useState(false);
 	const { playlistID } = useParams<{ playlistID: string }>();
 	const { viewStyle } = useParams<{ viewStyle: string }>();
 
 	useEffect(() => {
+
+		if(viewStyle === 'vote'){
+			setShowVoting(true);
+		}
+		else{
+			setShowVoting(false);
+		}
 		
 		if (viewStyle === 'standings') {
 			setShowPlaylistSongs(true);
@@ -93,8 +102,10 @@ const App = () => {
 					<TopTracks/>
 				) : (selectedPlaylist && showImportFromSpotify) ? (
 					<PlaylistImport />
-				) : (selectedPlaylist) ? (
+				) : (selectedPlaylist && showVoting) ? (
 					<Matchup />
+				) : (selectedPlaylist) ? (
+					<PlaylistHome />
 				) : (
 					<></>
 				)}

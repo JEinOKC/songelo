@@ -12,6 +12,7 @@ const Matchup = () => {
 	const { selectedPlaylist, selectedPlaylistSongs, submitMatchupResult } = useAppState();
 	const [matchupHappening] = useState(true);
 	const [matchupSongs, setMatchupSongs] = useState<PlaylistSong[]>([]);
+	const [votedSong, setVotedSong] = useState<PlaylistSong | null>(null);
 
 	const matchupSize = 4;
 	const decayTime:number = 0.000005//a smaller decay number will theoretically make it take longer for a song to re-appear on a matchup
@@ -79,7 +80,12 @@ const Matchup = () => {
 	}
 
 	const resetMatchup = ()=>{
+		setVotedSong(null);
 		setMatchupSongs(findRandomSongs(matchupSize));
+	}
+
+	const handleVoteSelect = (song:PlaylistSong) => {
+		setVotedSong(song);
 	}
 
 	const songWasChosen = (_?:React.MouseEvent<HTMLAnchorElement>,track?:SpotifyTrack)=>{
@@ -108,17 +114,41 @@ const Matchup = () => {
 		
 		resetMatchup();
 	}
-	
 
 	return (<div className='matchup-window-container'>
 		{(matchupHappening && matchupSongs.length > 0) ? 
 		<>
-			<h2 className="page-header">Choose Your Next Song</h2>
+			<h2 className="page-header">Vote on a Song</h2>
 			<div className='matchup-container'>
 				{matchupSongs.map((song) => (
-					<Song key={song.id} track={song.track_info} playlistId={selectedPlaylist} canAddToPlaylist={false} onPlay={songWasChosen} />
+					<div key={song.id} className="relative cursor-pointer hover:bg-lighter-7 hover:border-2"  onClick={(()=>{
+						setVotedSong(song);
+					})}>
+						<Song track={song.track_info} playlistId={selectedPlaylist} canAddToPlaylist={false} />
+						<input checked={votedSong?.id === song.id} type="radio" name="song" id={song.id} className="peer hidden" onChange={()=>{
+							handleVoteSelect(song);
+						}}></input>
+						<label htmlFor={song.id} className="absolute top-1/2 -translate-y-1/2 left-2 w-6 h-6 bg-white border-2 border-gray-400 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500 flex items-center justify-center">
+							<svg className="hidden peer-checked:block w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+								<path fillRule="evenodd" d="M20.707 5.293a1 1 0 0 1 0 1.414l-11 11a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L9 15.586l10.293-10.293a1 1 0 0 1 1.414 0z" clipRule="evenodd"/>
+							</svg>
+						</label>
+					</div>
+					
 				))}
+
 			</div>
+
+			{votedSong && (
+				<div className="text-center mt-4">
+					<a className="btn btn-lg btn-primary" href="#" onClick={(e)=>{
+						e.preventDefault();
+						songWasChosen(e,votedSong.track_info);
+					}} title='Vote'>
+						Vote
+					</a>
+				</div>
+			)}
 
 			{matchupSongs.length > 0 && (
 				<>

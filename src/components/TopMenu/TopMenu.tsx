@@ -25,7 +25,11 @@ const TopMenu: React.FC = () => {
 			{isLoggedIn  &&
 				<div className="top-menu bg-darkest text-lightest">
 					<div className="nav-top">
-					<h1 className="page-title text-3xl text-lighter-6"><Logo className='stroke-darkest text-lightest h-10 w-10 inline' />&nbsp;<span>Songelo</span></h1>
+					<h1 className="page-title text-3xl text-lighter-6 cursor-pointer" onClick={()=>{
+						window.location.href = '/';
+					}}>
+						<Logo className='stroke-darkest text-lightest h-10 w-10 inline' />&nbsp;<span>Songelo</span>
+					</h1>
 						
 						{/* <h1 className="page-title text-3xl text-lighter-6">Songelo</h1> */}
 						<button className="menu-toggle text-lightest" onClick={toggleMenu}>
@@ -35,22 +39,35 @@ const TopMenu: React.FC = () => {
 					<nav className={`menu-items ${isOpen ? 'open' : ''}`}>
 						<Link to="/" onClick={()=>setIsOpen(false)}  className="text-lightest hover:bg-darker-4">Home</Link>
 						{
+							isLoggedIn && selectedPlaylist && viewStyle !== undefined &&  (
+							<Link to={`/playlist/${selectedPlaylist}`} onClick={()=>{
+								setIsOpen(false);
+							}} className="text-lightest hover:bg-darker-4">Playlist Home</Link>)
+						}
+						{
+							isLoggedIn && selectedPlaylist && viewStyle !== 'vote' &&  (
+							<Link to={`/playlist/${selectedPlaylist}/vote`} onClick={()=>{
+								setIsOpen(false);
+							}} className="text-lightest hover:bg-darker-4">Vote on Songs</Link>)
+						}
+						{
 							isLoggedIn && selectedPlaylist && viewStyle !== 'standings' &&  (
 							<Link to={`/playlist/${selectedPlaylist}/standings`} onClick={()=>{
 								setIsOpen(false);
-							}} className="text-lightest hover:bg-darker-4">Playlist</Link>)
+							}} className="text-lightest hover:bg-darker-4">Song Standings</Link>)
 						}
+						<hr className='w-full border-8 text-transparent' />
 						{
 							isLoggedIn && selectedPlaylist && viewStyle !== 'top-tracks' &&  (
 							<Link to={`/playlist/${selectedPlaylist}/top-tracks`} onClick={()=>{
 								setIsOpen(false);
-							}} className="text-lightest hover:bg-darker-4">Top Tracks</Link>)
+							}} className="text-lightest hover:bg-darker-4">My Top Spotify Tracks</Link>)
 						}
 						{
 							isLoggedIn && selectedPlaylist && viewStyle !== 'recommended-tracks' &&  (
 							<Link to={`/playlist/${selectedPlaylist}/recommended-tracks`} onClick={()=>{
 								setIsOpen(false);
-							}} className="text-lightest hover:bg-darker-4">Recommended Tracks</Link>)
+							}} className="text-lightest hover:bg-darker-4">My Recommended Tracks</Link>)
 						}
 						{
 							isLoggedIn && selectedPlaylist && viewStyle !== 'import' &&  (
@@ -58,12 +75,7 @@ const TopMenu: React.FC = () => {
 								setIsOpen(false);
 							}} className="text-lightest hover:bg-darker-4">Import From Spotify Playlist</Link>)
 						}
-						{
-							isLoggedIn && selectedPlaylist && typeof viewStyle !== 'undefined' &&  (
-							<Link to={`/playlist/${selectedPlaylist}`} onClick={()=>{
-								setIsOpen(false);
-							}} className="text-lightest hover:bg-darker-4">Play Songs</Link>)
-						}
+						
 						{
 							isLoggedIn && (
 							<Link to="/" onClick={()=>{
