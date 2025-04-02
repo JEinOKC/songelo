@@ -11,7 +11,7 @@ export interface SongProps {
 	canAddToPlaylist?: boolean;
 	canPromote?: boolean;
 	score?: number;
-	onVote?: (event?:React.MouseEvent<HTMLAnchorElement>,track?:SpotifyTrack) => void;
+	onPlay?: (event?:React.MouseEvent<HTMLAnchorElement>,track?:SpotifyTrack) => void;
 }
 
 export interface ListSongeloPlaylistSongsProps {
