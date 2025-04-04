@@ -48,7 +48,7 @@ const SongeloPlaylistsDropdown = () => {
 	return (
 		<div>
 			{currentPlaylistName !== '' && !dropdownActive  && (
-				<div className="current-playlist-info-container mb-2">
+				<div className="current-playlist-info-container mb-1">
 					<div className="current-playlist-name p-2 border-b-1 border-lightest">
 						{currentPlaylistName}&nbsp;&nbsp;<FontAwesomeIcon className='show-dropdown-toggler' icon={faWrench} onClick={()=>{
 					setDropdownActive(true);
@@ -60,7 +60,16 @@ const SongeloPlaylistsDropdown = () => {
 			)}
 			
 			{(currentPlaylistName === '' || dropdownActive) && (
-				<>
+				<div className="m-2 bg-darker-1 rounded-md p-2 relative">
+					{currentPlaylistName !== '' && (
+						<div className="absolute right-0 top-0 m-1">
+							<span className="rounded-2xl bg-darker-2 text-lightest">
+								<FontAwesomeIcon className='show-dropdown-toggler' icon={faXmark} onClick={()=>{
+								setDropdownActive(false);
+								}} />	
+							</span>
+						</div>
+					)}
 					
 					{
 						playlists.length > 0 ? (
@@ -98,12 +107,8 @@ const SongeloPlaylistsDropdown = () => {
 							</button>
 						</div>
 					)}
-					{currentPlaylistName !== '' && (
-						<FontAwesomeIcon className='show-dropdown-toggler' icon={faXmark} onClick={()=>{
-							setDropdownActive(false);
-							}} />	
-					)}
-				</>	
+					
+				</div>	
 			)}
 			
 

@@ -66,6 +66,7 @@ export interface AppState {
 	selectedPlaylistWaitingList: PlaylistSong[];
 	promoteSongInPlaylist: (track: SpotifyTrack) => Promise<void>;
 	createNewPlaylist: (name: string, isPublic: boolean, maxSize: number) => Promise<string>;
+	loadingPlaylists: boolean;
 }
 
 export interface AuthState {

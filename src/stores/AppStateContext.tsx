@@ -11,6 +11,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 	const [selectedPlaylistSongs, setSelectedPlaylistSongs] = useState<PlaylistSong[]>([]);
 	const [selectedPlaylistWaitingList, setSelectedPlaylistWaitingList] = useState<PlaylistSong[]>([]);
 	const { appToken, appAxiosInstance } = useAuthState();
+	const [loadingPlaylists, setLoadingPlaylists] = useState<boolean>(true);
 
 	const getPlaylistRecommendedTracks = async (playlistID:string) => {
 		if (!appToken || !playlistID) return;
@@ -32,13 +33,14 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 	}
 
 	const setSelectedPlaylist = (playlistID:string) => {
-
+		setLoadingPlaylists(true);
 		
 		setRawSelectedPlaylist(playlistID);
 		
 		if(playlistID === ''){
 			setSelectedPlaylistSongs([]);
 			setSelectedPlaylistWaitingList([]);
+			setLoadingPlaylists(false);
 			return;
 		}
 
@@ -62,6 +64,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			else{
 				//failure
 			}
+
+			setLoadingPlaylists(false);
 			
 		};
 
@@ -251,7 +255,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			saveMultipleSongsInPlaylist,
 			selectedPlaylistWaitingList,
 			promoteSongInPlaylist,
-			createNewPlaylist
+			createNewPlaylist,
+			loadingPlaylists
 		}}>
 		{children}
 		</AppStateContext.Provider>

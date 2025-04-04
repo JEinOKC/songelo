@@ -52,6 +52,8 @@ const CreateSongeloPlaylistForm = ({ onCreate }: { onCreate: () => void }) => {
 			/>
 		</div>
 	
+		{/* 
+		not ready to deal with this option just yet
 		<div className="form-group checkbox-group">
 			<label htmlFor="isPublic">Public:</label>
 			<input
@@ -60,7 +62,7 @@ const CreateSongeloPlaylistForm = ({ onCreate }: { onCreate: () => void }) => {
 			checked={isPublic}
 			onChange={(e) => setIsPublic(e.target.checked)}
 			/>
-		</div>
+		</div> */}
 	
 		<div className="form-group">
 			<label htmlFor="maxSize">Maximum Size:</label>

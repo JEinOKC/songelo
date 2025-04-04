@@ -78,6 +78,21 @@ const PlaylistHome: React.FC = () => {
 						
 					</>
 				)}
+
+			{selectedPlaylist && filteredInactiveSongs.length == 0 && (
+				<div>
+					<p className="m-3">Add songs to your playlist:</p>
+					
+					<ul>
+						<li>
+							<a href={`/playlist/${selectedPlaylist}/top-tracks`} className="btn btn-default mb-4 w-full">Add Your Top Spotify Tracks</a>
+						</li>
+						<li>
+							<a href={`/playlist/${selectedPlaylist}/import`} className="btn btn-default mb-4 w-full">Import a Spotify Playlist</a>
+						</li>
+					</ul>
+				</div>
+			)}
 		</div>
 	);
 }

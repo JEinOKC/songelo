@@ -17,7 +17,7 @@ import PlaylistHome from '../components/PlaylistHome/PlaylistHome';
 
 
 const App = () => {
-	const { selectedPlaylist, setSelectedPlaylist } = useAppState();
+	const { selectedPlaylist, setSelectedPlaylist, loadingPlaylists } = useAppState();
 	const { isLoggedIn, handleLogin } = useAuthState();
 	// const configMode:'DEV'|'PROD' = import.meta.env.VITE_CONFIG;
 	const [showTopTracks, setShowTopTracks] = useState(false);
@@ -93,22 +93,31 @@ const App = () => {
 
 			<div className="main-content">
 
-
-				{(selectedPlaylist && showPlaylistSongs) ? (
-					<SongeloPlaylistViewer/>
-				) : (selectedPlaylist && showRecommendedTracks) ? (
-					<PlaylistRecommendedTracks />
-				) : (selectedPlaylist && showTopTracks) ? (
-					<TopTracks/>
-				) : (selectedPlaylist && showImportFromSpotify) ? (
-					<PlaylistImport />
-				) : (selectedPlaylist && showVoting) ? (
-					<Matchup />
-				) : (selectedPlaylist) ? (
-					<PlaylistHome />
-				) : (
-					<></>
-				)}
+				{!loadingPlaylists ? (
+					<>
+						{(selectedPlaylist && showPlaylistSongs) ? (
+							<SongeloPlaylistViewer/>
+						) : (selectedPlaylist && showRecommendedTracks) ? (
+							<PlaylistRecommendedTracks />
+						) : (selectedPlaylist && showTopTracks) ? (
+							<TopTracks/>
+						) : (selectedPlaylist && showImportFromSpotify) ? (
+							<PlaylistImport />
+						) : (selectedPlaylist && showVoting) ? (
+							<Matchup />
+						) : (selectedPlaylist) ? (
+							<PlaylistHome />
+						) : (
+							<></>
+						)}
+					</>
+				) :
+				(
+					<div className='alert alert-message w-full'>
+						Loading playlist information...
+					</div>
+				)
+			}
 
 			
 			</div>

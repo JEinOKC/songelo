@@ -78,6 +78,7 @@ const PlaylistImport = () => {
 	const _performPlaylistSearch = async () => {
 		try{
 			const playlists:SpotifyPlaylist[] = await performPlaylistSearch();
+			console.log({'playlists':playlists});
 			setSpotifyPlaylists(playlists);
 		}
 		catch(error){
@@ -109,7 +110,7 @@ const PlaylistImport = () => {
 	}
 
 	return (
-		<div>
+		<>
 			{/* <div>
 				<div>
 					{currentPlaylistObject?.id}
@@ -122,23 +123,26 @@ const PlaylistImport = () => {
 			</div> */}
 
 			{!selectedSpotifyPlaylist && (
-				<>
-					<h3 className="text-left">Your Playlists On Spotify:</h3>
-					<ul className="text-left">
-						{spotifyPlaylists
-							// .filter((playlist) => playlist.owner.id === spotifyID)
+				<div className="flex align-items-center flex-col justify-center w-full gap-2.5">
+					<h2 className="page-header">Your Playlists On Spotify:</h2>
+					<ul className="w-fit text-left">
+					{spotifyPlaylists
 							.map((playlist) => (
-							<li key={playlist.id} className="mb-5">
-								<h2 className="hover:cursor-pointe link" onClick={()=>setSelectedSpotifyPlaylist(playlist)}><strong>{playlist.name}</strong></h2>
-								<p>Owner ID: {playlist.owner.id}</p>
+							<li key={playlist.id} className="odd:bg-white even:bg-lighter-2 mb-2 rounded-md hover:cursor-pointer border-2 border-transparent hover:border-lighter-7"  onClick={()=>setSelectedSpotifyPlaylist(playlist)}>
+								<div className='flex flex-row items-center p-2 w-full max-w-full overflow-hidden'>
+									<img src={playlist.images[0].url} alt="Album Cover" className="w-16 h-16 rounded-md mr-2 shrink-0"/>
+									<span className="link block w-full flex-1">
+										{playlist.name}
+									</span>
+								</div>
 							</li>
 						))}		
 					</ul>
-				</>
+				</div>
 			)}
 
 			{selectedSpotifyPlaylist && (
-				<div className="text-left">
+				<div className="flex flex-col text-center w-full gap-2.5">
 
 					{importingAllSongs && (
 						<div className="alert-message bg-neutral mb-4">
@@ -149,20 +153,24 @@ const PlaylistImport = () => {
 					
 					{(filteredActiveSongs.length == 0 && selectedSpotifyPlaylistSongs.length > 0 && !importingAllSongs) && (
 						<div className="text-center">
-							<div className="alert-message bg-danger mb-4">You may import up to 100 songs or {currentPlaylistObject?.max_length} (whichever is smaller)</div>
+							<div className="alert-message bg-danger mb-4 w-full">You may import up to {currentPlaylistObject && currentPlaylistObject?.max_length < 100 ? currentPlaylistObject?.max_length : 100} songs</div>
 							<button className="btn btn-primary btn mb-4" onClick={importSpotifySongs.bind(this)}>Import Playlist</button>
 						</div>
 					)}
 
-					<h3 className="text-left">Playlist Tracks - {selectedSpotifyPlaylist.name}</h3>
-					<button className="hover:cursor-pointer" onClick={()=>{
+					<h2 className="page-header">
+						<strong>Playlist Tracks:</strong> 
+						<br/>
+						<span className="text-sm">{selectedSpotifyPlaylist.name}</span>
+					</h2>
+					<button className="hover:cursor-pointer inline-block" onClick={()=>{
 							setSelectedSpotifyPlaylist(null);
 							setSelectedSpotifyPlaylistSongs([]);
-						}}><FontAwesomeIcon icon={faChevronLeft} />&nbsp; Go Back</button>
+						}}><FontAwesomeIcon icon={faChevronLeft} />&nbsp; All Playlists</button>
 					<hr className="mb-2 mt-2"/>
 					<ul className="text-left">
 						{selectedSpotifyPlaylistSongs.map((song)=> (
-							<li key={song.track.id}>
+							<li className='mb-4 border-1 border-lighter-2 rounded-md' key={song.track.id}>
 								<Song track={song.track} playlistId={selectedPlaylist} canAddToPlaylist={!isTrackInPlaylist(song.track) && !importingAllSongs}/>
 							</li>
 						))} 
@@ -170,7 +178,7 @@ const PlaylistImport = () => {
 				</div>
 			)}
 			
-		</div>
+		</>
 	);
 };
 
