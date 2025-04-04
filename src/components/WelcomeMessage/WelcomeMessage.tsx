@@ -1,5 +1,3 @@
-import exp from "constants";
-
 const WelcomeMessage = () => {
 	return (
 		<div className='w-full flex flex-col items-center justify-center bg-lighter-7 p-4 rounded-md border-1 border-lighter-6'>
