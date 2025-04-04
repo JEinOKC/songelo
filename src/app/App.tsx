@@ -13,6 +13,7 @@ import PlaylistRecommendedTracks from '../components/PlaylistRecommendedTracks/P
 import SongeloPlaylistViewer from '../components/SongeloPlaylistViewer/SongeloPlaylistViewer';
 import PlaylistImport from '../components/PlaylistImport/PlaylistImport';
 import PlaylistHome from '../components/PlaylistHome/PlaylistHome';
+import WelcomeMessage from '../components/WelcomeMessage/WelcomeMessage';
 // import SearchSpotify from '../components/SearchSpotify/SearchSpotify';
 
 
@@ -108,7 +109,7 @@ const App = () => {
 						) : (selectedPlaylist) ? (
 							<PlaylistHome />
 						) : (
-							<></>
+							<WelcomeMessage />
 						)}
 					</>
 				) :
@@ -125,11 +126,17 @@ const App = () => {
 			
 		</div>
 		) : (
-		<div className="max-w-[480px] mx-auto text-center">
-			<button className="bg-darker-4 rounded-md login-button" onClick={handleLogin} >
-				Login with Spotify&nbsp;&nbsp;<FontAwesomeIcon icon={faSpotify} size='xl'/>
-			</button>
-		</div>
+			<>
+				<div className="max-w-[480px] mx-auto text-center">
+					<button className="bg-darker-4 rounded-md login-button" onClick={handleLogin} >
+						Login with Spotify&nbsp;&nbsp;<FontAwesomeIcon icon={faSpotify} size='xl'/>
+					</button>
+				</div>
+
+				<div className="m-8">
+					<WelcomeMessage />
+				</div>
+			</>
 		)}
 	  
 	</div>
