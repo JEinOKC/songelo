@@ -26,14 +26,18 @@ jobs:
           echo "VITE_CONFIG=PROD" >> .env
           npm install
 
-    #step 4: Build for Production
+    #step 4. Run Tests
+    - name: Run Tests
+      run: npm run test:ci
+
+    #step 5: Build for Production
     - name:  Build for Production
       env: 
         VITE_DOMAIN_URL: ${{ secrets.VITE_DOMAIN_URL }}
         VITE_CONFIG: 'PROD'
       run: npm run build
 
-    #step 5: Sync build folder to s3
+    #step 6: Sync build folder to s3
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@master
       with:
