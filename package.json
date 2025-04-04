@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "jest --watch",
-    "test:ci": "jest --ci --passwithNoTests"
+    "test:ci": "jest --ci --passWithNoTests"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
