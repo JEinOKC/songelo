@@ -65,6 +65,7 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 
 				} catch (refreshError) {
 					// Handle refresh token errors by clearing stored tokens and redirecting to the login page.
+					console.log('Refresh token error 68:', refreshError);
 					handleLogout();
 				}
 			}
@@ -115,6 +116,7 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 
 				} catch (refreshError) {
 					// Handle refresh token errors by clearing stored tokens and redirecting to the login page.
+					console.log('Refresh token error 119:', refreshError);
 					handleLogout();
 				}
 			}
@@ -186,6 +188,7 @@ export const AuthStateProvider = ({ children }: { children: ReactNode }) => {
 			}
 			
 		} catch (error) {
+			console.log('Refresh token error 191:', error);
 			handleLogout();
 		}
 

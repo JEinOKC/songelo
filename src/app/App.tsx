@@ -14,6 +14,7 @@ import SongeloPlaylistViewer from '../components/SongeloPlaylistViewer/SongeloPl
 import PlaylistImport from '../components/PlaylistImport/PlaylistImport';
 import PlaylistHome from '../components/PlaylistHome/PlaylistHome';
 import WelcomeMessage from '../components/WelcomeMessage/WelcomeMessage';
+import PlaylistExport from '../components/PlaylistExport/PlaylistExport';
 // import SearchSpotify from '../components/SearchSpotify/SearchSpotify';
 
 
@@ -26,6 +27,7 @@ const App = () => {
 	const [showRecommendedTracks, setShowRecommendedTracks] = useState(false);
 	const [showImportFromSpotify, setShowImportFromSpotify] = useState(false);
 	const [showVoting, setShowVoting] = useState(false);
+	const [showExport, setShowExport] = useState(false);
 	const { playlistID } = useParams<{ playlistID: string }>();
 	const { viewStyle } = useParams<{ viewStyle: string }>();
 
@@ -64,6 +66,13 @@ const App = () => {
 		}
 		else{
 			setShowImportFromSpotify(false);
+		}
+
+		if(viewStyle === 'export'){
+			setShowExport(true);
+		}
+		else{
+			setShowExport(false);
 		}
 	}, [viewStyle]);
 
@@ -106,6 +115,8 @@ const App = () => {
 							<PlaylistImport />
 						) : (selectedPlaylist && showVoting) ? (
 							<Matchup />
+						) : (selectedPlaylist && showExport) ? (
+							<PlaylistExport />
 						) : (selectedPlaylist) ? (
 							<PlaylistHome />
 						) : (
