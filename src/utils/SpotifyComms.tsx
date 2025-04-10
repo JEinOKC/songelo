@@ -27,7 +27,50 @@ const SpotifyComms = () => {
 		return [];
 		
 	}
-	
+
+	const addSongsToSpotifyPlaylist = async (playlistID:string, songs:PlaylistItem[]):Promise<boolean> => {
+		if(spotifyToken && playlistID && songs.length > 0){
+			const response = await spotifyAxiosInstance.post(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`,{
+				headers: { Authorization: `Bearer ${spotifyToken}` },
+				data: {
+					uris: songs.map((song) => song.track.uri)
+				}
+			});
+
+			if(response.status === 201){
+				return true;
+			}
+			else{
+				//failure
+				throw new Error("Failed to export songs to playlist");
+			}
+		}
+		throw new Error("Invalid parameters for exporting songs to playlist");
+	}
+
+	const createSpotifyPlaylist = async (userID:string, playlistName:string, songs:PlaylistItem[]):Promise<boolean> => {
+		if(spotifyToken && playlistName && songs.length > 0){
+			const response = await spotifyAxiosInstance.post(`https://api.spotify.com/v1/users/${userID}/playlists`,{
+				headers: { Authorization: `Bearer ${spotifyToken}` },
+				data: {
+					name: playlistName
+				}
+			});
+
+			if(response.status === 201){
+				const playlistID = response.data.id;
+				await addSongsToSpotifyPlaylist(playlistID, songs);
+				//success
+				return true;
+			}
+			else{
+				//failure
+				throw new Error("Failed to export songs to playlist");
+			}
+		}
+
+		throw new Error("Invalid parameters for exporting songs to playlist");
+	}
 	const performPlaylistSearch = async ():Promise<SpotifyPlaylist[]> => {
 		if(spotifyToken){
 			const response = await spotifyAxiosInstance.get('https://api.spotify.com/v1/me/playlists',{
@@ -93,7 +136,8 @@ const SpotifyComms = () => {
 		performPlaylistSearch,
 		spotifyTrackSearch,
 		getTopTracks,
-		getPlaylists
+		getPlaylists,
+		createSpotifyPlaylist
 	};
 }
 

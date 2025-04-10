@@ -4,6 +4,7 @@ export interface SpotifyTrack {
 	name: string;
 	artists: { name: string }[];
 	album: { images: { url: string }[] };
+	uri: string;
 }
 
 export interface PlaylistSong {
