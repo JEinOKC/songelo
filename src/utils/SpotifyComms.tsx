@@ -1,16 +1,16 @@
-import { PlaylistItemsResponse, SpotifyPlaylist, PlaylistItem, PlaylistResponse, SpotifySearchResult, SpotifyTrack} from '../types/interfaces';
+import { PlaylistSong, PlaylistItemsResponse, SpotifyPlaylist, PlaylistItem, PlaylistResponse, SpotifySearchResult, SpotifyTrack} from '../types/interfaces';
 import { useAuthState } from '../stores/AuthStateContext';
+import { useAppState } from '../stores/AppStateContext';
 
 const SpotifyComms = () => {
 
-	const { spotifyToken, spotifyAxiosInstance } = useAuthState();
+	const { spotifyID, spotifyToken, spotifyAxiosInstance } = useAuthState();
+	const { submitExportedPlaylist } = useAppState();
 
 	const findPlaylistSongs = async (selectedSpotifyPlaylist:string): Promise<PlaylistItem[]> => {
 		
 		if(spotifyToken && selectedSpotifyPlaylist){
-			const response = await spotifyAxiosInstance.get(`https://api.spotify.com/v1/playlists/${selectedSpotifyPlaylist}/tracks`,{
-				headers: { Authorization: `Bearer ${spotifyToken}` }
-			});
+			const response = await spotifyAxiosInstance.get(`https://api.spotify.com/v1/playlists/${selectedSpotifyPlaylist}/tracks`);
 	
 			if(response.status === 200){
 				const data:PlaylistItemsResponse = response.data;
@@ -28,13 +28,10 @@ const SpotifyComms = () => {
 		
 	}
 
-	const addSongsToSpotifyPlaylist = async (playlistID:string, songs:PlaylistItem[]):Promise<boolean> => {
+	const addSongsToSpotifyPlaylist = async (playlistID:string, songs:PlaylistSong[]):Promise<boolean> => {
 		if(spotifyToken && playlistID && songs.length > 0){
 			const response = await spotifyAxiosInstance.post(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`,{
-				headers: { Authorization: `Bearer ${spotifyToken}` },
-				data: {
-					uris: songs.map((song) => song.track.uri)
-				}
+				uris: songs.map((song) => song.track_info.uri)
 			});
 
 			if(response.status === 201){
@@ -48,18 +45,19 @@ const SpotifyComms = () => {
 		throw new Error("Invalid parameters for exporting songs to playlist");
 	}
 
-	const createSpotifyPlaylist = async (userID:string, playlistName:string, songs:PlaylistItem[]):Promise<boolean> => {
-		if(spotifyToken && playlistName && songs.length > 0){
-			const response = await spotifyAxiosInstance.post(`https://api.spotify.com/v1/users/${userID}/playlists`,{
-				headers: { Authorization: `Bearer ${spotifyToken}` },
-				data: {
-					name: playlistName
-				}
+	const createSpotifyPlaylist = async (playlistName:string, songs:PlaylistSong[]):Promise<boolean> => {
+		if(spotifyToken && playlistName && songs.length > 0 || !spotifyID){
+			
+			const response = await spotifyAxiosInstance.post(`https://api.spotify.com/v1/users/${spotifyID}/playlists`,{
+				name: playlistName,
+				description: "Playlist created by Songelo",
 			});
 
 			if(response.status === 201){
 				const playlistID = response.data.id;
-				await addSongsToSpotifyPlaylist(playlistID, songs);
+				
+				await Promise.all([addSongsToSpotifyPlaylist(playlistID, songs), submitExportedPlaylist(playlistID)]);
+
 				//success
 				return true;
 			}
@@ -73,9 +71,7 @@ const SpotifyComms = () => {
 	}
 	const performPlaylistSearch = async ():Promise<SpotifyPlaylist[]> => {
 		if(spotifyToken){
-			const response = await spotifyAxiosInstance.get('https://api.spotify.com/v1/me/playlists',{
-				headers: { Authorization: `Bearer ${spotifyToken}` }
-			});
+			const response = await spotifyAxiosInstance.get('https://api.spotify.com/v1/me/playlists');
 	
 			if(response.status === 200){
 				const data:PlaylistResponse = response.data;

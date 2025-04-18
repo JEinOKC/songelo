@@ -130,6 +130,57 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 
 	};
 
+	const fetchPlaylistExportData = async () => {
+		const playlistID = selectedPlaylist;
+
+		if (!appToken || !playlistID) return;
+
+		const response = await appAxiosInstance.get(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${playlistID}/export`);
+		if(response.status === 200){
+			const data = await response.data;
+			if (data.success) {
+				return data.exportData;
+			}
+		}
+		else{
+			//failure
+			return null;
+		}
+	};
+
+	const submitExportedPlaylist = async (spotifyPlaylistID:string) => {
+		if (!appToken || !selectedPlaylist) return;
+
+		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/playlists/${selectedPlaylist}/export`,{
+			spotify_playlist_id: spotifyPlaylistID
+		});
+
+		if(response.status === 200){
+			const data = await response.data;
+			if (data.success) {
+				return data.result;
+			}
+		}
+		else{
+			//failure
+			return null;
+		}
+	};
+
+	const getCurrentPlaylistName = ():string => {
+		if(!playlists.length || !selectedPlaylist){
+			return '';
+		}
+
+		for(var i = 0; i < playlists.length; i++){
+			if(playlists[i].id === selectedPlaylist){
+				return playlists[i].name;
+			}
+		}
+		
+		return '';
+	};
+
 	const promoteSongInPlaylist = async (track: SpotifyTrack) => {
 		if (!appToken || !selectedPlaylist) {
 			return;
@@ -256,7 +307,10 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			selectedPlaylistWaitingList,
 			promoteSongInPlaylist,
 			createNewPlaylist,
-			loadingPlaylists
+			loadingPlaylists,
+			fetchPlaylistExportData,
+			submitExportedPlaylist,
+			getCurrentPlaylistName,
 		}}>
 		{children}
 		</AppStateContext.Provider>
