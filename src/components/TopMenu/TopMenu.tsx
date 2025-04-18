@@ -11,7 +11,7 @@ import Logo from '../Logo/Logo';
 const TopMenu: React.FC = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const { isLoggedIn, setIsLoggedIn } = useAuthState();
-	const { selectedPlaylist } = useAppState();
+	const { selectedPlaylist, selectedPlaylistSongs } = useAppState();
 	const { viewStyle } = useParams<{ viewStyle: string }>();
 	// const { playlistID } = useParams<{ playlistID: string }>();
  
@@ -56,6 +56,14 @@ const TopMenu: React.FC = () => {
 								setIsOpen(false);
 							}} className="text-lightest hover:bg-darker-4">Song Standings</Link>)
 						}
+
+						{
+							isLoggedIn && selectedPlaylist && selectedPlaylistSongs.length > 0 && viewStyle !== 'export' &&  (
+							<Link to={`/playlist/${selectedPlaylist}/export`} onClick={()=>{
+								setIsOpen(false);
+							}} className="text-lightest hover:bg-darker-4">Export To Spotify</Link>)
+						}
+
 						<hr className='w-full border-8 text-transparent' />
 						{
 							isLoggedIn && selectedPlaylist && viewStyle !== 'top-tracks' &&  (
@@ -75,6 +83,7 @@ const TopMenu: React.FC = () => {
 								setIsOpen(false);
 							}} className="text-lightest hover:bg-darker-4">Import From Spotify Playlist</Link>)
 						}
+						
 						
 						{
 							isLoggedIn && (

@@ -62,12 +62,15 @@ export interface AppState {
 	submitMatchupResult: (winner: PlaylistSong, losers: PlaylistSong[]) => void;
 	fetchPlaylists: () => Promise<any>;
 	getPlaylistRecommendedTracks: (playlistID: string) => Promise<any>;
+	getCurrentPlaylistName: () => string;
 	saveSongInPlaylist: (track: SpotifyTrack, enqueue:boolean) => Promise<void>;
 	saveMultipleSongsInPlaylist: (tracks: SpotifyTrack[], enqueue:boolean) => Promise<void>;
 	selectedPlaylistWaitingList: PlaylistSong[];
 	promoteSongInPlaylist: (track: SpotifyTrack) => Promise<void>;
 	createNewPlaylist: (name: string, isPublic: boolean, maxSize: number) => Promise<string>;
 	loadingPlaylists: boolean;
+	fetchPlaylistExportData: () => Promise<SongeloPlaylistExport>;
+	submitExportedPlaylist: (spotifyPlaylistID: string) => Promise<any>;
 }
 
 export interface AuthState {
@@ -133,7 +136,14 @@ export interface Playlist{
 	is_active: boolean;
 	is_public: boolean;
 	max_length: number;
-	name: string;	
+	name: string;
+}
+
+export interface SongeloPlaylistExport{
+	id: string;
+	playlist_id: string;
+	spotify_playlist_id: string;
+	date_last_exported: string;
 }
 
 export interface PlaylistResponse {
