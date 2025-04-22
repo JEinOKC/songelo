@@ -32,6 +32,7 @@ const WelcomeMessage = () => {
 					Keep refining. Once your playlist is active, you'll also see <em>recommended tracks</em> based on your current picks.
 				</li>
 			</ol>
+			<div className="alert-message bg-neutral">Questions about how we handle your personal information? <a href="/privacy-policy" target="_blank">View our Privacy Policy</a></div>
 		</div>
 	)
 };
