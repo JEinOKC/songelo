@@ -10,7 +10,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 	const [playlists, setPlaylists] = useState<Playlist[]>([]);
 	const [selectedPlaylistSongs, setSelectedPlaylistSongs] = useState<PlaylistSong[]>([]);
 	const [selectedPlaylistWaitingList, setSelectedPlaylistWaitingList] = useState<PlaylistSong[]>([]);
-	const { appToken, appAxiosInstance } = useAuthState();
+	const { appToken, appAxiosInstance, handleLogout } = useAuthState();
 	const [loadingPlaylists, setLoadingPlaylists] = useState<boolean>(true);
 
 	const getPlaylistRecommendedTracks = async (playlistID:string) => {
@@ -238,6 +238,57 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 		}
 	}
 
+	const forgetUser = async () => {
+		await handleLogout();
+
+		return;
+		if (!appToken) {
+			return;
+		}
+
+		const response = await appAxiosInstance.post(`${import.meta.env.VITE_DOMAIN_URL}/api/forget-me`);
+
+		if(response.status === 200){
+			const data = await response.data;
+			if(data.success){
+				handleLogout();
+				return true;
+			}
+		}
+		else{
+			//failure
+			return false;
+		}
+	}
+
+	const downloadMyData = async () => {
+		if (!appToken) {
+			return;
+		}
+		const response = await appAxiosInstance.get(`${import.meta.env.VITE_DOMAIN_URL}/api/user-data`);
+		if(response.status === 200){
+			const data = await response.data;
+			if(data.success){
+				
+				const jsonData = JSON.stringify(data.userData);
+
+				const blob = new Blob([jsonData], { type: 'application/json' });
+				const url = URL.createObjectURL(blob);
+				const downloadLink = document.createElement('a');
+				downloadLink.href = url;
+				downloadLink.download = 'songelo_data.json';
+				document.body.appendChild(downloadLink);
+				downloadLink.click();
+				URL.revokeObjectURL(url);
+				// Clean up and remove the link
+				downloadLink.remove();
+			}
+		}
+		else{
+			//failure
+		}
+	}
+
 	const saveMultipleSongsInPlaylist = async (tracks: SpotifyTrack[], active:boolean=true) =>{
 		if (!appToken || !selectedPlaylist) {
 			return;
@@ -311,6 +362,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 			fetchPlaylistExportData,
 			submitExportedPlaylist,
 			getCurrentPlaylistName,
+			downloadMyData,
+			forgetUser
 		}}>
 		{children}
 		</AppStateContext.Provider>

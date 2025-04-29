@@ -71,6 +71,8 @@ export interface AppState {
 	loadingPlaylists: boolean;
 	fetchPlaylistExportData: () => Promise<SongeloPlaylistExport>;
 	submitExportedPlaylist: (spotifyPlaylistID: string) => Promise<any>;
+	downloadMyData: () => Promise<any>;
+	forgetUser: () => Promise<any>;
 }
 
 export interface AuthState {

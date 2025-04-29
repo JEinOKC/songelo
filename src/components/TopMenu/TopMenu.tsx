@@ -83,8 +83,12 @@ const TopMenu: React.FC = () => {
 								setIsOpen(false);
 							}} className="text-lightest hover:bg-darker-4">Import From Spotify Playlist</Link>)
 						}
-						
-						
+						{
+							isLoggedIn && viewStyle !== 'account' &&  (
+							<Link to="/account" onClick={()=>{
+								setIsOpen(false);
+							}} className="text-lightest hover:bg-darker-4">My Account</Link>)
+						}
 						{
 							isLoggedIn && (
 							<Link to="/" onClick={()=>{
