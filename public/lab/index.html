@@ -59,6 +59,40 @@ tbody tr:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px;
 label.slider { display: inline-flex; align-items: center; gap: 8px; }
 input[type=range] { width: 160px; accent-color: var(--accent); }
 select { font: inherit; padding: 6px 8px; border: 1px solid var(--axis); border-radius: 4px; background: var(--sheet); color: var(--ink); }
+.stack { display: flex; flex-direction: column; gap: inherit; }
+.stack[hidden], .panel[hidden] { display: none; }
+.tabs { display: flex; width: max-content; border-radius: 6px; overflow: hidden; }
+.tabs button { border: 0; padding: 8px 18px; font: 600 15px var(--font-ui); background: #4a6084; color: #dfe5f0; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--ink); }
+.weeknav { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-family: var(--font-ui); }
+.weeknav button { border: 1px solid var(--axis); background: var(--paper); color: var(--ink); border-radius: 6px; padding: 6px 14px; font: 600 16px var(--font-ui); cursor: pointer; }
+.weeknav button:disabled { opacity: .35; cursor: default; }
+.wk { position: relative; text-align: center; font-weight: 700; font-size: 17px; cursor: pointer; }
+.wk small { display: block; font-weight: 400; font-size: 12px; color: var(--muted); }
+.wk input { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; }
+.crow { display: grid; grid-template-columns: 44px 1fr 74px; gap: 10px; align-items: center; padding: 10px 2px; border-bottom: 1px solid var(--rule); font-family: var(--font-ui); cursor: pointer; }
+.crow:hover { background: var(--hover); }
+.crow:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.cpos { text-align: center; font: 700 22px var(--font-ui); line-height: 1; }
+.mv { display: block; font-size: 11px; font-weight: 600; margin-top: 3px; color: var(--muted); }
+.mv.up { color: #2e7d4f; } .mv.down { color: #9c3d8f; } .mv.nw { color: var(--accent); }
+.ct { font-weight: 600; font-size: 15px; }
+.ca { color: var(--muted); font-size: 13px; }
+.csc { text-align: right; font: 600 14px var(--font-data); }
+.csc svg { display: block; margin-left: auto; }
+.exp { grid-column: 1 / -1; background: var(--paper); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 12px; cursor: default; }
+.exp h3 { margin: 0; font: 600 12px var(--font-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.exp .match { font: 700 19px var(--font-ui); line-height: 1.25; }
+.exp .match span { display: block; font-weight: 400; font-size: 14px; color: var(--muted); }
+.exp .lg { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-2); }
+.exp .lg i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+.cmp { font-size: 14px; }
+.cmp th { text-align: right; border-bottom: 1px solid var(--rule); padding: 6px 4px; font-size: 11px; }
+.cmp th:first-child, .cmp td:first-child { text-align: left; }
+.cmp td { padding: 7px 4px; text-align: right; font-family: var(--font-data); font-size: 13.5px; }
+.cmp td:first-child { font-family: var(--font-ui); color: var(--ink-2); }
+.cmp td.me { color: var(--c1); font-weight: 600; }
+.cmp tbody tr { cursor: default; } .cmp tbody tr:hover { background: none; }
 </style>
 
 <div class="wrap">
@@ -67,6 +101,21 @@ select { font: inherit; padding: 6px 8px; border: 1px solid var(--axis); border-
     <h1>Hot 100 Ratings Lab</h1>
   </header>
 
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tabWeek" aria-selected="true">This week</button>
+    <button role="tab" id="tabAll" aria-selected="false">All-time</button>
+  </div>
+
+  <section class="panel" id="weekView" aria-label="Weekly chart">
+    <div class="weeknav">
+      <button id="prevW" aria-label="Previous week">‹</button>
+      <label class="wk"><span id="wkLabel">Loading…</span><small id="wkSub"></small><input type="date" id="wkPick" aria-label="Jump to a week"></label>
+      <button id="nextW" aria-label="Next week">›</button>
+    </div>
+    <div id="crows"></div>
+  </section>
+
+  <div class="stack" id="allView" hidden>
   <section class="panel" aria-label="Score curves">
     <div class="controls">
       <div class="search">
@@ -119,6 +168,7 @@ select { font: inherit; padding: 6px 8px; border: 1px solid var(--axis); border-
     <p class="small muted" id="sortNote">Click a row to add its curve to the chart.</p>
     <div class="scroll"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div>
   </section>
+  </div>
 </div>
 <div class="tip" id="tip" hidden></div>
 
@@ -273,6 +323,100 @@ $('sortBy').onchange = drawTable; $('typeF').onchange = drawTable; $('heldLvl').
 $('tb').addEventListener('click', e => { const tr = e.target.closest('tr[data-i]'); if (tr) addSong(+tr.dataset.i); });
 $('tb').addEventListener('keydown', e => { const tr = e.target.closest('tr[data-i]'); if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); addSong(+tr.dataset.i); } });
 
+
+// ---------- weekly chart ----------
+let BYWEEK = [], RUNS = [], curW = 0, openRow = -1;
+function buildWeekly() {
+  BYWEEK = WEEKS.map(() => []);
+  SONGS.forEach((S, i) => {
+    let run = null;
+    S.pts.forEach((p, k) => {
+      if (!run || p[0] !== S.pts[k - 1][0] + 1) { run = { s: i, first: !run, start: p[0], sc: [], pos: [] }; RUNS.push(run); S.runs = (S.runs || []).concat([run]); }
+      run.sc.push(p[1]); run.pos.push(p[2]); run.end = p[0];
+      BYWEEK[p[0]].push([p[2], i, k]);
+    });
+  });
+  BYWEEK.forEach(rows => rows.sort((a, b) => a[0] - b[0]));
+}
+function runAt(S, w) { return S.runs.find(r => r.start <= w && w <= r.end); }
+// The finished run (by another song, ended 4+ weeks before this chart) whose first n
+// weeks of score are closest to this run's so far. Debut runs match debut runs; a
+// return to the chart matches other returns.
+function lookalike(i, w) {
+  const run = runAt(SONGS[i], w), n = w - run.start + 1;
+  if (n < 2) return null;
+  const a = run.sc.slice(0, n);
+  let best = null, bestD = Infinity;
+  for (const r of RUNS) {
+    if (r.s === i || r.first !== run.first || r.end > w - 4 || r.sc.length < n) continue;
+    let d = 0;
+    for (let k = 0; k < n && d < bestD; k++) { const x = r.sc[k] - a[k]; d += x * x; }
+    if (d < bestD) { bestD = d; best = r; }
+  }
+  return best && { run, n, m: best };
+}
+function spark(sc) {
+  const w = 70, h = 22, lo = 1000, hi = 3300, n = sc.length;
+  const pts = sc.map((v, k) => [n === 1 ? w - 2 : k * (w - 2) / (n - 1), h - 1 - Math.max(0, Math.min(1, (v - lo) / (hi - lo))) * (h - 2)]);
+  return `<svg width="${w}" height="${h}" aria-hidden="true"><path d="M${pts.map(p => p.map(x => x.toFixed(1)).join(',')).join('L')}" fill="none" stroke="var(--accent)" stroke-width="1.6"/>${n === 1 ? `<circle cx="${pts[0][0]}" cy="${pts[0][1]}" r="2" fill="var(--accent)"/>` : ''}</svg>`;
+}
+function overlay(a, b) {
+  const W = 340, H = 210, P = 34, n = Math.max(a.length, b.length), all = a.concat(b);
+  const lo = Math.min(1200, ...all), hi = Math.max(...all) + 100;
+  const X = k => P + k * (W - P - 6) / (n - 1 || 1), Y = v => H - 16 - (v - lo) / (hi - lo) * (H - 24);
+  const line = (p, c, dash) => `<path d="M${p.map((v, k) => X(k).toFixed(1) + ',' + Y(v).toFixed(1)).join('L')}" fill="none" stroke="${c}" stroke-width="2"${dash ? ' stroke-dasharray="4 3"' : ''}/>`;
+  const grid = [1500, 2000, 2500, 3000, 3500].filter(v => v > lo && v < hi).map(v => `<line x1="${P}" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--rule)"/><text x="0" y="${Y(v) + 4}">${fmt(v)}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Score by week, this song against its match">${grid}${line(b, css('--muted'), 1)}${line(a, css('--c1'))}<circle cx="${X(a.length - 1)}" cy="${Y(a[a.length - 1])}" r="3.5" fill="${css('--c1')}"/><text x="${P}" y="${H - 2}">week 1</text><text x="${W - 60}" y="${H - 2}">week ${n}</text></svg>`;
+}
+function expanded(i, w) {
+  const L = lookalike(i, w);
+  if (!L) return `<div class="exp"><h3>Tracking like</h3><div class="ca">One week on the chart. Too new to compare.</div></div>`;
+  const S = SONGS[i], M = SONGS[L.m.s], a = L.run.sc.slice(0, L.n), b = L.m.sc, n = L.n, mx = x => Math.max(...x), mn = x => Math.min(...x);
+  const head = (t, alt) => esc(t.length > 14 ? alt : t);
+  return `<div class="exp">
+    <div><h3>Tracking like</h3><div class="match">${esc(M.title)}<span>${esc(M.performer)} · ${WEEKS[L.m.start].slice(0, 4)}</span></div></div>
+    <div class="lg"><span><i style="background:var(--c1)"></i>${esc(S.title)}</span><span><i style="background:var(--muted)"></i>${esc(M.title)}</span></div>
+    ${overlay(a, b)}
+    <table class="cmp"><thead><tr><th></th><th>${head(S.title, 'This song')}</th><th>${head(M.title, 'Match')}<br>at wk ${n}</th><th>Match<br>final</th></tr></thead><tbody>
+      <tr><td>${L.run.first ? 'Weeks on chart' : 'Weeks this run'}</td><td class="me">${n}</td><td>${n}</td><td>${b.length}</td></tr>
+      <tr><td>Score</td><td class="me">${fmt(a[n - 1])}</td><td>${fmt(b[n - 1])}</td><td>${fmt(b[b.length - 1])}</td></tr>
+      <tr><td>Peak score</td><td class="me">${fmt(mx(a))}</td><td>${fmt(mx(b.slice(0, n)))}</td><td>${fmt(mx(b))}</td></tr>
+      <tr><td>Best position</td><td class="me">#${mn(L.run.pos.slice(0, n))}</td><td>#${mn(L.m.pos.slice(0, n))}</td><td>#${mn(L.m.pos)}</td></tr>
+    </tbody></table></div>`;
+}
+function drawWeek() {
+  const w = curW, last = WEEKS.length - 1;
+  const d = new Date(WEEKS[w] + 'T00:00:00');
+  $('wkLabel').textContent = 'Week of ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  $('wkSub').textContent = w === last ? 'Latest chart' : 'Tap to pick a date';
+  $('wkPick').value = WEEKS[w]; $('wkPick').min = WEEKS[0]; $('wkPick').max = WEEKS[last];
+  $('prevW').disabled = w === 0; $('nextW').disabled = w === last;
+  $('crows').innerHTML = BYWEEK[w].map(([pos, i, k], row) => {
+    const S = SONGS[i], prev = k > 0 && S.pts[k - 1][0] === w - 1 ? S.pts[k - 1][2] : null;
+    const mv = k === 0 ? '<span class="mv nw">NEW</span>' : prev === null ? '<span class="mv nw">RE</span>'
+      : prev === pos ? '<span class="mv">–</span>' : prev > pos ? `<span class="mv up">▲${prev - pos}</span>` : `<span class="mv down">▼${pos - prev}</span>`;
+    const run = runAt(S, w);
+    return `<div class="crow" tabindex="0" data-row="${row}" aria-expanded="${row === openRow}"><div class="cpos">${pos}${mv}</div><div><div class="ct">${esc(S.title)}</div><div class="ca">${esc(S.performer)}</div></div><div class="csc">${fmt(S.pts[k][1])}${spark(run.sc.slice(0, w - run.start + 1))}</div>${row === openRow ? expanded(i, w) : ''}</div>`;
+  }).join('');
+}
+function setWeek(w) { curW = Math.max(0, Math.min(WEEKS.length - 1, w)); openRow = -1; drawWeek(); saveUrl(); }
+function setView(all) {
+  $('tabAll').setAttribute('aria-selected', all); $('tabWeek').setAttribute('aria-selected', !all);
+  $('allView').hidden = !all; $('weekView').hidden = all; if (all) drawChart(); saveUrl();
+}
+function saveUrl() {
+  const q = new URLSearchParams();
+  if ($('allView').hidden) { if (curW !== WEEKS.length - 1) q.set('w', WEEKS[curW]); } else q.set('view', 'all');
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
+}
+$('prevW').onclick = () => setWeek(curW - 1);
+$('nextW').onclick = () => setWeek(curW + 1);
+$('wkPick').onchange = e => { const v = e.target.value; if (!v) return; let w = WEEKS.findIndex(x => x > v); setWeek(w === -1 ? WEEKS.length - 1 : Math.max(0, w - 1)); };
+$('tabWeek').onclick = () => setView(false);
+$('tabAll').onclick = () => setView(true);
+$('crows').addEventListener('click', e => { if (e.target.closest('.exp')) return; const r = e.target.closest('.crow'); if (!r) return; openRow = +r.dataset.row === openRow ? -1 : +r.dataset.row; drawWeek(); });
+$('crows').addEventListener('keydown', e => { const r = e.target.closest('.crow'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); r.click(); } });
+
 // ---------- load ----------
 fetch('curves.json').then(r => r.json()).then(D => {
   WEEKS = D.weeks; SONGS = D.songs.map(decode);
@@ -282,7 +426,12 @@ fetch('curves.json').then(r => r.json()).then(D => {
   const pick = (t, p) => SONGS.findIndex(S => S.title === t && S.performer.startsWith(p));
   [['Hey Jude', 'The Beatles'], ['Physical', 'Olivia'], ['Old Town Road', 'Lil Nas X'], ["Choosin' Texas", 'Ella']].map(x => pick(...x)).filter(i => i >= 0).forEach(addSong);
   drawTable();
-}).catch(() => { $('chart').innerHTML = '<div class="empty">The song data didn\'t load. Reload the page to try again.</div>'; });
+  buildWeekly();
+  const q = new URLSearchParams(location.search), qw = q.get('w');
+  curW = WEEKS.length - 1;
+  if (qw) { const w = WEEKS.findIndex(x => x > qw); curW = w === -1 ? WEEKS.length - 1 : Math.max(0, w - 1); }
+  drawWeek(); setView(q.get('view') === 'all');
+}).catch(() => { $('chart').innerHTML = '<div class="empty">The song data didn\'t load. Reload the page to try again.</div>'; $('wkLabel').textContent = 'The chart didn\'t load. Reload the page to try again.'; });
 const redraw = () => drawChart();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redraw);
 new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
