@@ -1,0 +1,26 @@
+name: Upload lab to S3 dev path
+
+on:
+  push:
+    branches:
+    - lab-dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # the lab is static, so public/lab is uploaded as-is to /lab-dev
+    - name: Deploy to S3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --follow-symlinks --delete
+      env:
+        SOURCE_DIR: ./public/lab
+        DEST_DIR: lab-dev
+        AWS_REGION: us-east-1
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
