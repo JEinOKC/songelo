@@ -25,3 +25,17 @@ jobs:
         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    # The venues page goes to /venues-dev/okc the same way. venues.json there is
+    # written by the concerts pipeline (dbx serverless/concerts, site layer).
+    - name: Deploy venues to S3 dev path
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --follow-symlinks --delete --exclude 'venues.json'
+      env:
+        SOURCE_DIR: ./public/venues/okc
+        DEST_DIR: venues-dev/okc
+        AWS_REGION: us-east-1
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
