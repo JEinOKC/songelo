@@ -134,49 +134,45 @@ function stats(v) {
 }
 
 // ---------- ticket price trend ----------
+const TODAY = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
 const monthName = m => fmt(m + '-01', { month: 'short' });
-// City average per month, weighted by priced shows.
-function cityPrices() {
-  const acc = {};
-  D.venues.forEach(v => Object.entries(v.month_prices || {}).forEach(([m, [avg, n]]) => { const a = acc[m] = acc[m] || [0, 0]; a[0] += avg * n; a[1] += n; }));
-  return Object.fromEntries(Object.entries(acc).sort().map(([m, [s, n]]) => [m, [Math.round(s / n * 100) / 100, n]]));
-}
+// Last month's change: the current month against the one before it (never a future month).
 function change(mp) {
-  const e = Object.entries(mp).sort();
+  const cur = TODAY.slice(0, 7), e = Object.entries(mp).filter(([m]) => m <= cur).sort();
   if (e.length < 2) return '';
   const [pm, [a]] = e[e.length - 2], [, [b]] = e[e.length - 1], d = b - a, pct = Math.round(d / a * 100);
   const cls = Math.abs(d) < 0.005 ? 'flat' : d > 0 ? 'up' : 'down', arrow = cls === 'flat' ? '–' : d > 0 ? '▲' : '▼';
   return `<span class="chg ${cls}">${arrow} ${money(Math.abs(Math.round(d * 100) / 100))} (${pct > 0 ? '+' : ''}${pct}%) vs ${monthName(pm)}</span>`;
 }
-function spark(mp, w = 86, h = 28) {
-  const vals = Object.entries(mp).sort().map(e => e[1][0]);
-  if (vals.length < 2) return '';
-  const lo = Math.min(...vals), hi = Math.max(...vals), r = hi - lo || 1;
-  const pts = vals.map((v, i) => [i * (w - 4) / (vals.length - 1) + 2, h - 3 - (v - lo) / r * (h - 6)]);
-  const last = vals[vals.length - 1] - vals[vals.length - 2], col = last > 0 ? '#2e7d4f' : last < 0 ? '#9c3d8f' : 'var(--muted)';
-  return `<svg width="${w}" height="${h}" aria-hidden="true"><path d="M${pts.map(p => p.map(x => x.toFixed(1)).join(',')).join('L')}" fill="none" stroke="${col}" stroke-width="2"/><circle cx="${pts[pts.length - 1][0]}" cy="${pts[pts.length - 1][1]}" r="2.5" fill="${col}"/></svg>`;
-}
-function latest(mp) { const e = Object.entries(mp).sort(); return e.length ? e[e.length - 1] : null; }
-function tickerRow(name, sub, mp, href, all) {
-  const l = latest(mp); if (!l) return '';
-  return `<${href ? `a href="${href}"` : 'div'} class="tk${all ? ' all' : ''}"><div class="nm">${esc(name)}<small>${sub}</small></div><div class="px">${cost(l[1][0])}${change(mp)}</div>${spark(mp)}</${href ? 'a' : 'div'}>`;
-}
-function ticker() {
-  const city = cityPrices(), l = latest(city);
-  if (!l) return '';
-  return `<section class="panel"><h2>Average ticket, ${fmt(l[0] + '-01', { month: 'long' })}</h2><div class="ticker">
-    ${D.venues.map(v => tickerRow(v.name, (v.month_prices[l[0]] || [0, 0])[1] + ' shows', v.month_prices || {}, '?v=' + v.slug)).join('')}
-    ${tickerRow('All OKC venues', l[1][1] + ' shows', city, null, true)}</div></section>`;
-}
+// Months on a continuous axis (a month with no priced shows is skipped by the
+// line, not plotted as zero). Solid up to today, dotted after; the future side
+// sits behind a faint wash, split by a vertical "today" line.
 function trendChart(mp) {
   const e = Object.entries(mp).sort();
   if (e.length < 2) return '';
-  const W = 340, H = 150, L = 34, R = 34, T = 26, B = 22, vals = e.map(x => x[1][0]);
+  const addM = (m, n) => { const [y, mo] = m.split('-').map(Number), d = new Date(y, mo - 1 + n, 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+  const axis = []; for (let m = e[0][0]; m <= e[e.length - 1][0]; m = addM(m, 1)) axis.push(m);
+  const W = 340, H = 160, L = 34, R = 18, T = 24, B = 24, vals = e.map(x => x[1][0]);
   const lo = Math.floor(Math.min(...vals) / 5) * 5, hi = Math.ceil(Math.max(...vals) / 5) * 5 || lo + 5;
-  const X = i => L + i * (W - L - R) / (e.length - 1), Y = v => T + (hi - v) / (hi - lo || 1) * (H - T - B);
+  const step = (W - L - R) / Math.max(1, axis.length - 1);
+  const X = m => L + axis.indexOf(m) * step, Y = v => T + (hi - v) / (hi - lo || 1) * (H - T - B);
+  const cur = TODAY.slice(0, 7), [ty, tm, td] = TODAY.split('-').map(Number), dim = new Date(ty, tm, 0).getDate();
+  const tx = axis.includes(cur) ? X(cur) + (td - 0.5) / dim * step - step / 2 : (cur < axis[0] ? L - step / 2 : W - R + step / 2);
+  const line = `M${e.map(([m, [v]]) => X(m).toFixed(1) + ',' + Y(v).toFixed(1)).join('L')}`;
+  // Label the current month, the highest and the lowest; every month gets a tick.
+  const curPt = e.filter(([m]) => m <= cur).pop(), hiPt = e.reduce((a, b) => b[1][0] > a[1][0] ? b : a), loPt = e.reduce((a, b) => b[1][0] < a[1][0] ? b : a);
+  const labelled = new Set([curPt && curPt[0], hiPt[0], loPt[0]]);
+  const yearMark = m => m.endsWith('-01') || m === axis[0] ? ` '${m.slice(2, 4)}` : '';
   const grid = [lo, hi].map(v => `<line x1="${L}" x2="${W - 4}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--rule)"/><text x="0" y="${Y(v) + 4}">$${v}</text>`).join('');
-  const pts = e.map(([m, [v]], i) => `<circle cx="${X(i)}" cy="${Y(v)}" r="3.5" fill="var(--accent)"/><text x="${X(i)}" y="${Y(v) - 9}" text-anchor="middle" style="fill:var(--ink);font-weight:600">${money(v)}</text><text x="${X(i)}" y="${H - 4}" text-anchor="middle">${monthName(m)}</text>`).join('');
-  return `<svg class="trend" viewBox="0 0 ${W} ${H}" width="100%" style="max-width:520px" role="img" aria-label="Average ticket price by month">${grid}<path d="M${e.map(([, [v]], i) => X(i).toFixed(1) + ',' + Y(v).toFixed(1)).join('L')}" fill="none" stroke="var(--accent)" stroke-width="2"/>${pts}</svg>`;
+  const ticks = axis.map(m => `<text x="${X(m)}" y="${H - 6}" text-anchor="middle"${m > cur ? ' opacity=".55"' : ''}>${monthName(m)[0]}${yearMark(m)}</text>`).join('');
+  const dots = e.map(([m, [v, n]]) => `<g${m > cur ? ' opacity=".55"' : ''}><circle cx="${X(m)}" cy="${Y(v)}" r="3.5" fill="var(--accent)"><title>${monthName(m)} ${m.slice(0, 4)}: ${money(v)} + fees, ${n} show${n > 1 ? 's' : ''}</title></circle>${labelled.has(m) ? `<text x="${X(m)}" y="${Y(v) - 9}" text-anchor="middle" style="fill:var(--ink);font-weight:600">${money(v)}</text>` : ''}</g>`).join('');
+  return `<svg class="trend" viewBox="0 0 ${W} ${H}" width="100%" style="max-width:560px" role="img" aria-label="Average ticket price by month, past and announced">
+    <defs><clipPath id="past"><rect x="0" y="0" width="${tx}" height="${H}"/></clipPath><clipPath id="ahead"><rect x="${tx}" y="0" width="${W}" height="${H}"/></clipPath></defs>
+    ${grid}<rect x="${tx}" y="${T - 14}" width="${Math.max(0, W - 4 - tx)}" height="${H - T - B + 14}" fill="var(--paper)" opacity=".45"/>
+    <line x1="${tx}" x2="${tx}" y1="${T - 14}" y2="${H - B}" stroke="var(--ink)" stroke-width="1" opacity=".5"/><text x="${tx}" y="${T - 16}" text-anchor="middle" style="fill:var(--ink)">Today</text>
+    <path d="${line}" clip-path="url(#past)" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    <path d="${line}" clip-path="url(#ahead)" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 4" opacity=".7"/>
+    ${dots}${ticks}</svg>`;
 }
 
 function tabs(cur) {
@@ -185,7 +181,7 @@ function tabs(cur) {
 }
 function index() {
   document.title = 'OKC Venues · Songelo';
-  return `<h1>OKC Venues</h1>${tabs('')}${ticker()}` + D.venues.map(v => `<a class="panel card" href="?v=${v.slug}">
+  return `<h1>OKC Venues</h1>${tabs('')}` + D.venues.map(v => `<a class="panel card" href="?v=${v.slug}">
     <div><h3>${esc(v.name)}</h3><div class="addr">${esc(v.address)}</div></div>${stats(v)}</a>`).join('');
 }
 // Every upcoming show at every venue, by date, each carrying its venue.
@@ -198,7 +194,7 @@ function showRow(s, withVenue) {
       <div class="bill">${s.bill.length ? s.bill.map((b, k) => `<div class="${k ? 'sup' : 'hl'}"><a href="?b=${b.id}">${esc(b.name)}</a></div>`).join('') : `<div class="hl">${esc(s.name)}</div>`}${withVenue ? `<div class="where"><a href="?v=${s.venue.slug}">${esc(s.venue.name)}</a></div>` : ''}</div>
       <div class="price">${cost(s.price)}${s.url ? `<a href="${esc(s.url)}" rel="noopener">Tickets</a>` : ''}</div></div>`;
 }
-const TODAY = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
+
 let calMonth = TODAY.slice(0, 7), calDay = null;
 function calendar() {
   document.title = 'OKC Show Calendar · Songelo';
