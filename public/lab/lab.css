@@ -94,3 +94,5 @@ select { font: inherit; padding: 6px 8px; border: 1px solid var(--axis); border-
 table.facts th { text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--muted); border-bottom: 1px solid var(--rule); width: 40%; }
 table.facts td { font-weight: 600; }
 nav.controls a { color: var(--ink); font: 600 14px var(--font-ui); }
+.exp-link { font: 600 14px var(--font-ui); color: var(--accent-ink); align-self: flex-start; }
+.exp .match a { color: inherit; }

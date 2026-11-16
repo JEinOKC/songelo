@@ -9,7 +9,7 @@
 <meta property="og:description" content="Every Billboard Hot 100 song since 1958, rated week by week.">
 <meta property="og:url" content="https://songelo.com/lab/">
 <link rel="icon" type="image/svg+xml" href="/songelo-lg.svg">
-<link rel="stylesheet" href="lab.css?v=2">
+<link rel="stylesheet" href="lab.css?v=3">
 
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:14px">
@@ -284,13 +284,18 @@ function overlay(a, b) {
   const grid = [1500, 2000, 2500, 3000, 3500].filter(v => v > lo && v < hi).map(v => `<line x1="${P}" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--rule)"/><text x="0" y="${Y(v) + 4}">${fmt(v)}</text>`).join('');
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Score by week, this song against its match">${grid}${line(b, css('--muted'), 1)}${line(a, css('--c1'))}<circle cx="${X(a.length - 1)}" cy="${Y(a[a.length - 1])}" r="3.5" fill="${css('--c1')}"/><text x="${P}" y="${H - 2}">week 1</text><text x="${W - 60}" y="${H - 2}">week ${n}</text></svg>`;
 }
+// Song page slugs, written by the hot100 pipeline beside curves.json (songs/index.json).
+let SLUGS = null;
+fetch('songs/index.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(s => { SLUGS = s; if (openRow >= 0) drawWeek(); }).catch(() => {});
+const songHref = i => SLUGS && SLUGS[i] ? `songs/${SLUGS[i]}/` : null;
 function expanded(i, w) {
   const L = lookalike(i, w);
-  if (!L) return `<div class="exp"><h3>Tracking like</h3><div class="ca">One week on the chart. Too new to compare.</div></div>`;
+  if (!L) return `<div class="exp">${songHref(i) ? `<a class="exp-link" href="${songHref(i)}">${esc(SONGS[i].title)} chart history ›</a>` : ''}<h3>Tracking like</h3><div class="ca">One week on the chart. Too new to compare.</div></div>`;
   const S = SONGS[i], M = SONGS[L.m.s], a = L.run.sc.slice(0, L.n), b = L.m.sc, n = L.n, mx = x => Math.max(...x), mn = x => Math.min(...x);
   const head = (t, alt) => esc(t.length > 14 ? alt : t);
   return `<div class="exp">
-    <div><h3>Tracking like</h3><div class="match">${esc(M.title)}<span>${esc(M.performer)} · ${WEEKS[L.m.start].slice(0, 4)}</span></div></div>
+    ${songHref(i) ? `<a class="exp-link" href="${songHref(i)}">${esc(S.title)} chart history ›</a>` : ''}
+    <div><h3>Tracking like</h3><div class="match">${songHref(L.m.s) ? `<a href="${songHref(L.m.s)}">${esc(M.title)}</a>` : esc(M.title)}<span>${esc(M.performer)} · ${WEEKS[L.m.start].slice(0, 4)}</span></div></div>
     <div class="lg"><span><i style="background:var(--c1)"></i>${esc(S.title)}</span><span><i style="background:var(--muted)"></i>${esc(M.title)}</span></div>
     ${overlay(a, b)}
     <table class="cmp"><thead><tr><th></th><th>${head(S.title, 'This song')}</th><th>${head(M.title, 'Match')}<br>at wk ${n}</th><th>Match<br>final</th></tr></thead><tbody>
