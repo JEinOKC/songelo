@@ -418,7 +418,7 @@ $('crows').addEventListener('click', e => { if (e.target.closest('.exp')) return
 $('crows').addEventListener('keydown', e => { const r = e.target.closest('.crow'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); r.click(); } });
 
 // ---------- load ----------
-fetch('curves.json').then(r => r.json()).then(D => {
+fetch('curves.json', { cache: 'no-cache' }).then(r => r.json()).then(D => {
   WEEKS = D.weeks; SONGS = D.songs.map(decode);
   HLINES = D.lines;
   if (D.lines && $('lineV')) $('lineV').textContent = Object.entries(D.lines).filter(([n]) => [50, 25, 10, 5].includes(+n)).sort((a, b) => b[0] - a[0]).map(([n, v]) => `#${n} ${fmt(v)}`).join(', ');
