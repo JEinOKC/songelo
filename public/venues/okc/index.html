@@ -32,10 +32,11 @@ a { color: var(--accent); }
 .stats { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 16px; align-items: end; }
 .stat b { display: block; font: 700 22px var(--font-ui); }
 .stat span { display: block; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-.bars { display: flex; align-items: flex-end; gap: 3px; height: 34px; margin: 18px 0; }  /* top margin: room for the counts drawn above the bars */
-.bars div { flex: 1 1 0; max-width: 22px; min-width: 6px; background: var(--accent); border-radius: 2px 2px 0 0; position: relative; }
-.bars small { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--muted); }
-.bars i { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font: 600 10px var(--font-ui); color: var(--ink-2); font-style: normal; }
+.bars { display: flex; align-items: flex-end; gap: 3px; margin-bottom: 6px; }
+.bars .col { flex: 1 1 0; max-width: 22px; min-width: 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.bars .bar { width: 100%; background: var(--accent); border-radius: 2px 2px 0 0; }
+.bars i { font: 600 10px var(--font-ui); color: var(--ink-2); font-style: normal; line-height: 1; }
+.bars small { font-size: 10px; color: var(--muted); line-height: 1.2; }
 .show { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--rule); }
 .show:last-child { border-bottom: 0; }
 .date { text-align: center; background: var(--paper); border-radius: 6px; padding: 4px 0; }
@@ -126,7 +127,7 @@ function bars(months) {
   const max = Math.max(...entries.map(e => e[1]));
   // Many months: single-letter labels, and counts only on hover/tap.
   const many = entries.length > 6;
-  return `<div class="bars">${entries.map(([m, n]) => `<div style="height:${Math.max(3, n / max * 34)}px" title="${fmt(m + '-01', { month: 'short', year: 'numeric' })}: ${n} shows">${many ? '' : `<i>${n}</i>`}<small>${fmt(m + '-01', { month: many ? 'narrow' : 'short' })}</small></div>`).join('')}</div>`;
+  return `<div class="bars">${entries.map(([m, n]) => `<div class="col" title="${fmt(m + '-01', { month: 'short', year: 'numeric' })}: ${n} shows">${many ? '' : `<i>${n}</i>`}<div class="bar" style="height:${Math.max(3, n / max * 34)}px"></div><small>${fmt(m + '-01', { month: many ? 'narrow' : 'short' })}</small></div>`).join('')}</div>`;
 }
 function stats(v) {
   return `<div class="stats">
