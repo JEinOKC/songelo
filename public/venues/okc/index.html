@@ -29,11 +29,11 @@ a { color: var(--accent); }
 .card h3 { margin: 0; font-size: 21px; }
 .addr { color: var(--muted); font-size: 14px; }
 .sub { color: var(--ink-2); font-size: 15px; }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: end; }
+.stats { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 16px; align-items: end; }
 .stat b { display: block; font: 700 22px var(--font-ui); }
 .stat span { display: block; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-.bars { display: flex; align-items: flex-end; gap: 6px; height: 34px; margin-bottom: 18px; }
-.bars div { width: 22px; background: var(--accent); border-radius: 2px 2px 0 0; position: relative; }
+.bars { display: flex; align-items: flex-end; gap: 3px; height: 34px; margin-bottom: 18px; }
+.bars div { flex: 1 1 0; max-width: 22px; min-width: 6px; background: var(--accent); border-radius: 2px 2px 0 0; position: relative; }
 .bars small { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--muted); }
 .bars i { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font: 600 10px var(--font-ui); color: var(--ink-2); font-style: normal; }
 .show { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--rule); }
@@ -124,7 +124,9 @@ function bars(months) {
   const entries = Object.entries(months).sort();
   if (!entries.length) return '<div class="sub">—</div>';
   const max = Math.max(...entries.map(e => e[1]));
-  return `<div class="bars">${entries.map(([m, n]) => `<div style="height:${Math.max(3, n / max * 34)}px"><i>${n}</i><small>${fmt(m + '-01', { month: 'short' })}</small></div>`).join('')}</div>`;
+  // Many months: single-letter labels, and counts only on hover/tap.
+  const many = entries.length > 6;
+  return `<div class="bars">${entries.map(([m, n]) => `<div style="height:${Math.max(3, n / max * 34)}px" title="${fmt(m + '-01', { month: 'short', year: 'numeric' })}: ${n} shows">${many ? '' : `<i>${n}</i>`}<small>${fmt(m + '-01', { month: many ? 'narrow' : 'short' })}</small></div>`).join('')}</div>`;
 }
 function stats(v) {
   return `<div class="stats">
