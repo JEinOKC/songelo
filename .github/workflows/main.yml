@@ -41,7 +41,7 @@ jobs:
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@master
       with:
-        args: --follow-symlinks --delete --exclude '.git*/*' --exclude 'lab-dev/*'
+        args: --follow-symlinks --delete --exclude '.git*/*' --exclude 'lab-dev/*' --exclude 'lab/curves.json'
       env:
         SOURCE_DIR: ./dist #only upload the dist folder
         AWS_REGION: us-east-1
