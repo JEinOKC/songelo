@@ -68,6 +68,14 @@
           <option value="rivals">Strongest rivals at peak</option>
           <option value="volatility">Most volatile</option>
         </select>
+        <select id="eraF" aria-label="Era">
+          <option value="">All eras</option>
+          <option value="0">AM Radio Era (1958–1977)</option>
+          <option value="1">FM Radio Era (1977–1991)</option>
+          <option value="2">SoundScan Era (1991–2008)</option>
+          <option value="3">Download Era (2008–2018)</option>
+          <option value="4">Streaming Era (2018–now)</option>
+        </select>
         <select id="typeF" aria-label="Curve type">
           <option value="">All curve types</option>
           <option value="spike">Spike</option>
@@ -218,12 +226,16 @@ const SORTS = {
   rivals: { label: 'Rivals’ average score', get: S => S.m.rivals, fmt: v => fmt(v), big: true },
   volatility: { label: 'Weekly swing', get: S => S.m.volatility, fmt: v => v.toFixed(1), big: true },
 };
+// The five chart eras from the rating lab's change-point search (research/rating-lab,
+// expect.py BREAKS). A song belongs to the era of the week it peaked.
+const ERA_BREAKS = ['1977-04-23', '1991-11-16', '2008-04-12', '2018-03-03'];
+const eraOf = S => ERA_BREAKS.filter(b => WEEKS[S.peakWeek] >= b).length;
 const TYPE_NAMES = { spike: 'Spike', plateau: 'Plateau', sleeper: 'Sleeper', comeback: 'Comeback', seasonal: 'Seasonal', standard: 'Standard', minor: 'Minor' };
 function drawTable() {
-  const by = $('sortBy').value, lvl = $('heldLvl').value, tf = $('typeF').value, cfg = SORTS[by];
+  const by = $('sortBy').value, lvl = $('heldLvl').value, tf = $('typeF').value, ef = $('eraF').value, cfg = SORTS[by];
   $('heldLvl').hidden = by !== 'held';
   const get = by === 'held' ? (S => S.m['held' + lvl]) : cfg.get;
-  let pool = SONGS.map((S, i) => i).filter(i => !tf || SONGS[i].m.type === tf);
+  let pool = SONGS.map((S, i) => i).filter(i => (!tf || SONGS[i].m.type === tf) && (ef === '' || eraOf(SONGS[i]) === +ef));
   if (cfg.big) pool = pool.filter(i => SONGS[i].peak >= HLINES['5']);
   let rows = pool.map(i => [i, get(SONGS[i])]).filter(r => r[1] !== null && r[1] !== undefined && !Number.isNaN(r[1]) && (by !== 'held' || r[1] > 0));
   rows.sort((a, b) => (cfg.asc ? a[1] - b[1] : b[1] - a[1]) || SONGS[b[0]].peak - SONGS[a[0]].peak);
@@ -233,9 +245,9 @@ function drawTable() {
   $('th').innerHTML = `<tr><th class="n">#</th><th>Song</th><th class="n">Debut</th><th class="n">Chart peak</th><th>Type</th><th class="n">${label}</th></tr>`;
   $('tb').innerHTML = rows.length ? rows.map(([i, v], k) => { const S = SONGS[i];
     return `<tr tabindex="0" data-i="${i}"><td class="n muted">${k + 1}</td><td><div style="font-weight:600">${esc(S.title)}</div><div class="small muted">${esc(S.performer)}</div></td><td class="n">${S.year}</td><td class="n">#${S.bestPos}</td><td class="small">${TYPE_NAMES[S.m.type]}</td><td class="n"><b>${cfg.fmt(v)}</b></td></tr>`; }).join('')
-    : '<tr><td colspan="6" class="empty">No songs match. Try another curve type or a lower threshold.</td></tr>';
+    : '<tr><td colspan="6" class="empty">No songs match. Try another era, curve type or a lower threshold.</td></tr>';
 }
-$('sortBy').onchange = drawTable; $('typeF').onchange = drawTable; $('heldLvl').onchange = drawTable;
+$('sortBy').onchange = drawTable; $('typeF').onchange = drawTable; $('eraF').onchange = drawTable; $('heldLvl').onchange = drawTable;
 $('tb').addEventListener('click', e => { const tr = e.target.closest('tr[data-i]'); if (tr) addSong(+tr.dataset.i); });
 $('tb').addEventListener('keydown', e => { const tr = e.target.closest('tr[data-i]'); if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); addSong(+tr.dataset.i); } });
 
