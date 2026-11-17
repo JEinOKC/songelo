@@ -9,7 +9,7 @@
 <meta property="og:description" content="Every Billboard Hot 100 song since 1958, rated week by week.">
 <meta property="og:url" content="https://songelo.com/lab/">
 <link rel="icon" type="image/svg+xml" href="/songelo-lg.svg">
-<link rel="stylesheet" href="lab.css?v=11">
+<link rel="stylesheet" href="lab.css?v=12">
 
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:14px">
@@ -26,7 +26,7 @@
   <section class="panel" id="weekView" aria-label="Weekly chart">
     <div class="weeknav">
       <button id="prevW" aria-label="Previous week">‹</button>
-      <label class="wk"><span id="wkLabel">Loading…</span><small id="wkSub"></small><input type="date" id="wkPick" aria-label="Jump to a week"></label>
+      <label class="wpick"><span id="wkLabel">Loading…</span><input type="date" id="wkPick" aria-label="Jump to a week"></label>
       <button id="nextW" aria-label="Next week">›</button>
     </div>
     <div id="crows"></div>
@@ -215,8 +215,7 @@ function songRow(i, rank, mv, value, sc) {
 function drawWeek() {
   const w = curW, last = WEEKS.length - 1;
   const d = new Date(WEEKS[w] + 'T00:00:00');
-  $('wkLabel').textContent = 'Week of ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  $('wkSub').textContent = w === last ? 'Latest chart' : 'Tap to pick a date';
+  $('wkLabel').textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   $('wkPick').value = WEEKS[w]; $('wkPick').min = WEEKS[0]; $('wkPick').max = WEEKS[last];
   $('prevW').disabled = w === 0; $('nextW').disabled = w === last;
   $('crows').innerHTML = BYWEEK[w].map(([pos, i, k], row) => {
