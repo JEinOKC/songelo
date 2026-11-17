@@ -204,7 +204,7 @@ function spark(sc) {
 }
 // Song page slugs, written by the hot100 pipeline beside curves.json (songs/index.json).
 let SLUGS = null;
-fetch('songs/index.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(s => { SLUGS = s; if (openRow >= 0) drawWeek(); }).catch(() => {});
+fetch('songs/index.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(s => { SLUGS = s; if (SONGS.length) { drawWeek(); drawTable(); if (!$('erasView').hidden) drawEras(); } }).catch(() => {});
 const songHref = i => SLUGS && SLUGS[i] ? `songs/${SLUGS[i]}/` : null;
 // One row style for every song list: rank (+ movement), title and artist, a
 // number and the song's score line. The row links to the song's page.
