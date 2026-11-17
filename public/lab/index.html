@@ -9,7 +9,7 @@
 <meta property="og:description" content="Every Billboard Hot 100 song since 1958, rated week by week.">
 <meta property="og:url" content="https://songelo.com/lab/">
 <link rel="icon" type="image/svg+xml" href="/songelo-lg.svg">
-<link rel="stylesheet" href="lab.css?v=7">
+<link rel="stylesheet" href="lab.css?v=8">
 
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:14px">
@@ -157,10 +157,10 @@ function drawEras() {
   } else {
     const E = all[curEra];
     const rows = E.songs.slice(0, 100).map((i, n) => songRow(i, n + 1, '', fmt(SONGS[i].peak), SONGS[i].pts.map(p => p[1]))).join('');
-    const nav = `<nav class="enav">${curEra > 0 ? `<a href="?view=eras&era=${all[curEra - 1].slug}" data-era="${curEra - 1}">‹ ${all[curEra - 1].name}</a>` : '<span></span>'}<a href="?view=eras" data-era="">All eras</a>${curEra < 4 ? `<a href="?view=eras&era=${all[curEra + 1].slug}" data-era="${curEra + 1}">${all[curEra + 1].name} ›</a>` : '<span></span>'}</nav>`;
+    const nav = `<nav class="eswitch" aria-label="Eras"><a href="?view=eras" data-era="">All eras</a>${all.map(x => `<a href="?view=eras&era=${x.slug}" data-era="${x.k}"${x.k === curEra ? ' aria-current="page"' : ''}>${x.name.replace(' Era', '')}</a>`).join('')}</nav>`;
     box.innerHTML = `${nav}<section class="panel"><div class="ehead"><h2 class="big">${E.name}</h2><span class="eyears">${E.years}</span></div><ul class="etraits">${E.traits.map(t => `<li>${t}</li>`).join('')}</ul>${eraStatTiles(E)}</section>
       <section class="panel"><h2>Top 100 of the ${E.name}</h2><p class="small muted">By peak score. Songs count in the era they peaked.</p>
-      <div>${rows}</div></section>${nav}`;
+      <div>${rows}</div></section>`;
   }
 }
 const TYPE_NAMES = { spike: 'Spike', plateau: 'Plateau', sleeper: 'Sleeper', comeback: 'Comeback', seasonal: 'Seasonal', standard: 'Standard', minor: 'Minor' };
