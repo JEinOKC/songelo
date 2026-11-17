@@ -9,7 +9,7 @@
 <meta property="og:description" content="Every Billboard Hot 100 song since 1958, rated week by week.">
 <meta property="og:url" content="https://songelo.com/lab/">
 <link rel="icon" type="image/svg+xml" href="/songelo-lg.svg">
-<link rel="stylesheet" href="lab.css?v=3">
+<link rel="stylesheet" href="lab.css?v=4">
 
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:14px">
@@ -20,6 +20,7 @@
   <div class="tabs" role="tablist">
     <button role="tab" id="tabWeek" aria-selected="true">This week</button>
     <button role="tab" id="tabAll" aria-selected="false">All-time</button>
+    <button role="tab" id="tabEras" aria-selected="false">Eras</button>
   </div>
 
   <section class="panel" id="weekView" aria-label="Weekly chart">
@@ -30,6 +31,8 @@
     </div>
     <div id="crows"></div>
   </section>
+
+  <div class="stack" id="erasView" hidden></div>
 
   <div class="stack" id="allView" hidden>
   <section class="panel" aria-label="Score curves">
@@ -67,14 +70,6 @@
           <option value="margin">Margin over the next song at peak</option>
           <option value="rivals">Strongest rivals at peak</option>
           <option value="volatility">Most volatile</option>
-        </select>
-        <select id="eraF" aria-label="Era">
-          <option value="">All eras</option>
-          <option value="0">AM Radio Era (1958–1977)</option>
-          <option value="1">FM Radio Era (1977–1991)</option>
-          <option value="2">SoundScan Era (1991–2008)</option>
-          <option value="3">Download Era (2008–2018)</option>
-          <option value="4">Streaming Era (2018–now)</option>
         </select>
         <select id="typeF" aria-label="Curve type">
           <option value="">All curve types</option>
@@ -230,12 +225,55 @@ const SORTS = {
 // expect.py BREAKS). A song belongs to the era of the week it peaked.
 const ERA_BREAKS = ['1977-04-23', '1991-11-16', '2008-04-12', '2018-03-03'];
 const eraOf = S => ERA_BREAKS.filter(b => WEEKS[S.peakWeek] >= b).length;
+const ERAS = [
+  { slug: 'am-radio', name: 'AM Radio Era', years: '1958–1977', line: 'Over 600 new songs a year, and most were gone within two months.' },
+  { slug: 'fm-radio', name: 'FM Radio Era', years: '1977–1991', line: 'Fewer songs and slower climbs: almost nothing peaked in its first week.' },
+  { slug: 'soundscan', name: 'SoundScan Era', years: '1991–2008', line: 'The fewest songs and the longest runs, and half as many #1s a year.' },
+  { slug: 'download', name: 'Download Era', years: '2008–2018', line: 'Hits arrived fast: 43% peaked in their debut week.' },
+  { slug: 'streaming', name: 'Streaming Era', years: '2018–now', line: 'Seven in ten songs peak in their debut week.' },
+];
+let ERA_CACHE = null;
+function eraStats() {
+  if (ERA_CACHE) return ERA_CACHE;
+  const weeks = [0, 0, 0, 0, 0]; WEEKS.forEach(w => weeks[ERA_BREAKS.filter(b => w >= b).length]++);
+  ERA_CACHE = ERAS.map((e, k) => ({ ...e, k, weeks: weeks[k], songs: [], ones: 0, wk: 0, debutPeak: 0 }));
+  SONGS.forEach((S, i) => {
+    const E = ERA_CACHE[eraOf(S)]; E.songs.push(i); E.wk += S.pts.length;
+    if (S.bestPos === 1) E.ones++;
+    if (S.pts[0][2] === S.bestPos) E.debutPeak++;
+  });
+  ERA_CACHE.forEach(E => { E.songs.sort((a, b) => SONGS[b].peak - SONGS[a].peak); const yrs = E.weeks / 52.18;
+    E.perYear = Math.round(E.songs.length / yrs); E.avgWk = (E.wk / E.songs.length).toFixed(1); E.debutPct = Math.round(E.debutPeak / E.songs.length * 100); E.onesYear = (E.ones / yrs).toFixed(1); });
+  return ERA_CACHE;
+}
+let curEra = null;
+function eraStatTiles(E) {
+  return `<div class="estats"><div><b>${fmt(E.perYear)}</b><span>new songs a year</span></div><div><b>${E.avgWk}</b><span>avg weeks on chart</span></div><div><b>${E.debutPct}%</b><span>peaked in debut week</span></div><div><b>${E.onesYear}</b><span>#1 hits a year</span></div></div>`;
+}
+function drawEras() {
+  const all = eraStats(), box = $('erasView');
+  if (curEra === null) {
+    box.innerHTML = all.map(E => `<a class="panel ecard" href="?view=eras&era=${E.slug}" data-era="${E.k}">
+      <div class="ehead"><h2>${E.name}</h2><span class="eyears">${E.years}</span></div>
+      <p class="eline">${E.line}</p>${eraStatTiles(E)}
+      <div class="etop">${E.songs.slice(0, 3).map((i, n) => `<span><b>${n + 1}</b> ${esc(SONGS[i].title)} <span class="muted">· ${esc(SONGS[i].performer)}</span></span>`).join('')}</div>
+      <span class="emore">Top 100 ›</span></a>`).join('');
+  } else {
+    const E = all[curEra];
+    const rows = E.songs.slice(0, 100).map((i, n) => { const S = SONGS[i], href = songHref(i);
+      return `<tr><td class="n muted">${n + 1}</td><td><div style="font-weight:600">${href ? `<a href="${href}">${esc(S.title)}</a>` : esc(S.title)}</div><div class="small muted">${esc(S.performer)}</div></td><td class="n">${WEEKS[S.peakWeek].slice(0, 4)}</td><td class="n">#${S.bestPos}</td><td class="n">${fmt(S.peak)}</td></tr>`; }).join('');
+    const nav = `<nav class="enav">${curEra > 0 ? `<a href="?view=eras&era=${all[curEra - 1].slug}" data-era="${curEra - 1}">‹ ${all[curEra - 1].name}</a>` : '<span></span>'}<a href="?view=eras" data-era="">All eras</a>${curEra < 4 ? `<a href="?view=eras&era=${all[curEra + 1].slug}" data-era="${curEra + 1}">${all[curEra + 1].name} ›</a>` : '<span></span>'}</nav>`;
+    box.innerHTML = `${nav}<section class="panel"><div class="ehead"><h2 class="big">${E.name}</h2><span class="eyears">${E.years}</span></div><p class="eline">${E.line}</p>${eraStatTiles(E)}</section>
+      <section class="panel"><h2>Top 100 of the ${E.name}</h2><p class="small muted">By peak score. Songs count in the era they peaked.</p>
+      <div class="scroll"><table><thead><tr><th class="n">#</th><th>Song</th><th class="n">Peak year</th><th class="n">Chart peak</th><th class="n">Peak score</th></tr></thead><tbody>${rows}</tbody></table></div></section>${nav}`;
+  }
+}
 const TYPE_NAMES = { spike: 'Spike', plateau: 'Plateau', sleeper: 'Sleeper', comeback: 'Comeback', seasonal: 'Seasonal', standard: 'Standard', minor: 'Minor' };
 function drawTable() {
-  const by = $('sortBy').value, lvl = $('heldLvl').value, tf = $('typeF').value, ef = $('eraF').value, cfg = SORTS[by];
+  const by = $('sortBy').value, lvl = $('heldLvl').value, tf = $('typeF').value, cfg = SORTS[by];
   $('heldLvl').hidden = by !== 'held';
   const get = by === 'held' ? (S => S.m['held' + lvl]) : cfg.get;
-  let pool = SONGS.map((S, i) => i).filter(i => (!tf || SONGS[i].m.type === tf) && (ef === '' || eraOf(SONGS[i]) === +ef));
+  let pool = SONGS.map((S, i) => i).filter(i => (!tf || SONGS[i].m.type === tf));
   if (cfg.big) pool = pool.filter(i => SONGS[i].peak >= HLINES['5']);
   let rows = pool.map(i => [i, get(SONGS[i])]).filter(r => r[1] !== null && r[1] !== undefined && !Number.isNaN(r[1]) && (by !== 'held' || r[1] > 0));
   rows.sort((a, b) => (cfg.asc ? a[1] - b[1] : b[1] - a[1]) || SONGS[b[0]].peak - SONGS[a[0]].peak);
@@ -245,9 +283,9 @@ function drawTable() {
   $('th').innerHTML = `<tr><th class="n">#</th><th>Song</th><th class="n">Debut</th><th class="n">Chart peak</th><th>Type</th><th class="n">${label}</th></tr>`;
   $('tb').innerHTML = rows.length ? rows.map(([i, v], k) => { const S = SONGS[i];
     return `<tr tabindex="0" data-i="${i}"><td class="n muted">${k + 1}</td><td><div style="font-weight:600">${esc(S.title)}</div><div class="small muted">${esc(S.performer)}</div></td><td class="n">${S.year}</td><td class="n">#${S.bestPos}</td><td class="small">${TYPE_NAMES[S.m.type]}</td><td class="n"><b>${cfg.fmt(v)}</b></td></tr>`; }).join('')
-    : '<tr><td colspan="6" class="empty">No songs match. Try another era, curve type or a lower threshold.</td></tr>';
+    : '<tr><td colspan="6" class="empty">No songs match. Try another curve type or a lower threshold.</td></tr>';
 }
-$('sortBy').onchange = drawTable; $('typeF').onchange = drawTable; $('eraF').onchange = drawTable; $('heldLvl').onchange = drawTable;
+$('sortBy').onchange = drawTable; $('typeF').onchange = drawTable; $('heldLvl').onchange = drawTable;
 $('tb').addEventListener('click', e => { const tr = e.target.closest('tr[data-i]'); if (tr) addSong(+tr.dataset.i); });
 $('tb').addEventListener('keydown', e => { const tr = e.target.closest('tr[data-i]'); if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); addSong(+tr.dataset.i); } });
 
@@ -333,20 +371,26 @@ function drawWeek() {
   }).join('');
 }
 function setWeek(w) { curW = Math.max(0, Math.min(WEEKS.length - 1, w)); openRow = -1; drawWeek(); saveUrl(); }
-function setView(all) {
-  $('tabAll').setAttribute('aria-selected', all); $('tabWeek').setAttribute('aria-selected', !all);
-  $('allView').hidden = !all; $('weekView').hidden = all; if (all) drawChart(); saveUrl();
+function setView(view) {
+  const all = view === 'all', eras = view === 'eras';
+  $('tabAll').setAttribute('aria-selected', all); $('tabEras').setAttribute('aria-selected', eras); $('tabWeek').setAttribute('aria-selected', !all && !eras);
+  $('allView').hidden = !all; $('erasView').hidden = !eras; $('weekView').hidden = all || eras;
+  if (all) drawChart(); if (eras) drawEras(); saveUrl();
 }
 function saveUrl() {
   const q = new URLSearchParams();
-  if ($('allView').hidden) { if (curW !== WEEKS.length - 1) q.set('w', WEEKS[curW]); } else q.set('view', 'all');
+  if (!$('allView').hidden) q.set('view', 'all');
+  else if (!$('erasView').hidden) { q.set('view', 'eras'); if (curEra !== null) q.set('era', ERAS[curEra].slug); }
+  else if (curW !== WEEKS.length - 1) q.set('w', WEEKS[curW]);
   history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
 }
+$('erasView').addEventListener('click', e => { const a = e.target.closest('[data-era]'); if (!a) return; e.preventDefault(); curEra = a.dataset.era === '' ? null : +a.dataset.era; drawEras(); saveUrl(); scrollTo(0, $('erasView').offsetTop - 80); });
 $('prevW').onclick = () => setWeek(curW - 1);
 $('nextW').onclick = () => setWeek(curW + 1);
 $('wkPick').onchange = e => { const v = e.target.value; if (!v) return; let w = WEEKS.findIndex(x => x > v); setWeek(w === -1 ? WEEKS.length - 1 : Math.max(0, w - 1)); };
-$('tabWeek').onclick = () => setView(false);
-$('tabAll').onclick = () => setView(true);
+$('tabWeek').onclick = () => setView('week');
+$('tabAll').onclick = () => setView('all');
+$('tabEras').onclick = () => { curEra = null; setView('eras'); };
 $('crows').addEventListener('click', e => { if (e.target.closest('.exp')) return; const r = e.target.closest('.crow'); if (!r) return; openRow = +r.dataset.row === openRow ? -1 : +r.dataset.row; drawWeek(); });
 $('crows').addEventListener('keydown', e => { const r = e.target.closest('.crow'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); r.click(); } });
 
@@ -363,7 +407,8 @@ fetch('curves.json', { cache: 'no-cache' }).then(r => r.json()).then(D => {
   const q = new URLSearchParams(location.search), qw = q.get('w');
   curW = WEEKS.length - 1;
   if (qw) { const w = WEEKS.findIndex(x => x > qw); curW = w === -1 ? WEEKS.length - 1 : Math.max(0, w - 1); }
-  drawWeek(); setView(q.get('view') === 'all');
+  const qe = ERAS.findIndex(e => e.slug === q.get('era')); curEra = qe >= 0 ? qe : null;
+  drawWeek(); setView(q.get('view') || 'week');
 }).catch(() => { $('chart').innerHTML = '<div class="empty">The song data didn\'t load. Reload the page to try again.</div>'; $('wkLabel').textContent = 'The chart didn\'t load. Reload the page to try again.'; });
 const redraw = () => drawChart();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redraw);
