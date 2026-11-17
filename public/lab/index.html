@@ -227,10 +227,10 @@ const ERA_BREAKS = ['1977-04-23', '1991-11-16', '2008-04-12', '2018-03-03'];
 const eraOf = S => ERA_BREAKS.filter(b => WEEKS[S.peakWeek] >= b).length;
 const ERAS = [
   { slug: 'am-radio', name: 'AM Radio Era', years: '1958–1977', traits: ['High turnover', 'Short chart runs', 'Frequent #1 changes'] },
-  { slug: 'fm-radio', name: 'FM Radio Era', years: '1977–1991', traits: ['Slow climbs', 'Rare debut-week peaks', 'Longer runs'] },
-  { slug: 'soundscan', name: 'SoundScan Era', years: '1991–2008', traits: ['Fewest new songs', 'Longest chart runs', 'Fewer #1s'] },
+  { slug: 'fm-radio', name: 'FM Radio Era', years: '1977–1991', traits: ['Slow climbs', 'Rare debut-week peaks', 'Long chart runs'] },
+  { slug: 'soundscan', name: 'SoundScan Era', years: '1991–2008', traits: ['Few new songs', 'Long chart runs', 'Long stays at #1'] },
   { slug: 'download', name: 'Download Era', years: '2008–2018', traits: ['Fast starts', 'Many debut-week peaks'] },
-  { slug: 'streaming', name: 'Streaming Era', years: '2018–now', traits: ['Peaks on arrival', 'Album tracks crowd the chart', 'Most top-10 debuts'] },
+  { slug: 'streaming', name: 'Streaming Era', years: '2018–now', traits: ['Peaks on arrival', 'Album tracks crowd the chart', 'Frequent top-10 debuts'] },
 ];
 let ERA_CACHE = null;
 function eraStats() {
