@@ -9,7 +9,7 @@
 <meta property="og:description" content="Every Billboard Hot 100 song since 1958, rated week by week.">
 <meta property="og:url" content="https://songelo.com/lab/">
 <link rel="icon" type="image/svg+xml" href="/songelo-lg.svg">
-<link rel="stylesheet" href="lab.css?v=6">
+<link rel="stylesheet" href="lab.css?v=7">
 
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:14px">
@@ -35,22 +35,6 @@
   <div class="stack" id="erasView" hidden></div>
 
   <div class="stack" id="allView" hidden>
-  <section class="panel" aria-label="Score curves">
-    <div class="controls">
-      <div class="search">
-        <input id="q" type="search" placeholder="Add a song: title or artist" autocomplete="off" aria-label="Search songs">
-        <div class="results" id="results" hidden></div>
-      </div>
-      <div class="seg" role="group" aria-label="Horizontal axis">
-        <button id="xChart" aria-pressed="true">Chart weeks</button>
-        <button id="xRel" aria-pressed="false">Weeks since debut</button>
-        <button id="xAbs" aria-pressed="false">Date</button>
-      </div>
-    </div>
-    <div class="chips" id="chips"></div>
-    <div id="chart"><div class="empty">Loading 32,769 songs…</div></div>
-  </section>
-
   <section class="panel" aria-label="Sort songs">
     <div class="controls" style="justify-content:space-between">
       <h2>Sort all songs</h2>
@@ -85,7 +69,7 @@
       </div>
     </div>
     <p class="small muted" id="sortNote">Click a row to add its curve to the chart.</p>
-    <div class="scroll"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div>
+    <div id="th" hidden></div><div id="tb"></div>
   </section>
   </div>
 </div>
@@ -104,8 +88,6 @@ const hideTip = () => { tip.hidden = true; };
 const COLORS = ['--c1', '--c2', '--c3', '--c4', '--c5', '--c6'];
 
 let WEEKS = [], SONGS = [];
-let selected = [];                 // [{idx, color}]
-let xMode = 'chart';
 
 function decode(raw) {
   // [title, performer, firstWeek, weekDeltas, scoreDeltas, positions] -> points [[week, score, pos]]
@@ -116,92 +98,6 @@ function decode(raw) {
   pts.forEach((p, i) => { if (p[1] > peak) { peak = p[1]; peakI = i; } best = Math.min(best, p[2]); });
   return { title, performer, pts, peak, peakWeek: pts[peakI][0], bestPos: best, year: +WEEKS[w0].slice(0, 4), wk1: pts.filter(p => p[2] === 1).length, key: (title + ' ' + performer).toLowerCase() };
 }
-
-// ---------- chart ----------
-function niceTicks(a, b, n) { const st0 = (b - a) / n; const mag = Math.pow(10, Math.floor(Math.log10(st0))); const st = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= st0); const out = []; for (let t = Math.ceil(a / st) * st; t <= b + 1e-9; t += st) out.push(+t.toFixed(6)); return out; }
-function drawChart() {
-  const box = $('chart'); box.innerHTML = '';
-  if (!selected.length) { box.innerHTML = '<div class="empty">Search above to add a song. You can compare up to 6.</div>'; return; }
-  const W = 1000, H = 380, ml = 52, mr = 16, mt = 14, mb = 30;
-  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': 'Score curves for ' + selected.map(s => SONGS[s.idx].title).join(', ') }, box);
-  const series = selected.map(s => { const S = SONGS[s.idx]; const w0 = S.pts[0][0];
-    return { S, color: css(COLORS[s.color]), pts: S.pts.map((p, i) => [xMode === 'chart' ? i : xMode === 'rel' ? p[0] - w0 : p[0], p[1], p[2], p[0]]) }; });
-  const xs = series.flatMap(s => s.pts.map(p => p[0])), ys = series.flatMap(s => s.pts.map(p => p[1]));
-  let x0 = Math.min(...xs), x1 = Math.max(...xs); if (x1 === x0) x1 = x0 + 1;
-  if (xMode !== 'abs') x0 = 0;
-  const y0 = Math.min(1500, ...ys) - 20, y1 = Math.max(...ys) + 20;
-  const X = v => ml + (v - x0) / (x1 - x0) * (W - ml - mr), Y = v => mt + (1 - (v - y0) / (y1 - y0)) * (H - mt - mb);
-  niceTicks(y0, y1, 5).forEach(t => { el('line', { x1: ml, x2: W - mr, y1: Y(t), y2: Y(t), stroke: css('--rule') }, svg); el('text', { x: ml - 6, y: Y(t) + 4, 'text-anchor': 'end' }, svg).textContent = fmt(t); });
-  el('line', { x1: ml, x2: W - mr, y1: Y(1500), y2: Y(1500), stroke: css('--axis'), 'stroke-dasharray': '4 3' }, svg);
-  el('text', { x: W - mr, y: Y(1500) - 5, 'text-anchor': 'end' }, svg).textContent = 'chart average 1,500';
-  if (xMode !== 'abs') niceTicks(x0, x1, 8).forEach(t => { if (t === Math.round(t)) el('text', { x: X(t), y: H - 8, 'text-anchor': 'middle' }, svg).textContent = t + (t === 0 ? (xMode === 'chart' ? ' chart wks' : ' wk') : ''); });
-  else { const ya = +WEEKS[Math.round(x0)].slice(0, 4), yb = +WEEKS[Math.round(x1)].slice(0, 4); const step = Math.max(1, Math.ceil((yb - ya) / 8));
-    for (let yr = ya; yr <= yb; yr += step) { const wi = WEEKS.findIndex(w => +w.slice(0, 4) >= yr); if (wi >= x0 && wi <= x1) el('text', { x: X(wi), y: H - 8, 'text-anchor': 'middle' }, svg).textContent = yr; } }
-  el('line', { x1: ml, x2: W - mr, y1: H - mb, y2: H - mb, stroke: css('--axis') }, svg);
-  series.forEach(s => {
-    let d = '', gaps = '', prev = null;
-    s.pts.forEach(p => {
-      const xy = X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1);
-      if (prev && p[3] - prev[3] === 1) d += 'L' + xy;
-      else { if (prev) gaps += 'M' + X(prev[0]).toFixed(1) + ',' + Y(prev[1]).toFixed(1) + 'L' + xy; d += 'M' + xy; }
-      prev = p;
-    });
-    if (gaps) el('path', { d: gaps, fill: 'none', stroke: s.color, 'stroke-width': 1.5, 'stroke-dasharray': '3 4', opacity: 0.7 }, svg);   // off the chart, then back
-    el('path', { d, fill: 'none', stroke: s.color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
-    const pk = s.pts.reduce((a, p) => p[1] > a[1] ? p : a);
-    el('circle', { cx: X(pk[0]), cy: Y(pk[1]), r: 4.5, fill: s.color, stroke: css('--sheet'), 'stroke-width': 2 }, svg);
-  });
-  const cross = el('line', { y1: mt, y2: H - mb, stroke: css('--muted'), opacity: 0 }, svg);
-  const dots = series.map(s => el('circle', { r: 4, fill: s.color, stroke: css('--sheet'), 'stroke-width': 2, opacity: 0 }, svg));
-  const hit = el('rect', { x: ml, y: mt, width: W - ml - mr, height: H - mt - mb, fill: 'transparent' }, svg);
-  hit.addEventListener('mousemove', e => {
-    const b = svg.getBoundingClientRect(); const xv = x0 + ((e.clientX - b.left) / b.width * W - ml) / (W - ml - mr) * (x1 - x0);
-    cross.setAttribute('x1', X(xv)); cross.setAttribute('x2', X(xv)); cross.setAttribute('opacity', 1);
-    const rows = [];
-    series.forEach((s, i) => { const p = s.pts.reduce((a, q) => Math.abs(q[0] - xv) < Math.abs(a[0] - xv) ? q : a);
-      if (Math.abs(p[0] - xv) <= Math.max(1, (x1 - x0) / 200)) { dots[i].setAttribute('cx', X(p[0])); dots[i].setAttribute('cy', Y(p[1])); dots[i].setAttribute('opacity', 1);
-        rows.push(`<i style="background:${s.color}"></i>${esc(s.S.title)}: <b>${fmt(p[1])}</b> · #${p[2]} · ${WEEKS[p[3]]}`); }
-      else dots[i].setAttribute('opacity', 0); });
-    rows.length ? showTip(rows.join('<br>'), e.clientX, e.clientY) : hideTip();
-  });
-  hit.addEventListener('mouseleave', () => { cross.setAttribute('opacity', 0); dots.forEach(d => d.setAttribute('opacity', 0)); hideTip(); });
-}
-function drawChips() {
-  $('chips').innerHTML = selected.map(s => { const S = SONGS[s.idx];
-    return `<span class="chip"><i style="background:var(${COLORS[s.color]})"></i>${esc(S.title)} <span class="muted">· ${esc(S.performer)} · peak ${fmt(S.peak)}</span><button aria-label="Remove ${esc(S.title)}" data-rm="${s.idx}">×</button></span>`; }).join('');
-}
-function addSong(idx) {
-  if (selected.some(s => s.idx === idx)) return;
-  if (selected.length >= 6) selected.shift();
-  const used = new Set(selected.map(s => s.color)); const color = [0, 1, 2, 3, 4, 5].find(c => !used.has(c));
-  selected.push({ idx, color }); drawChips(); drawChart();
-}
-$('chips').addEventListener('click', e => { const b = e.target.closest('[data-rm]'); if (!b) return; selected = selected.filter(s => s.idx !== +b.dataset.rm); drawChips(); drawChart(); });
-const setX = m => { xMode = m; [['xChart', 'chart'], ['xRel', 'rel'], ['xAbs', 'abs']].forEach(([id, v]) => $(id).setAttribute('aria-pressed', String(v === m))); drawChart(); };
-$('xChart').onclick = () => setX('chart'); $('xRel').onclick = () => setX('rel'); $('xAbs').onclick = () => setX('abs');
-
-// ---------- search ----------
-let hits = [], hiIdx = -1;
-function search() {
-  const q = $('q').value.trim().toLowerCase(); const box = $('results');
-  if (q.length < 2) { box.hidden = true; return; }
-  const words = q.split(/\s+/);
-  hits = [];
-  for (let i = 0; i < SONGS.length && hits.length < 200; i++) if (words.every(w => SONGS[i].key.includes(w))) hits.push(i);
-  hits.sort((a, b) => SONGS[b].peak - SONGS[a].peak); hits = hits.slice(0, 10); hiIdx = -1;
-  box.innerHTML = hits.length ? hits.map((i, k) => `<button data-i="${i}" id="h${k}">${esc(SONGS[i].title)} <span class="sub">· ${esc(SONGS[i].performer)} · ${SONGS[i].year} · peak #${SONGS[i].bestPos}</span></button>`).join('') : '<div class="empty" style="padding:12px">No songs match.</div>';
-  box.hidden = false;
-}
-$('q').addEventListener('input', search);
-$('q').addEventListener('keydown', e => {
-  if ($('results').hidden || !hits.length) return;
-  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); hiIdx = (hiIdx + (e.key === 'ArrowDown' ? 1 : -1) + hits.length) % hits.length;
-    hits.forEach((_, k) => $('h' + k).classList.toggle('on', k === hiIdx)); }
-  if (e.key === 'Enter') { e.preventDefault(); addSong(hits[Math.max(0, hiIdx)]); $('q').value = ''; $('results').hidden = true; }
-  if (e.key === 'Escape') $('results').hidden = true;
-});
-$('results').addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (!b) return; addSong(+b.dataset.i); $('q').value = ''; $('results').hidden = true; });
-document.addEventListener('click', e => { if (!e.target.closest('.search')) $('results').hidden = true; });
 
 // ---------- sortable table ----------
 let HLINES = {};
@@ -260,12 +156,11 @@ function drawEras() {
       <span class="emore">Top 100 ›</span></a>`).join('');
   } else {
     const E = all[curEra];
-    const rows = E.songs.slice(0, 100).map((i, n) => { const S = SONGS[i], href = songHref(i);
-      return `<tr><td class="n muted">${n + 1}</td><td><div style="font-weight:600">${href ? `<a href="${href}">${esc(S.title)}</a>` : esc(S.title)}</div><div class="small muted">${esc(S.performer)}</div></td><td class="n">${WEEKS[S.peakWeek].slice(0, 4)}</td><td class="n">#${S.bestPos}</td><td class="n">${fmt(S.peak)}</td></tr>`; }).join('');
+    const rows = E.songs.slice(0, 100).map((i, n) => songRow(i, n + 1, '', fmt(SONGS[i].peak), SONGS[i].pts.map(p => p[1]))).join('');
     const nav = `<nav class="enav">${curEra > 0 ? `<a href="?view=eras&era=${all[curEra - 1].slug}" data-era="${curEra - 1}">‹ ${all[curEra - 1].name}</a>` : '<span></span>'}<a href="?view=eras" data-era="">All eras</a>${curEra < 4 ? `<a href="?view=eras&era=${all[curEra + 1].slug}" data-era="${curEra + 1}">${all[curEra + 1].name} ›</a>` : '<span></span>'}</nav>`;
     box.innerHTML = `${nav}<section class="panel"><div class="ehead"><h2 class="big">${E.name}</h2><span class="eyears">${E.years}</span></div><ul class="etraits">${E.traits.map(t => `<li>${t}</li>`).join('')}</ul>${eraStatTiles(E)}</section>
       <section class="panel"><h2>Top 100 of the ${E.name}</h2><p class="small muted">By peak score. Songs count in the era they peaked.</p>
-      <div class="scroll"><table><thead><tr><th class="n">#</th><th>Song</th><th class="n">Peak year</th><th class="n">Chart peak</th><th class="n">Peak score</th></tr></thead><tbody>${rows}</tbody></table></div></section>${nav}`;
+      <div>${rows}</div></section>${nav}`;
   }
 }
 const TYPE_NAMES = { spike: 'Spike', plateau: 'Plateau', sleeper: 'Sleeper', comeback: 'Comeback', seasonal: 'Seasonal', standard: 'Standard', minor: 'Minor' };
@@ -278,16 +173,13 @@ function drawTable() {
   let rows = pool.map(i => [i, get(SONGS[i])]).filter(r => r[1] !== null && r[1] !== undefined && !Number.isNaN(r[1]) && (by !== 'held' || r[1] > 0));
   rows.sort((a, b) => (cfg.asc ? a[1] - b[1] : b[1] - a[1]) || SONGS[b[0]].peak - SONGS[a[0]].peak);
   rows = rows.slice(0, 50);
-  $('sortNote').textContent = 'Tap a song for its page.' + (cfg.big ? ` This sort only includes songs whose score reached the #5 line (${fmt(HLINES['5'])}), so tiny chart runs don’t crowd it.` : '');
+  $('sortNote').textContent = (cfg.big ? `This sort only includes songs whose score reached the #5 line (${fmt(HLINES['5'])}), so tiny chart runs don’t crowd it.` : '');
   const label = by === 'held' ? `Era-matched straight weeks ≥ #${lvl} line (${fmt(HLINES[lvl])})` : cfg.label;
-  $('th').innerHTML = `<tr><th class="n">#</th><th>Song</th><th class="n">Debut</th><th class="n">Chart peak</th><th>Type</th><th class="n">${label}</th></tr>`;
-  $('tb').innerHTML = rows.length ? rows.map(([i, v], k) => { const S = SONGS[i];
-    return `<tr tabindex="0" data-i="${i}"><td class="n muted">${k + 1}</td><td><div style="font-weight:600">${esc(S.title)}</div><div class="small muted">${esc(S.performer)}</div></td><td class="n">${S.year}</td><td class="n">#${S.bestPos}</td><td class="small">${TYPE_NAMES[S.m.type]}</td><td class="n"><b>${cfg.fmt(v)}</b></td></tr>`; }).join('')
-    : '<tr><td colspan="6" class="empty">No songs match. Try another curve type or a lower threshold.</td></tr>';
+  $('th').innerHTML = '';
+  $('tb').innerHTML = rows.length ? rows.map(([i, v], k) => songRow(i, k + 1, '', cfg.fmt ? cfg.fmt(v) : fmt(Math.round(v)), SONGS[i].pts.map(p => p[1]))).join('')
+    : '<div class="empty">No songs match. Try another curve type or a lower threshold.</div>';
 }
 $('sortBy').onchange = drawTable; $('typeF').onchange = drawTable; $('heldLvl').onchange = drawTable;
-$('tb').addEventListener('click', e => { const tr = e.target.closest('tr[data-i]'); if (!tr) return; const href = songHref(+tr.dataset.i); if (href) location.href = href; });
-$('tb').addEventListener('keydown', e => { const tr = e.target.closest('tr[data-i]'); if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); addSong(+tr.dataset.i); } });
 
 
 // ---------- weekly chart ----------
@@ -305,55 +197,20 @@ function buildWeekly() {
   BYWEEK.forEach(rows => rows.sort((a, b) => a[0] - b[0]));
 }
 function runAt(S, w) { return S.runs.find(r => r.start <= w && w <= r.end); }
-// The finished run (by another song, ended 4+ weeks before this chart) whose first n
-// weeks of score are closest to this run's so far. Debut runs match debut runs; a
-// return to the chart matches other returns.
-function lookalike(i, w) {
-  const run = runAt(SONGS[i], w), n = w - run.start + 1;
-  if (n < 2) return null;
-  const a = run.sc.slice(0, n);
-  let best = null, bestD = Infinity;
-  for (const r of RUNS) {
-    if (r.s === i || r.first !== run.first || r.end > w - 4 || r.sc.length < n) continue;
-    let d = 0;
-    for (let k = 0; k < n && d < bestD; k++) { const x = r.sc[k] - a[k]; d += x * x; }
-    if (d < bestD) { bestD = d; best = r; }
-  }
-  return best && { run, n, m: best };
-}
 function spark(sc) {
   const w = 70, h = 22, lo = 1000, hi = 3300, n = sc.length;
   const pts = sc.map((v, k) => [n === 1 ? w - 2 : k * (w - 2) / (n - 1), h - 1 - Math.max(0, Math.min(1, (v - lo) / (hi - lo))) * (h - 2)]);
   return `<svg width="${w}" height="${h}" aria-hidden="true"><path d="M${pts.map(p => p.map(x => x.toFixed(1)).join(',')).join('L')}" fill="none" stroke="var(--accent)" stroke-width="1.6"/>${n === 1 ? `<circle cx="${pts[0][0]}" cy="${pts[0][1]}" r="2" fill="var(--accent)"/>` : ''}</svg>`;
 }
-function overlay(a, b) {
-  const W = 340, H = 210, P = 34, n = Math.max(a.length, b.length), all = a.concat(b);
-  const lo = Math.min(1200, ...all), hi = Math.max(...all) + 100;
-  const X = k => P + k * (W - P - 6) / (n - 1 || 1), Y = v => H - 16 - (v - lo) / (hi - lo) * (H - 24);
-  const line = (p, c, dash) => `<path d="M${p.map((v, k) => X(k).toFixed(1) + ',' + Y(v).toFixed(1)).join('L')}" fill="none" stroke="${c}" stroke-width="2"${dash ? ' stroke-dasharray="4 3"' : ''}/>`;
-  const grid = [1500, 2000, 2500, 3000, 3500].filter(v => v > lo && v < hi).map(v => `<line x1="${P}" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--rule)"/><text x="0" y="${Y(v) + 4}">${fmt(v)}</text>`).join('');
-  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Score by week, this song against its match">${grid}${line(b, css('--muted'), 1)}${line(a, css('--c1'))}<circle cx="${X(a.length - 1)}" cy="${Y(a[a.length - 1])}" r="3.5" fill="${css('--c1')}"/><text x="${P}" y="${H - 2}">week 1</text><text x="${W - 60}" y="${H - 2}">week ${n}</text></svg>`;
-}
 // Song page slugs, written by the hot100 pipeline beside curves.json (songs/index.json).
 let SLUGS = null;
 fetch('songs/index.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(s => { SLUGS = s; if (openRow >= 0) drawWeek(); }).catch(() => {});
 const songHref = i => SLUGS && SLUGS[i] ? `songs/${SLUGS[i]}/` : null;
-function expanded(i, w) {
-  const L = lookalike(i, w);
-  if (!L) return `<div class="exp">${songHref(i) ? `<a class="exp-link" href="${songHref(i)}">${esc(SONGS[i].title)} chart history ›</a>` : ''}<h3>Tracking like</h3><div class="ca">One week on the chart. Too new to compare.</div></div>`;
-  const S = SONGS[i], M = SONGS[L.m.s], a = L.run.sc.slice(0, L.n), b = L.m.sc, n = L.n, mx = x => Math.max(...x), mn = x => Math.min(...x);
-  const head = (t, alt) => esc(t.length > 14 ? alt : t);
-  return `<div class="exp">
-    ${songHref(i) ? `<a class="exp-link" href="${songHref(i)}">${esc(S.title)} chart history ›</a>` : ''}
-    <div><h3>Tracking like</h3><div class="match">${songHref(L.m.s) ? `<a href="${songHref(L.m.s)}">${esc(M.title)}</a>` : esc(M.title)}<span>${esc(M.performer)} · ${WEEKS[L.m.start].slice(0, 4)}</span></div></div>
-    <div class="lg"><span><i style="background:var(--c1)"></i>${esc(S.title)}</span><span><i style="background:var(--muted)"></i>${esc(M.title)}</span></div>
-    ${overlay(a, b)}
-    <table class="cmp"><thead><tr><th></th><th>${head(S.title, 'This song')}</th><th>${head(M.title, 'Match')}<br>at wk ${n}</th><th>Match<br>final</th></tr></thead><tbody>
-      <tr><td>${L.run.first ? 'Weeks on chart' : 'Weeks this run'}</td><td class="me">${n}</td><td>${n}</td><td>${b.length}</td></tr>
-      <tr><td>Score</td><td class="me">${fmt(a[n - 1])}</td><td>${fmt(b[n - 1])}</td><td>${fmt(b[b.length - 1])}</td></tr>
-      <tr><td>Peak score</td><td class="me">${fmt(mx(a))}</td><td>${fmt(mx(b.slice(0, n)))}</td><td>${fmt(mx(b))}</td></tr>
-      <tr><td>Best position</td><td class="me">#${mn(L.run.pos.slice(0, n))}</td><td>#${mn(L.m.pos.slice(0, n))}</td><td>#${mn(L.m.pos)}</td></tr>
-    </tbody></table></div>`;
+// One row style for every song list: rank (+ movement), title and artist, a
+// number and the song's score line. The row links to the song's page.
+function songRow(i, rank, mv, value, sc) {
+  const S = SONGS[i], href = songHref(i);
+  return `<a class="crow"${href ? ` href="${href}"` : ''}><div class="cpos">${rank}${mv || ''}</div><div><div class="ct">${esc(S.title)}</div><div class="ca">${esc(S.performer)}</div></div><div class="csc">${value}${spark(sc)}</div></a>`;
 }
 function drawWeek() {
   const w = curW, last = WEEKS.length - 1;
@@ -367,7 +224,7 @@ function drawWeek() {
     const mv = k === 0 ? '<span class="mv nw">NEW</span>' : prev === null ? '<span class="mv nw">RE</span>'
       : prev === pos ? '<span class="mv">–</span>' : prev > pos ? `<span class="mv up">▲${prev - pos}</span>` : `<span class="mv down">▼${pos - prev}</span>`;
     const run = runAt(S, w);
-    return `<div class="crow" tabindex="0" data-row="${row}" aria-expanded="${row === openRow}"><div class="cpos">${pos}${mv}</div><div><div class="ct">${esc(S.title)}</div><div class="ca">${esc(S.performer)}</div></div><div class="csc">${fmt(S.pts[k][1])}${spark(run.sc.slice(0, w - run.start + 1))}</div>${row === openRow ? expanded(i, w) : ''}</div>`;
+    return songRow(i, pos, mv, fmt(S.pts[k][1]), run.sc.slice(0, w - run.start + 1));
   }).join('');
 }
 function setWeek(w) { curW = Math.max(0, Math.min(WEEKS.length - 1, w)); openRow = -1; drawWeek(); saveUrl(); }
@@ -375,7 +232,7 @@ function setView(view) {
   const all = view === 'all', eras = view === 'eras';
   $('tabAll').setAttribute('aria-selected', all); $('tabEras').setAttribute('aria-selected', eras); $('tabWeek').setAttribute('aria-selected', !all && !eras);
   $('allView').hidden = !all; $('erasView').hidden = !eras; $('weekView').hidden = all || eras;
-  if (all) drawChart(); if (eras) drawEras(); saveUrl();
+  if (eras) drawEras(); saveUrl();
 }
 function saveUrl() {
   const q = new URLSearchParams();
@@ -391,8 +248,6 @@ $('wkPick').onchange = e => { const v = e.target.value; if (!v) return; let w = 
 $('tabWeek').onclick = () => setView('week');
 $('tabAll').onclick = () => setView('all');
 $('tabEras').onclick = () => { curEra = null; setView('eras'); };
-$('crows').addEventListener('click', e => { const r = e.target.closest('.crow'); if (!r) return; const i = BYWEEK[curW][+r.dataset.row][1], href = songHref(i); if (href) location.href = href; });
-$('crows').addEventListener('keydown', e => { const r = e.target.closest('.crow'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); r.click(); } });
 
 // ---------- load ----------
 fetch('curves.json', { cache: 'no-cache' }).then(r => r.json()).then(D => {
@@ -400,8 +255,6 @@ fetch('curves.json', { cache: 'no-cache' }).then(r => r.json()).then(D => {
   HLINES = D.lines;
   if (D.lines && $('lineV')) $('lineV').textContent = Object.entries(D.lines).filter(([n]) => [50, 25, 10, 5].includes(+n)).sort((a, b) => b[0] - a[0]).map(([n, v]) => `#${n} ${fmt(v)}`).join(', ');
   SONGS.forEach((S, i) => { const v = D.metrics[i]; S.m = Object.fromEntries(D.fields.map((f, k) => [f, v[k]])); if (S.peak < D.lines['10']) S.m.type = 'minor'; });
-  const pick = (t, p) => SONGS.findIndex(S => S.title === t && S.performer.startsWith(p));
-  [['Hey Jude', 'The Beatles'], ['Physical', 'Olivia'], ['Old Town Road', 'Lil Nas X'], ["Choosin' Texas", 'Ella']].map(x => pick(...x)).filter(i => i >= 0).forEach(addSong);
   drawTable();
   buildWeekly();
   const q = new URLSearchParams(location.search), qw = q.get('w');
@@ -409,7 +262,7 @@ fetch('curves.json', { cache: 'no-cache' }).then(r => r.json()).then(D => {
   if (qw) { const w = WEEKS.findIndex(x => x > qw); curW = w === -1 ? WEEKS.length - 1 : Math.max(0, w - 1); }
   const qe = ERAS.findIndex(e => e.slug === q.get('era')); curEra = qe >= 0 ? qe : null;
   drawWeek(); setView(q.get('view') || 'week');
-}).catch(() => { $('chart').innerHTML = '<div class="empty">The song data didn\'t load. Reload the page to try again.</div>'; $('wkLabel').textContent = 'The chart didn\'t load. Reload the page to try again.'; });
+}).catch(() => { $('wkLabel').textContent = 'The chart didn\'t load. Reload the page to try again.'; });
 const redraw = () => drawChart();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redraw);
 new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
