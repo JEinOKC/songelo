@@ -9,7 +9,7 @@
 <meta property="og:description" content="Every Billboard Hot 100 song since 1958, rated week by week.">
 <meta property="og:url" content="https://songelo.com/lab/">
 <link rel="icon" type="image/svg+xml" href="/songelo-lg.svg">
-<link rel="stylesheet" href="lab.css?v=4">
+<link rel="stylesheet" href="lab.css?v=5">
 
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:14px">
@@ -226,11 +226,11 @@ const SORTS = {
 const ERA_BREAKS = ['1977-04-23', '1991-11-16', '2008-04-12', '2018-03-03'];
 const eraOf = S => ERA_BREAKS.filter(b => WEEKS[S.peakWeek] >= b).length;
 const ERAS = [
-  { slug: 'am-radio', name: 'AM Radio Era', years: '1958–1977', line: 'Over 600 new songs a year, and most were gone within two months.' },
-  { slug: 'fm-radio', name: 'FM Radio Era', years: '1977–1991', line: 'Fewer songs and slower climbs: almost nothing peaked in its first week.' },
-  { slug: 'soundscan', name: 'SoundScan Era', years: '1991–2008', line: 'The fewest songs and the longest runs, and half as many #1s a year.' },
-  { slug: 'download', name: 'Download Era', years: '2008–2018', line: 'Hits arrived fast: 43% peaked in their debut week.' },
-  { slug: 'streaming', name: 'Streaming Era', years: '2018–now', line: 'Seven in ten songs peak in their debut week.' },
+  { slug: 'am-radio', name: 'AM Radio Era', years: '1958–1977', traits: ['High turnover', 'Short chart runs', 'Frequent #1 changes'] },
+  { slug: 'fm-radio', name: 'FM Radio Era', years: '1977–1991', traits: ['Slow climbs', 'Rare debut-week peaks', 'Longer runs'] },
+  { slug: 'soundscan', name: 'SoundScan Era', years: '1991–2008', traits: ['Fewest new songs', 'Longest chart runs', 'Fewer #1s'] },
+  { slug: 'download', name: 'Download Era', years: '2008–2018', traits: ['Fast starts', 'Many debut-week peaks'] },
+  { slug: 'streaming', name: 'Streaming Era', years: '2018–now', traits: ['High turnover', 'Most songs peak at debut', 'Short runs'] },
 ];
 let ERA_CACHE = null;
 function eraStats() {
@@ -255,7 +255,7 @@ function drawEras() {
   if (curEra === null) {
     box.innerHTML = all.map(E => `<a class="panel ecard" href="?view=eras&era=${E.slug}" data-era="${E.k}">
       <div class="ehead"><h2>${E.name}</h2><span class="eyears">${E.years}</span></div>
-      <p class="eline">${E.line}</p>${eraStatTiles(E)}
+      <ul class="etraits">${E.traits.map(t => `<li>${t}</li>`).join('')}</ul>${eraStatTiles(E)}
       <div class="etop">${E.songs.slice(0, 3).map((i, n) => `<span><b>${n + 1}</b> ${esc(SONGS[i].title)} <span class="muted">· ${esc(SONGS[i].performer)}</span></span>`).join('')}</div>
       <span class="emore">Top 100 ›</span></a>`).join('');
   } else {
@@ -263,7 +263,7 @@ function drawEras() {
     const rows = E.songs.slice(0, 100).map((i, n) => { const S = SONGS[i], href = songHref(i);
       return `<tr><td class="n muted">${n + 1}</td><td><div style="font-weight:600">${href ? `<a href="${href}">${esc(S.title)}</a>` : esc(S.title)}</div><div class="small muted">${esc(S.performer)}</div></td><td class="n">${WEEKS[S.peakWeek].slice(0, 4)}</td><td class="n">#${S.bestPos}</td><td class="n">${fmt(S.peak)}</td></tr>`; }).join('');
     const nav = `<nav class="enav">${curEra > 0 ? `<a href="?view=eras&era=${all[curEra - 1].slug}" data-era="${curEra - 1}">‹ ${all[curEra - 1].name}</a>` : '<span></span>'}<a href="?view=eras" data-era="">All eras</a>${curEra < 4 ? `<a href="?view=eras&era=${all[curEra + 1].slug}" data-era="${curEra + 1}">${all[curEra + 1].name} ›</a>` : '<span></span>'}</nav>`;
-    box.innerHTML = `${nav}<section class="panel"><div class="ehead"><h2 class="big">${E.name}</h2><span class="eyears">${E.years}</span></div><p class="eline">${E.line}</p>${eraStatTiles(E)}</section>
+    box.innerHTML = `${nav}<section class="panel"><div class="ehead"><h2 class="big">${E.name}</h2><span class="eyears">${E.years}</span></div><ul class="etraits">${E.traits.map(t => `<li>${t}</li>`).join('')}</ul>${eraStatTiles(E)}</section>
       <section class="panel"><h2>Top 100 of the ${E.name}</h2><p class="small muted">By peak score. Songs count in the era they peaked.</p>
       <div class="scroll"><table><thead><tr><th class="n">#</th><th>Song</th><th class="n">Peak year</th><th class="n">Chart peak</th><th class="n">Peak score</th></tr></thead><tbody>${rows}</tbody></table></div></section>${nav}`;
   }
