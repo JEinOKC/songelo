@@ -9,7 +9,7 @@
 <meta property="og:description" content="Every Billboard Hot 100 song since 1958, rated week by week.">
 <meta property="og:url" content="https://songelo.com/lab/">
 <link rel="icon" type="image/svg+xml" href="/songelo-lg.svg">
-<link rel="stylesheet" href="lab.css?v=5">
+<link rel="stylesheet" href="lab.css?v=6">
 
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:14px">
@@ -278,7 +278,7 @@ function drawTable() {
   let rows = pool.map(i => [i, get(SONGS[i])]).filter(r => r[1] !== null && r[1] !== undefined && !Number.isNaN(r[1]) && (by !== 'held' || r[1] > 0));
   rows.sort((a, b) => (cfg.asc ? a[1] - b[1] : b[1] - a[1]) || SONGS[b[0]].peak - SONGS[a[0]].peak);
   rows = rows.slice(0, 50);
-  $('sortNote').textContent = 'Click a row to add its curve to the chart.' + (cfg.big ? ` This sort only includes songs whose score reached the #5 line (${fmt(HLINES['5'])}), so tiny chart runs don’t crowd it.` : '');
+  $('sortNote').textContent = 'Tap a song for its page.' + (cfg.big ? ` This sort only includes songs whose score reached the #5 line (${fmt(HLINES['5'])}), so tiny chart runs don’t crowd it.` : '');
   const label = by === 'held' ? `Era-matched straight weeks ≥ #${lvl} line (${fmt(HLINES[lvl])})` : cfg.label;
   $('th').innerHTML = `<tr><th class="n">#</th><th>Song</th><th class="n">Debut</th><th class="n">Chart peak</th><th>Type</th><th class="n">${label}</th></tr>`;
   $('tb').innerHTML = rows.length ? rows.map(([i, v], k) => { const S = SONGS[i];
@@ -286,7 +286,7 @@ function drawTable() {
     : '<tr><td colspan="6" class="empty">No songs match. Try another curve type or a lower threshold.</td></tr>';
 }
 $('sortBy').onchange = drawTable; $('typeF').onchange = drawTable; $('heldLvl').onchange = drawTable;
-$('tb').addEventListener('click', e => { const tr = e.target.closest('tr[data-i]'); if (tr) addSong(+tr.dataset.i); });
+$('tb').addEventListener('click', e => { const tr = e.target.closest('tr[data-i]'); if (!tr) return; const href = songHref(+tr.dataset.i); if (href) location.href = href; });
 $('tb').addEventListener('keydown', e => { const tr = e.target.closest('tr[data-i]'); if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); addSong(+tr.dataset.i); } });
 
 
@@ -391,7 +391,7 @@ $('wkPick').onchange = e => { const v = e.target.value; if (!v) return; let w = 
 $('tabWeek').onclick = () => setView('week');
 $('tabAll').onclick = () => setView('all');
 $('tabEras').onclick = () => { curEra = null; setView('eras'); };
-$('crows').addEventListener('click', e => { if (e.target.closest('.exp')) return; const r = e.target.closest('.crow'); if (!r) return; openRow = +r.dataset.row === openRow ? -1 : +r.dataset.row; drawWeek(); });
+$('crows').addEventListener('click', e => { const r = e.target.closest('.crow'); if (!r) return; const i = BYWEEK[curW][+r.dataset.row][1], href = songHref(i); if (href) location.href = href; });
 $('crows').addEventListener('keydown', e => { const r = e.target.closest('.crow'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); r.click(); } });
 
 // ---------- load ----------

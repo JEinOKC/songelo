@@ -113,3 +113,9 @@ nav.controls a { color: var(--ink); font: 600 14px var(--font-ui); }
 .enav { display: flex; justify-content: space-between; gap: 10px; font: 600 14px var(--font-ui); }
 .enav a { color: var(--ink); }
 @media (max-width: 480px) { .estats { grid-template-columns: repeat(2, 1fr); } .etraits { flex-direction: column; } }
+.panel > .match { font: 700 19px var(--font-ui); line-height: 1.25; }
+.panel > .match span { display: block; font-weight: 400; font-size: 14px; color: var(--muted); }
+.panel > .lg { display: flex; flex-wrap: wrap; gap: 14px; font: 12px var(--font-ui); color: var(--ink-2); }
+.panel > .lg i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+svg.curve { max-width: 720px; }
+svg.curve text { font: 19px var(--font-data); fill: var(--muted); }
