@@ -126,3 +126,16 @@ svg.curve { max-width: 720px; }
 svg.curve text { font: 19px var(--font-data); fill: var(--muted); }
 .crow.erow { grid-template-columns: 1fr 74px; }
 .elabel { font: 600 11px var(--font-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+/* projection on a song page: dashed middle path, shaded likely range, chart position strip */
+.panel > .lg i.dash { background: repeating-linear-gradient(90deg, var(--c1) 0 5px, transparent 5px 9px); }
+.panel > .lg i.band { background: var(--c1); opacity: .3; height: 10px; }
+svg.curve .range { fill: var(--c1); opacity: .14; }
+svg.curve .proj { fill: none; stroke: var(--c1); stroke-width: 2.2; stroke-dasharray: 6 5; }
+svg.curve text.cap { font-size: 16px; }
+svg.curve text.pnow { fill: var(--ink); font-weight: 700; }
+svg.curve text.pfut { fill: var(--c1); font-weight: 700; }
+.peaks { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 4px; font-family: var(--font-ui); }
+.peak { display: flex; flex-direction: column; gap: 2px; }
+.peak + .peak { border-left: 1px solid var(--rule); padding-left: 16px; }
+.peak b { font-size: 44px; line-height: 1; letter-spacing: -.02em; color: var(--ink); }
+.peak small { font-size: 14px; font-weight: 600; color: var(--muted); }
