@@ -134,9 +134,9 @@ svg.curve .proj { fill: none; stroke: var(--c1); stroke-width: 2.2; stroke-dasha
 svg.curve text.cap { font-size: 16px; }
 svg.curve text.pnow { fill: var(--ink); font-weight: 700; }
 svg.curve text.pfut { fill: var(--c1); font-weight: 700; }
-.peaks { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 4px; font-family: var(--font-ui); }
+.peaks { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding-top: 4px; font-family: var(--font-ui); }
 .peak { display: flex; flex-direction: column; gap: 2px; }
 .peak + .peak { border-left: 1px solid var(--rule); padding-left: 16px; }
 .peak b { font-size: 44px; line-height: 1; letter-spacing: -.02em; color: var(--ink); }
-.peak small { font-size: 14px; font-weight: 600; color: var(--muted); }
-.peak .peaked { display: inline-block; margin-left: 8px; padding: 1px 7px; border-radius: 999px; background: var(--ink); color: var(--sheet); font-size: 10px; font-weight: 700; letter-spacing: .06em; vertical-align: 1px; }
+.peak .when { font-size: 14px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.peak.ahead b, .peak.ahead .when { color: var(--c1); }  /* still ahead: projected blue, as on the chart */
