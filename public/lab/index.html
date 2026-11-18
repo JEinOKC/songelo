@@ -9,7 +9,7 @@
 <meta property="og:description" content="Every Billboard Hot 100 song since 1958, rated week by week.">
 <meta property="og:url" content="https://songelo.com/lab/">
 <link rel="icon" type="image/svg+xml" href="/songelo-lg.svg">
-<link rel="stylesheet" href="lab.css?v=15">
+<link rel="stylesheet" href="lab.css?v=16">
 
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:14px">
@@ -197,20 +197,30 @@ function buildWeekly() {
   BYWEEK.forEach(rows => rows.sort((a, b) => a[0] - b[0]));
 }
 function runAt(S, w) { return S.runs.find(r => r.start <= w && w <= r.end); }
-function spark(sc) {
-  const w = 70, h = 22, lo = 1000, hi = 3300, n = sc.length;
-  const pts = sc.map((v, k) => [n === 1 ? w - 2 : k * (w - 2) / (n - 1), h - 1 - Math.max(0, Math.min(1, (v - lo) / (hi - lo))) * (h - 2)]);
-  return `<svg width="${w}" height="${h}" aria-hidden="true"><path d="M${pts.map(p => p.map(x => x.toFixed(1)).join(',')).join('L')}" fill="none" stroke="var(--accent)" stroke-width="1.6"/>${n === 1 ? `<circle cx="${pts[0][0]}" cy="${pts[0][1]}" r="2" fill="var(--accent)"/>` : ''}</svg>`;
+// climb = [position now, projected peak]: a blue dashed tip rises off the end (pages.py _spark)
+function spark(sc, climb) {
+  const w = 70, h = 22, lo = 1000, hi = 3300, n = sc.length, span = climb ? w - 18 : w - 2;
+  const pts = sc.map((v, k) => [n === 1 ? span : k * span / (n - 1), h - 1 - Math.max(0, Math.min(1, (v - lo) / (hi - lo))) * (h - 2)]);
+  let tip = '';
+  if (climb) {
+    const [x, y] = pts[n - 1], rise = Math.min(10, Math.max(4, (climb[0] - climb[1]) / climb[0] * 24));
+    tip = `<path class="tip" d="M${x.toFixed(1)},${y.toFixed(1)}L${w - 1},${Math.max(1.5, y - rise).toFixed(1)}"/>`;
+  }
+  return `<svg width="${w}" height="${h}" aria-hidden="true"><path d="M${pts.map(p => p.map(x => x.toFixed(1)).join(',')).join('L')}" fill="none" stroke="var(--accent)" stroke-width="1.6"/>${n === 1 && !climb ? `<circle cx="${pts[0][0]}" cy="${pts[0][1]}" r="2" fill="var(--accent)"/>` : ''}${tip}</svg>`;
 }
+const CLIMB_ARROW = '<svg class="climbs" width="11" height="11" viewBox="0 0 10 10" role="img" aria-label="Projected to climb"><path d="M1.5 8.5 L8.5 1.5 M3.5 1.5 H8.5 V6.5"/></svg>';
+// Songs on the latest chart projected to climb, written by the hot100 pipeline (songs/climbers.json).
+let CLIMBS = null;
+fetch('songs/climbers.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(c => { CLIMBS = c; if (SONGS.length) drawWeek(); }).catch(() => {});
 // Song page slugs, written by the hot100 pipeline beside curves.json (songs/index.json).
 let SLUGS = null;
 fetch('songs/index.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(s => { SLUGS = s; if (SONGS.length) { drawWeek(); drawTable(); if (!$('erasView').hidden) drawEras(); } }).catch(() => {});
 const songHref = i => SLUGS && SLUGS[i] ? `songs/${SLUGS[i]}/` : null;
 // One row style for every song list: rank (+ movement), title and artist, a
 // number and the song's score line. The row links to the song's page.
-function songRow(i, rank, mv, value, sc) {
+function songRow(i, rank, mv, value, sc, climb) {
   const S = SONGS[i], href = songHref(i);
-  return `<a class="crow"${href ? ` href="${href}"` : ''}><div class="cpos">${rank}${mv || ''}</div><div><div class="ct">${esc(S.title)}</div><div class="ca">${esc(S.performer)}</div></div><div class="csc">${value}${spark(sc)}</div></a>`;
+  return `<a class="crow"${href ? ` href="${href}"` : ''}><div class="cpos">${rank}${mv || ''}</div><div><div class="ct">${esc(S.title)}</div><div class="ca">${esc(S.performer)}</div></div><div class="csc">${climb ? CLIMB_ARROW : ''}${value}${spark(sc, climb)}</div></a>`;
 }
 function drawWeek() {
   const w = curW, last = WEEKS.length - 1;
@@ -218,12 +228,13 @@ function drawWeek() {
   $('wkLabel').textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   $('wkPick').value = WEEKS[w]; $('wkPick').min = WEEKS[0]; $('wkPick').max = WEEKS[last];
   $('prevW').disabled = w === 0; $('nextW').disabled = w === last;
+  const climbs = CLIMBS && CLIMBS.week === WEEKS[w] ? CLIMBS.climbs : {};
   $('crows').innerHTML = BYWEEK[w].map(([pos, i, k], row) => {
     const S = SONGS[i], prev = k > 0 && S.pts[k - 1][0] === w - 1 ? S.pts[k - 1][2] : null;
     const mv = k === 0 ? '<span class="mv nw">NEW</span>' : prev === null ? '<span class="mv nw">RE</span>'
       : prev === pos ? '<span class="mv">–</span>' : prev > pos ? `<span class="mv up">▲${prev - pos}</span>` : `<span class="mv down">▼${pos - prev}</span>`;
     const run = runAt(S, w);
-    return songRow(i, pos, mv, fmt(S.pts[k][1]), run.sc.slice(0, w - run.start + 1));
+    return songRow(i, pos, mv, fmt(S.pts[k][1]), run.sc.slice(0, w - run.start + 1), climbs[i]);
   }).join('');
 }
 function setWeek(w) { curW = Math.max(0, Math.min(WEEKS.length - 1, w)); openRow = -1; drawWeek(); saveUrl(); }

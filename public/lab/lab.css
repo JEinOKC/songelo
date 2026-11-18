@@ -140,3 +140,7 @@ svg.curve text.pfut { fill: var(--c1); font-weight: 700; }
 .peak b { font-size: 44px; line-height: 1; letter-spacing: -.02em; color: var(--ink); }
 .peak .when { font-size: 14px; font-weight: 600; color: var(--muted); white-space: nowrap; }
 .peak.ahead b, .peak.ahead .when { color: var(--c1); }  /* still ahead: projected blue, as on the chart */
+/* climbers: projected to keep rising (songs/climbers.json); blue = projected, as on the song page */
+.csc svg.climbs { display: inline-block; margin: 0 5px 1px 0; vertical-align: -1px; }
+.csc svg.climbs path { fill: none; stroke: var(--c1); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.csc svg .tip { fill: none; stroke: var(--c1); stroke-width: 1.8; stroke-dasharray: 3 2; }
