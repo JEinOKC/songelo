@@ -144,3 +144,12 @@ svg.curve text.pfut { fill: var(--c1); font-weight: 700; }
 .csc svg.climbs { display: inline-block; margin: 0 5px 1px 0; vertical-align: -1px; }
 .csc svg.climbs path { fill: none; stroke: var(--c1); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .csc svg .tip { fill: none; stroke: var(--c1); stroke-width: 1.8; stroke-dasharray: 3 2; }
+/* Hot 100 watchlist (This week, latest week only) */
+.wjump { align-self: flex-end; font: 600 14px var(--font-ui); color: var(--accent-ink); text-decoration: none; }
+.wjump[hidden] { display: none; }
+.crow.wrow { grid-template-columns: 34px 1fr; cursor: default; }
+.crow.wrow:hover { background: none; }
+.wrow .cpos { font-size: 18px; color: var(--muted); }
+.wplace { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 6px; }
+.wplace span { font: 600 12px var(--font-ui); color: var(--ink-2); background: var(--paper); border: 1px solid var(--rule); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
+.wplace b { font-weight: 700; color: var(--ink); margin-left: 4px; }
