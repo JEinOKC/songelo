@@ -100,3 +100,12 @@ tr.ahead td { color: var(--muted); }
 .tk.all { border-top: 2px solid var(--ink); }
 svg.trend text { font: 10px var(--font-ui); fill: var(--muted); }
 .brand img { width: 44px; height: 44px; }
+/* curator playlists a show's bands are on now, under the whole show */
+.cpills { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+.cpill { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 3px 11px; border-radius: 999px; border: 1px solid var(--rule); background: #fff; font-size: 12px; font-weight: 600; color: var(--ink-2); text-decoration: none; }
+.cpill::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: #1db954; }
+.cpill:hover { border-color: var(--ink-2); }
+/* band page: curator picks, newest first */
+table.picks td { vertical-align: middle; }
+table.picks td .sub { font-size: 13px; color: var(--muted); }
+table.picks td.n { white-space: nowrap; color: var(--muted); }

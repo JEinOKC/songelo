@@ -85,7 +85,13 @@ function showRow(s, withVenue) {
   return `<div class="show">
       <div class="date"><small>${fmt(s.date, { month: 'short' })}</small><b>${day(s.date).getDate()}</b><small>${fmt(s.date, { weekday: 'short' })}</small></div>
       <div class="bill">${s.bill.length ? s.bill.map((b, k) => `<div class="${k ? 'sup' : 'hl'}"><a href="${bandHref(b.id)}">${esc(b.name)}</a></div>`).join('') : `<div class="hl">${esc(s.name)}</div>`}${withVenue ? `<div class="where"><a href="${BASE}${s.venue.slug}/">${esc(s.venue.name)}</a></div>` : ''}</div>
-      <div class="price">${cost(s.price)}${s.url ? `<a href="${esc(s.url)}" rel="noopener">Tickets</a>` : ''}</div></div>`;
+      <div class="price">${cost(s.price)}${s.url ? `<a href="${esc(s.url)}" rel="noopener">Tickets</a>` : ''}</div>${pills(s)}</div>`;
+}
+// Curator playlists this show's bands are on right now (the pipeline drops any a band
+// has rotated off, so a pill never links to a playlist without the band).
+function pills(s) {
+  const pl = s.playlists || [];
+  return pl.length ? `<div class="cpills">${pl.map(p => `<a class="cpill" href="${esc(p.url)}" rel="noopener">${esc(p.curator)} · ${esc(p.playlist)}</a>`).join('')}</div>` : '';
 }
 
 let calMonth = TODAY.slice(0, 7), calDay = null;
