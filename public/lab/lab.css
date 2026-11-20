@@ -153,3 +153,7 @@ svg.curve text.pfut { fill: var(--c1); font-weight: 700; }
 .wplace { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 6px; }
 .wplace span { font: 600 12px var(--font-ui); color: var(--ink-2); background: var(--paper); border: 1px solid var(--rule); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
 .wplace b { font-weight: 700; color: var(--ink); margin-left: 4px; }
+/* song page: curator picks, newest first */
+.crow.prow { grid-template-columns: 1fr auto; cursor: default; }
+.crow.prow:hover { background: none; }
+.prow .pdate { font: 600 13px var(--font-ui); color: var(--muted); text-align: right; white-space: nowrap; }
